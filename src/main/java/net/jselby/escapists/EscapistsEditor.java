@@ -56,7 +56,7 @@ public class EscapistsEditor {
      * Create a new default registry for objects
      */
     public ObjectRegistry registry;
-    private boolean showGUI;
+    private static boolean showGUI;
 
     private void start() {
         System.out.println("The Escapists Editor v0.1");
@@ -68,20 +68,33 @@ public class EscapistsEditor {
         File steamPath = SteamFinder.getSteamPath();
 
         if (steamPath == null) {
-            System.out.println("Failed to discover Steam installation.");
-            System.exit(1);
+            fatalError("Failed to discover Steam installation.");
         }
 
         // Check that Escapists is installed
         escapistsPath =
                 new File(steamPath, "SteamApps" + File.separator + "common" + File.separator + "The Escapists");
         if (!escapistsPath.exists()) {
-            System.out.println("Escapists is not installed @ " + escapistsPath.getPath());
-            System.exit(1);
+            fatalError("Escapists is not installed @ " + escapistsPath.getPath());
         }
 
         // Parse arguments
         System.out.println("=====================");
+    }
+
+    private static void fatalError(String s) {
+        System.err.println(s);
+        if (showGUI) {
+            JOptionPane.showMessageDialog(null, s);
+        }
+        System.exit(1);
+    }
+
+    private void dialog(String s) {
+        System.out.println(s);
+        if (showGUI) {
+            JOptionPane.showMessageDialog(null, s);
+        }
     }
 
     public String[] getMaps() {
@@ -111,7 +124,8 @@ public class EscapistsEditor {
         if (!mapPath.exists()) {
             mapPath = new File(escapistsPath, "Data" + File.separator + "Maps" + File.separator + name);
             if (!mapPath.exists()) {
-                System.out.println("Map \"" + name.trim() + "\" not found.");
+                dialog("Map \"" + name.trim() + "\" not found.");
+                return;
             }
         }
 
@@ -134,7 +148,8 @@ public class EscapistsEditor {
         if (!mapPath.exists()) {
             mapPath = new File(escapistsPath, "Data" + File.separator + "Maps" + File.separator + name);
             if (!mapPath.exists()) {
-                System.out.println("Map \"" + name.trim() + "\" not found.");
+                dialog("Map \"" + name.trim() + "\" not found.");
+                return;
             }
         }
 
@@ -165,7 +180,8 @@ public class EscapistsEditor {
         if (!mapPath.exists()) {
             mapPath = new File(escapistsPath, "Data" + File.separator + "Maps" + File.separator + name);
             if (!mapPath.exists()) {
-                System.out.println("Map \"" + name.trim() + "\" not found.");
+                dialog("Map \"" + name.trim() + "\" not found.");
+                return;
             }
         }
 
@@ -195,7 +211,7 @@ public class EscapistsEditor {
         if (!mapPath.exists()) {
             mapPath = new File(escapistsPath, "Data" + File.separator + "Maps" + File.separator + name);
             if (!mapPath.exists()) {
-                System.out.println("Map \"" + name.trim() + "\" not found.");
+                dialog("Map \"" + name.trim() + "\" not found.");
                 return;
             }
         }
@@ -214,63 +230,67 @@ public class EscapistsEditor {
         }
     }
 
-    public static void main(String[] args) throws IOException {
-        // Parse
-        EscapistsEditor editor = new EscapistsEditor();
-
-        JCommander commander = new JCommander(editor);
-        commander.setAcceptUnknownOptions(false);
-        commander.setProgramName("java -jar escapistseditor.jar");
+    public static void main(String[] args) {
         try {
-            commander.parse(args);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            commander.usage();
-            System.exit(-1);
-        }
-        if (editor.showHelp) {
-            commander.usage();
-            System.exit(0);
-        }
+            // Parse
+            EscapistsEditor editor = new EscapistsEditor();
 
-        editor.start();
-
-        // Check what we need to do
-
-        if (editor.decryptFile == null &&
-                editor.encryptFile == null &&
-                editor.renderMap == null &&
-                editor.encryptAndInstallFile == null &&
-                editor.editMap == null &&
-                !editor.renderAll) {
-            // Select a map through a GUI first
-            editor.showGUI = true;
-            RenderView view = new RenderView(editor, null);
-            view.setEnabled(false);
-            MapSelectionGUI gui = new MapSelectionGUI(editor);
-            gui.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-            gui.setOldView(view);
-        }
-
-        if (editor.decryptFile != null) {
-            editor.dump(editor.decryptFile);
-        }
-        if (editor.encryptFile != null) {
-            editor.encrypt(editor.encryptFile, false);
-        }
-        if (editor.encryptAndInstallFile != null) {
-            editor.encrypt(editor.encryptAndInstallFile, true);
-        }
-        if (editor.renderMap != null) {
-            editor.render(editor.renderMap);
-        }
-        if (editor.renderAll) {
-            for (String map : editor.getMaps()) {
-                editor.render(map);
+            JCommander commander = new JCommander(editor);
+            commander.setAcceptUnknownOptions(false);
+            commander.setProgramName("java -jar escapistseditor.jar");
+            try {
+                commander.parse(args);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                commander.usage();
+                System.exit(-1);
             }
-        }
-        if (editor.editMap != null) {
-            editor.edit(editor.editMap, null);
+            if (editor.showHelp) {
+                commander.usage();
+                System.exit(0);
+            }
+
+            editor.start();
+
+            // Check what we need to do
+
+            if (editor.decryptFile == null &&
+                    editor.encryptFile == null &&
+                    editor.renderMap == null &&
+                    editor.encryptAndInstallFile == null &&
+                    editor.editMap == null &&
+                    !editor.renderAll) {
+                // Select a map through a GUI first
+                editor.showGUI = true;
+                RenderView view = new RenderView(editor, null);
+                view.setEnabled(false);
+                MapSelectionGUI gui = new MapSelectionGUI(editor);
+                gui.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+                gui.setOldView(view);
+            }
+
+            if (editor.decryptFile != null) {
+                editor.dump(editor.decryptFile);
+            }
+            if (editor.encryptFile != null) {
+                editor.encrypt(editor.encryptFile, false);
+            }
+            if (editor.encryptAndInstallFile != null) {
+                editor.encrypt(editor.encryptAndInstallFile, true);
+            }
+            if (editor.renderMap != null) {
+                editor.render(editor.renderMap);
+            }
+            if (editor.renderAll) {
+                for (String map : editor.getMaps()) {
+                    editor.render(map);
+                }
+            }
+            if (editor.editMap != null) {
+                editor.edit(editor.editMap, null);
+            }
+        } catch (Exception e) {
+            fatalError("Error: " + e.getMessage());
         }
     }
 }

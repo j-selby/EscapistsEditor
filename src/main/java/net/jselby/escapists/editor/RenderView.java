@@ -369,8 +369,6 @@ public class RenderView extends JFrame {
                 // Get ID
                 int idToAdd;
                 if (id.getSelectedItem().toString().equalsIgnoreCase("Other...")) {
-                    x = -1;
-                    y = -1;
                     String output = JOptionPane.showInputDialog(RenderView.this, "Enter an ID (1-150): ").trim();
                     if (NumberUtils.isNumber(output)) {
                         int num = Integer.parseInt(output);
@@ -383,6 +381,8 @@ public class RenderView extends JFrame {
                     } else {
                         editor.dialog("Invalid ID entered!");
                     }
+                    this.x = -1;
+                    this.y = -1;
                 } else {
                     idToAdd = Integer.parseInt(id.getSelectedItem().toString().split(":")[0].trim());
                     if (idToAdd > 0 && idToAdd < 150) {
@@ -390,6 +390,7 @@ public class RenderView extends JFrame {
                     } else {
                         editor.dialog("Invalid ID for object!");
                     }
+                    renderer.refresh();
                 }
                 break;
             case DELETE_OBJECT:

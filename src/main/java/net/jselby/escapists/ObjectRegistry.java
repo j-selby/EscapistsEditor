@@ -104,6 +104,7 @@ public class ObjectRegistry {
         DOOR_ORANGE_KEY(26),
         DOOR_LAUNDRY(28),
         DOOR_RED_KEY(30),
+        DOOR_PRISON_ENTRANCE(75),
 
         // Training
         TRAINING_TREADMILL(7),

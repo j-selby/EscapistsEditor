@@ -61,7 +61,7 @@ public class RenderView extends JFrame {
         objectIds.add("Other...");
         id = new JComboBox(objectIds.toArray());
         id.setSelectedIndex(0);
-        id.setMaximumSize(new Dimension(200, 30));
+        id.setMaximumSize(new Dimension(150, 30));
 
         // Build tiles
         ArrayList<Object> icons = new ArrayList<>();
@@ -83,13 +83,13 @@ public class RenderView extends JFrame {
         }
         tileSelect = new JComboBox(icons.toArray());
         tileSelect.setSelectedIndex(0);
-        tileSelect.setMaximumSize(new Dimension(200, 30));
+        tileSelect.setMaximumSize(new Dimension(150, 30));
 
         // Zone editor
         selectedZone.setAlignmentX(CENTER_ALIGNMENT);
         selectedZoneEditor.setAlignmentX(CENTER_ALIGNMENT);
-        selectedZoneEditor.setMinimumSize(new Dimension(150, 30));
-        selectedZoneEditor.setMaximumSize(new Dimension(150, 30));
+        selectedZoneEditor.setMinimumSize(new Dimension(120, 30));
+        selectedZoneEditor.setMaximumSize(new Dimension(120, 30));
         selectedZoneEditor.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
@@ -181,7 +181,7 @@ public class RenderView extends JFrame {
         // Toolbar
         JPanel sidebar = new JPanel();
         sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
-        Dimension sidebarSize = new Dimension(150, 600);
+        Dimension sidebarSize = new Dimension(200, 600);
         sidebar.setPreferredSize(sidebarSize);
         sidebar.setMaximumSize(sidebarSize);
         sidebar.setMinimumSize(sidebarSize);
@@ -205,7 +205,11 @@ public class RenderView extends JFrame {
         sidebar.add(Box.createVerticalStrut(20));
 
         // Toolbar options
-        JButton loadMap = new JButton("Load Map");
+        JPanel ioButtons = new JPanel();
+        ioButtons.setAlignmentX(CENTER_ALIGNMENT);
+        ioButtons.setLayout(new BoxLayout(ioButtons, BoxLayout.X_AXIS));
+        ioButtons.setMaximumSize(new Dimension(150, 50));
+        JButton loadMap = new JButton("Load...");
         loadMap.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -220,11 +224,11 @@ public class RenderView extends JFrame {
             }
         });
         loadMap.setAlignmentX(CENTER_ALIGNMENT);
-        loadMap.setMinimumSize(new Dimension(150, 50));
+        loadMap.setMinimumSize(new Dimension(70, 50));
         loadMap.setHorizontalAlignment(SwingConstants.LEADING);
-        sidebar.add(loadMap);
+        ioButtons.add(loadMap);
 
-        JButton saveMap = new JButton("Save Map");
+        JButton saveMap = new JButton("Save...");
         saveMap.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -243,9 +247,10 @@ public class RenderView extends JFrame {
             }
         });
         saveMap.setAlignmentX(CENTER_ALIGNMENT);
-        saveMap.setMinimumSize(new Dimension(150, 50));
+        saveMap.setMinimumSize(new Dimension(70, 50));
         saveMap.setHorizontalAlignment(SwingConstants.LEADING);
-        sidebar.add(saveMap);
+        ioButtons.add(saveMap);
+        sidebar.add(ioButtons);
 
         JButton properties = new JButton("Properties");
         properties.setMinimumSize(new Dimension(150, 50));
@@ -259,6 +264,7 @@ public class RenderView extends JFrame {
         sidebar.add(properties);
 
         // Zoom
+        sidebar.add(Box.createVerticalStrut(10));
         JLabel zoomLabel = new JLabel("Zoom");
         zoomLabel.setAlignmentX(CENTER_ALIGNMENT);
         sidebar.add(zoomLabel);
@@ -289,8 +295,6 @@ public class RenderView extends JFrame {
         zoom.setAlignmentX(CENTER_ALIGNMENT);
         sidebar.add(zoom);
 
-        sidebar.add(Box.createVerticalStrut(20));
-
         // Checkbox for rendering
         final JCheckBox showZones = new JCheckBox();
         showZones.setText("Show Zones");
@@ -307,6 +311,8 @@ public class RenderView extends JFrame {
         });
         showZones.setAlignmentX(CENTER_ALIGNMENT);
         sidebar.add(showZones);
+        sidebar.add(Box.createVerticalStrut(30));
+
 
         // Tool chooser
         String[] rawModes = new String[ActionMode.values().length];
@@ -316,7 +322,7 @@ public class RenderView extends JFrame {
         }
         final JComboBox petList = new JComboBox(rawModes);
         petList.setSelectedIndex(0);
-        petList.setMaximumSize(new Dimension(200, 30));
+        petList.setMaximumSize(new Dimension(150, 30));
         petList.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -326,7 +332,7 @@ public class RenderView extends JFrame {
         sidebar.add(petList);
 
         // Add the options
-        sidebar.add(Box.createVerticalStrut(50));
+        sidebar.add(Box.createVerticalStrut(20));
 
         toolOptions = new JPanel();
         toolOptions.setAlignmentX(CENTER_ALIGNMENT);
@@ -352,6 +358,7 @@ public class RenderView extends JFrame {
                 UnsupportedLookAndFeelException e) {
             e.printStackTrace();
         }
+        SwingUtilities.updateComponentTreeUI(this);
         setVisible(true);
     }
 

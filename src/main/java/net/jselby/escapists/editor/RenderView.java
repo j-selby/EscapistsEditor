@@ -7,6 +7,8 @@ import org.apache.commons.lang3.text.WordUtils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.AbstractDocument;
@@ -168,6 +170,8 @@ public class RenderView extends JFrame {
         });
 
         JScrollPane scrollArea = new JScrollPane(renderer);
+        scrollArea.setOpaque(false);
+        scrollArea.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         scrollArea.setWheelScrollingEnabled(true);
         scrollArea.getHorizontalScrollBar().setUnitIncrement(16);
         scrollArea.getVerticalScrollBar().setUnitIncrement(16);
@@ -198,7 +202,7 @@ public class RenderView extends JFrame {
         scrollPane.setMaximumSize(new Dimension(200, 200));
 
         sidebar.add(scrollPane);
-        sidebar.add(Box.createVerticalStrut(50));
+        sidebar.add(Box.createVerticalStrut(20));
 
         // Toolbar options
         JButton loadMap = new JButton("Load Map");
@@ -254,7 +258,38 @@ public class RenderView extends JFrame {
         });
         sidebar.add(properties);
 
-        sidebar.add(Box.createVerticalStrut(50));
+        // Zoom
+        JLabel zoomLabel = new JLabel("Zoom");
+        zoomLabel.setAlignmentX(CENTER_ALIGNMENT);
+        sidebar.add(zoomLabel);
+        final JSlider zoom = new JSlider(JSlider.HORIZONTAL,
+                1, 5, 3);
+        zoom.setMajorTickSpacing(1);
+        zoom.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                float value = zoom.getValue();
+                if (value < 3) {
+                    if (value == 1) {
+                        value = 0.5f;
+                    } else if (value == 2) {
+                        value = 0.75f;
+                    }
+                } else {
+                    value -= 2;
+                    if (value == 2) {
+                        value = 1.5f;
+                    } else if (value == 3) {
+                        value = 2f;
+                    }
+                }
+                renderer.setZoomFactor(value);
+            }
+        });
+        zoom.setAlignmentX(CENTER_ALIGNMENT);
+        sidebar.add(zoom);
+
+        sidebar.add(Box.createVerticalStrut(20));
 
         // Checkbox for rendering
         final JCheckBox showZones = new JCheckBox();
@@ -321,6 +356,10 @@ public class RenderView extends JFrame {
     }
 
     private void toolHandler(int x, int y) {
+        // Convert x & y with scaling
+        x = (int) (((float) x) / ((float) renderer.getZoomFactor()));
+        y = (int) (((float) y) / ((float) renderer.getZoomFactor()));
+
         // Get object at that position
         WorldObject clickedObject = mapToEdit.getObjectAt(x, y);
 

@@ -290,6 +290,7 @@ public class EscapistsEditor {
                 editor.edit(editor.editMap, null);
             }
         } catch (Exception e) {
+            e.printStackTrace();
             fatalError("Error: " + e.getMessage());
         }
     }

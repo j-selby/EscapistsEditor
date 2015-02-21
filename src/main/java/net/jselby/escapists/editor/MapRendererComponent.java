@@ -14,11 +14,16 @@ import java.awt.image.BufferedImage;
  * @author j_selby
  */
 public class MapRendererComponent extends JPanel {
+    private final float origWidth;
+    private final float origHeight;
+
     private Map mapToEdit;
 
     private BufferedImage render;
     private boolean showZones;
     private String selectedZone;
+
+    private float zoomFactor = 1.0f;
 
     public MapRendererComponent(Map map, ClickListener clickListener, MouseMotionListener motionListener) {
         this.mapToEdit = map;
@@ -32,6 +37,13 @@ public class MapRendererComponent extends JPanel {
             setPreferredSize(size);
             setMaximumSize(size);
             setMinimumSize(size);
+
+            // These are inverted, don't worry.
+            origWidth = (map.getHeight() - 1) * 16;
+            origHeight = (map.getWidth() - 3) * 16;
+        } else {
+            origHeight = 1;
+            origWidth = 1;
         }
 
         refresh();
@@ -39,7 +51,20 @@ public class MapRendererComponent extends JPanel {
 
     @Override
     protected void paintComponent(Graphics g) {
+        Graphics2D graphics2D = (Graphics2D) g;
+        graphics2D.scale(zoomFactor, zoomFactor);
+
         g.drawImage(render, 0, 0, null);
+
+        // Change the size of the panel
+        Dimension size = new Dimension((int) (origWidth * zoomFactor),(int) (origHeight * zoomFactor));
+        setSize(size);
+        setPreferredSize(size);
+        setMaximumSize(size);
+        setMinimumSize(size);
+
+        // Re-Layout the panel
+        validate();
     }
 
     public void refresh() {
@@ -50,6 +75,15 @@ public class MapRendererComponent extends JPanel {
 
         setIgnoreRepaint(false);
         repaint();
+    }
+
+    public void setZoomFactor(float newZoom) {
+        this.zoomFactor = newZoom;
+        refresh();
+    }
+
+    public float getZoomFactor() {
+        return zoomFactor;
     }
 
     public void setShowZones(boolean showZones) {

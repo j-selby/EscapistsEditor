@@ -1,10 +1,9 @@
 package net.jselby.escapists.editor;
 
-import net.jselby.escapists.EscapistsEditor;
-import net.jselby.escapists.Map;
-import net.jselby.escapists.MapSelectionGUI;
-import net.jselby.escapists.WorldObject;
+import net.jselby.escapists.*;
 import net.jselby.escapists.objects.Light;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.commons.lang3.text.WordUtils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -25,21 +24,13 @@ import java.util.Arrays;
  * @author j_selby
  */
 public class RenderView extends JFrame {
-    private static final ArrayList<Integer> KEEP_IDS = new ArrayList<>();
-
-    static {
-        KEEP_IDS.addAll(Arrays.asList(
-                17, 19, 22
-        ));
-    }
-
     private final MapRendererComponent renderer;
     private final JTextArea console;
     private final JComboBox tileSelect;
     private final JPanel toolOptions;
 
     // Tools
-    private final JTextField id = new JTextField("0");
+    private final JComboBox id;
     private final JLabel selectedZone = new JLabel("Selected Zone: None");
     private final JTextField selectedZoneEditor = new JTextField();
 
@@ -60,11 +51,15 @@ public class RenderView extends JFrame {
 
         // Configure the defaults
         // ID box
-        id.setAlignmentX(CENTER_ALIGNMENT);
-        id.setMinimumSize(new Dimension(150, 30));
-        id.setMaximumSize(new Dimension(150, 30));
-        ((AbstractDocument)id.getDocument()).setDocumentFilter(
-                new NumberOnlyFilter());
+        ArrayList<Object> objectIds = new ArrayList<>();
+        for (ObjectRegistry.Objects objectId : ObjectRegistry.Objects.values()) {
+            objectIds.add(objectId.getID() + ": "
+                    + WordUtils.capitalize(objectId.name().toLowerCase().replace("_", " ")));
+        }
+        objectIds.add("Other...");
+        id = new JComboBox(objectIds.toArray());
+        id.setSelectedIndex(0);
+        id.setMaximumSize(new Dimension(200, 30));
 
         // Build tiles
         ArrayList<Object> icons = new ArrayList<>();
@@ -230,15 +225,16 @@ public class RenderView extends JFrame {
             @Override
             public void mousePressed(MouseEvent e) {
                 // Save map
-                try {
-                    // Get our target
-                    JFileChooser fc = new JFileChooser();
-                    int dialog = fc.showSaveDialog(RenderView.this);
-                    if (JFileChooser.APPROVE_OPTION == dialog) {
+                // Get our target
+                JFileChooser fc = new JFileChooser();
+                int dialog = fc.showSaveDialog(RenderView.this);
+                if (JFileChooser.APPROVE_OPTION == dialog) {
+                    try {
                         mapToEdit.save(fc.getSelectedFile());
+                    } catch (Exception error) {
+                        error.printStackTrace();
+                        editor.dialog(error.getMessage());
                     }
-                } catch (IOException e1) {
-                    e1.printStackTrace();
                 }
             }
         });
@@ -332,18 +328,36 @@ public class RenderView extends JFrame {
         switch (mode) {
             case CREATE_OBJECT:
                 // Get ID
-                int idToAdd = id.getText().trim().length() == 0 ? 0 : Integer.parseInt(id.getText());
-                if (idToAdd > 0 && idToAdd < 100) {
-                    mapToEdit.getObjects().add(editor.registry.instanceWithUnknown(idToAdd, x, y));
+                int idToAdd;
+                if (id.getSelectedItem().toString().equalsIgnoreCase("Other...")) {
+                    x = -1;
+                    y = -1;
+                    String output = JOptionPane.showInputDialog(RenderView.this, "Enter an ID (1-150): ").trim();
+                    if (NumberUtils.isNumber(output)) {
+                        int num = Integer.parseInt(output);
+                        if (num > 0 && num < 150) {
+                            mapToEdit.getObjects().add(editor.registry.instanceWithUnknown(num, x, y));
+                            renderer.refresh();
+                        } else {
+                            editor.dialog("Invalid ID entered!");
+                        }
+                    } else {
+                        editor.dialog("Invalid ID entered!");
+                    }
                 } else {
-                    System.out.println("Invalid ID");
+                    idToAdd = Integer.parseInt(id.getSelectedItem().toString().split(":")[0].trim());
+                    if (idToAdd > 0 && idToAdd < 150) {
+                        mapToEdit.getObjects().add(editor.registry.instanceWithUnknown(idToAdd, x, y));
+                    } else {
+                        editor.dialog("Invalid ID for object!");
+                    }
                 }
                 break;
             case DELETE_OBJECT:
                 mapToEdit.getObjects().remove(clickedObject);
                 break;
             case INFO_OBJECT:
-                System.out.println(clickedObject);
+                System.out.println(clickedObject.getName());
                 break;
             case SET_TILE:
                 // Get tile
@@ -426,9 +440,7 @@ public class RenderView extends JFrame {
                         java.util.List<WorldObject> worldObjects = mapToEdit.getObjects();
                         for (WorldObject object :
                                 worldObjects.toArray(new WorldObject[worldObjects.size()])) {
-                            if (!KEEP_IDS.contains(object.getID())) {
-                                worldObjects.remove(object);
-                            }
+                            worldObjects.remove(object);
                         }
 
                         renderer.refresh();

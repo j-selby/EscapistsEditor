@@ -90,7 +90,7 @@ public class EscapistsEditor {
         System.exit(1);
     }
 
-    private void dialog(String s) {
+    public void dialog(String s) {
         System.out.println(s);
         if (showGUI) {
             JOptionPane.showMessageDialog(null, s);

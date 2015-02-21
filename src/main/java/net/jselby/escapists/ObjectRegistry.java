@@ -112,12 +112,13 @@ public class ObjectRegistry {
         TRAINING_INTERNET(69),
 
         // AI Waypoints
-        AI_WAYPOINT_GUARD_SHOWERS(14),
-        AI_WAYPOINT_PRISONER_ROLLCALL(16),
-        AI_WAYPOINT_GUARD_ROLLCALL(17),
-        AI_WAYPOINT_GUARD_GENERAL(19),
-        AI_WAYPOINT_GUARD_EXERCISE(39),
-        AI_WAYPOINT_DOCTOR_WORK(94),
+        AI_WP_GUARD_SHOWERS(14),
+        AI_WP_PRISONER_ROLLCALL(16),
+        AI_WP_GUARD_ROLLCALL(17),
+        AI_WP_PRISONER_GENERAL(18),
+        AI_WP_GUARD_GENERAL(19),
+        AI_WP_GUARD_EXERCISE(39),
+        AI_WP_DOCTOR_WORK(94),
         ;
 
         private final int id;

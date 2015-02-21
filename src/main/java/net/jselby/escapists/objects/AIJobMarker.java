@@ -21,11 +21,6 @@ public class AIJobMarker extends WorldObject {
     }
 
     @Override
-    public String getName() {
-        return "AI_JobMarker";
-    }
-
-    @Override
     public int getID() {
         return 50;
     }

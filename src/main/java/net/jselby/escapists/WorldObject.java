@@ -36,7 +36,8 @@ public abstract class WorldObject {
             }
         }
         if (providedName == null) {
-            providedName = WordUtils.capitalize(getClass().getSimpleName().toLowerCase().replace("_", " "));
+            providedName = WordUtils.capitalize(getClass().getSimpleName().toLowerCase().replace("_", " "))
+                    + " (ID: " + getID() + ")";
         }
         return getX() + ":" + getY() + " = " + providedName;
     }

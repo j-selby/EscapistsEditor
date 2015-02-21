@@ -113,6 +113,7 @@ public class ObjectRegistry {
 
         // AI Waypoints
         AI_WAYPOINT_GUARD_SHOWERS(14),
+        AI_WAYPOINT_PRISONER_ROLLCALL(16),
         AI_WAYPOINT_GUARD_ROLLCALL(17),
         AI_WAYPOINT_GUARD_GENERAL(19),
         AI_WAYPOINT_GUARD_EXERCISE(39),

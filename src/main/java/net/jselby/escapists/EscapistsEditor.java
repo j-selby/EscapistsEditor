@@ -109,7 +109,7 @@ public class EscapistsEditor {
                 maps.add("Custom" + File.separator + file.getName());
             }
         }
-        System.out.println("Rendering " + maps.size() + " maps.");
+        System.out.println("Listing " + maps.size() + " maps.");
         return maps.toArray(new String[maps.size()]);
     }
 

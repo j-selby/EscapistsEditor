@@ -195,7 +195,9 @@ public class RenderView extends JFrame {
         console.setEditable(false);
         // Redirect System.out
         System.setOut(new PrintStream(new TextPanePrintStream(console)));
-        console.append("Ready!\n");
+        console.append("- Ready!\n");
+        console.append("- Escapists location: " + editor.escapistsPath + "\n");
+        console.append("- Escapists Editor v0.1, by jselby (http://jselby.net)\n");
 
         JScrollPane scrollPane = new JScrollPane(console);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);

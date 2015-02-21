@@ -33,13 +33,13 @@ public class TextPanePrintStream extends OutputStream {
         }
 
         if (b == '\n') {
-            final String text = sb.toString() + "\n";
+            final String text = "- " + sb.toString() + "\n";
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     // Shorten to X lines
                     String[] lines = textArea.getText().split("\n");
                     String newContent = "";
-                    int linesToKeep = 5;
+                    int linesToKeep = 4;
                     int pullFrom = (lines.length == linesToKeep ? 2 : 1);
                     for (int i = lines.length - pullFrom; i > lines.length - pullFrom - linesToKeep; i--) {
                         if (i < 0) {

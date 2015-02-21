@@ -115,6 +115,7 @@ public class ObjectRegistry {
         TRAINING_TREADMILL(7),
         TRAINING_WEIGHT(8),
         TRAINING_INTERNET(69),
+        TRAINING_CHINUP(102),
 
         // AI Waypoints
         AI_WP_GUARD_SHOWERS(14),

@@ -269,11 +269,11 @@ public class Map {
 
     public void save(File selectedFile) throws IOException {
         // Do checks
-        if (count(ObjectRegistry.Objects.AI_WAYPOINT_GUARD_ROLLCALL) == 0) {
+        if (count(ObjectRegistry.Objects.AI_WP_GUARD_ROLLCALL) == 0) {
             throw new IOException(COMPILE_ERROR + "Invalid amount of rollcall guard waypoints - \n" +
                     "You need more then 1.");
         }
-        if (count(ObjectRegistry.Objects.AI_WAYPOINT_GUARD_GENERAL) == 0) {
+        if (count(ObjectRegistry.Objects.AI_WP_GUARD_GENERAL) == 0) {
             throw new IOException(COMPILE_ERROR + "Invalid amount of general guard waypoints - \nYou need more then 1.");
         }
 

@@ -29,7 +29,7 @@ public class ObjectRegistry {
                 // X:Y
                 Constructor<? extends WorldObject> constructor
                         = type.getConstructor(new Class[]{Integer.TYPE, Integer.TYPE});
-                WorldObject instance = constructor.newInstance(-1, 1);
+                WorldObject instance = constructor.newInstance(-1, -1);
                 objects.put(instance.getID(), type);
             } catch (InstantiationException |
                     InvocationTargetException |
@@ -103,8 +103,13 @@ public class ObjectRegistry {
         DOOR_GENERAL_OUTSIDE(25),
         DOOR_ORANGE_KEY(26),
         DOOR_LAUNDRY(28),
+        DOOR_JANITOR(29),
         DOOR_RED_KEY(30),
+        DOOR_METALSHOP(31),
+        DOOR_WOODSHOP(38),
         DOOR_PRISON_ENTRANCE(75),
+        DOOR_MAILROOM(83),
+        DOOR_DELIVERIES(86),
 
         // Training
         TRAINING_TREADMILL(7),

@@ -2,8 +2,8 @@
 <launch4jConfig>
   <dontWrapJar>false</dontWrapJar>
   <headerType>gui</headerType>
-  <jar>C:\Users\James\Desktop\EscapistsEditor\target\EscapistsEditor-1.0-SNAPSHOT.jar</jar>
-  <outfile>C:\Users\James\Desktop\EscapistsEditor\EscapistsEditor-1.0.exe</outfile>
+  <jar>.\target\EscapistsEditor-1.0-SNAPSHOT.jar</jar>
+  <outfile>.\EscapistsEditor-1.0.exe</outfile>
   <errTitle>Escapists Map Editor</errTitle>
   <cmdLine></cmdLine>
   <chdir>.</chdir>
@@ -13,7 +13,7 @@
   <stayAlive>false</stayAlive>
   <restartOnCrash>false</restartOnCrash>
   <manifest></manifest>
-  <icon>C:\Users\James\Desktop\EscapistsEditor\icon.ico</icon>
+  <icon>.\icon.ico</icon>
   <jre>
     <path></path>
     <bundledJre64Bit>false</bundledJre64Bit>
@@ -24,7 +24,7 @@
     <runtimeBits>64/32</runtimeBits>
   </jre>
   <splash>
-    <file>C:\Users\James\Desktop\EscapistsEditor\headerimage.bmp</file>
+    <file>.\headerimage.bmp</file>
     <waitForWindow>true</waitForWindow>
     <timeout>60</timeout>
     <timeoutErr>true</timeoutErr>

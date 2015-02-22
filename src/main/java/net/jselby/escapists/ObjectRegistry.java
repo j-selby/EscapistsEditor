@@ -108,6 +108,7 @@ public class ObjectRegistry {
         JOB_METAL_TOOLS(45),
         JOB_SELECTION(46),
         JOB_CLEANING_SUPPLIES(47),
+        JOB_JANIOR_MESS_SPAWN(51),
         JOB_MAILROOM_FILE(82),
 
         // Doors

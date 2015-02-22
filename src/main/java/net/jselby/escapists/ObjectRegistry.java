@@ -78,6 +78,7 @@ public class ObjectRegistry {
         CONTRABAND_DETECTOR(32),
         SECURITY_CAMERA(33),
         SINK(34),
+        MINE(40),
         MEDICAL_SUPPLIES(48),
         LIGHT(49),
         LADDER_UP(52),

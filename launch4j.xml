@@ -30,12 +30,12 @@
     <timeoutErr>true</timeoutErr>
   </splash>
   <versionInfo>
-    <fileVersion>1.1.12</fileVersion>
-    <txtFileVersion>1.1.12</txtFileVersion>
+    <fileVersion>1.1.12.0</fileVersion>
+    <txtFileVersion>1.1.12.0</txtFileVersion>
     <fileDescription>Escapists Map Editor</fileDescription>
     <copyright>Editor: jselby, Game: Mouldy Toof Studios, Team17</copyright>
-    <productVersion>1.1.12</productVersion>
-    <txtProductVersion>1.1.12</txtProductVersion>
+    <productVersion>1.1.12.0</productVersion>
+    <txtProductVersion>1.1.12.0</txtProductVersion>
     <productName>Escapists Map Editor</productName>
     <companyName></companyName>
     <internalName>net.jselby.escapists.EscapistsEditor</internalName>

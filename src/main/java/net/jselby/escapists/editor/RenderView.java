@@ -500,7 +500,6 @@ public class RenderView extends JFrame {
                 toolOptions.add(selectedZoneEditor);
                 break;
             case CLEAR_ALL_TILES:
-                // TODO: Update for multilayer
                 JLabel warning = new JLabel("This will wipe out ALL tiles!");
                 JLabel warning2 = new JLabel("(And objects safe to delete)");
                 JButton button = new JButton("Continue anyway...");

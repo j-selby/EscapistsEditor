@@ -24,6 +24,7 @@ public class MapRendererComponent extends JPanel {
     private String selectedZone;
 
     private float zoomFactor = 1.0f;
+    private String view = "World";
 
     public MapRendererComponent(Map map, ClickListener clickListener, MouseMotionListener motionListener) {
         this.mapToEdit = map;
@@ -70,7 +71,7 @@ public class MapRendererComponent extends JPanel {
     public void refresh() {
         // Render a snapshot
         if (mapToEdit != null) {
-            render = MapRenderer.render(mapToEdit, showZones, selectedZone);
+            render = MapRenderer.render(mapToEdit, showZones, selectedZone, view);
         }
 
         setIgnoreRepaint(false);
@@ -92,5 +93,13 @@ public class MapRendererComponent extends JPanel {
 
     public void setSelectedZone(String selectedZone) {
         this.selectedZone = selectedZone;
+    }
+
+    public void setView(String view) {
+        this.view = view;
+    }
+
+    public String getView() {
+        return view;
     }
 }

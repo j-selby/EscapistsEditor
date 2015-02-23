@@ -25,6 +25,10 @@ public class Map {
     private static final String COMPILE_ERROR = "Compile Error: ";
 
     private final int[][] tiles;
+    private final int[][] vents;
+    private final int[][] roof;
+    private final int[][] underground;
+
     private int width;
     private int height;
 
@@ -105,38 +109,40 @@ public class Map {
         if (sections.containsKey("Tiles")) {
             // Decode!
             java.util.Map<String, Object> section = sections.get("Tiles");
-            // Get first row, so we can work out width
-            String firstRow = (String) section.get("0");
-            width = firstRow.split("_").length - 1;
-            height = section.size();
-            System.out.println("Map size: " + width + " * " + height);
-
-            tiles = new int[height][width]; // TODO: Document this
-
-            for (java.util.Map.Entry<String, Object> tile : section.entrySet()) {
-                int heightPos = Integer.parseInt(tile.getKey());
-                String row = (String) tile.getValue();
-                String[] values = row.split("_");
-                int[] rowDecompiled = new int[values.length];
-
-                int widthPos = -1;
-                for (String value : values) {
-                    widthPos++;
-                    if (value.trim().length() < 1) {
-                        continue;
-                    }
-
-                    //System.out.println(widthPos);
-                    rowDecompiled[widthPos] = Integer.parseInt(value);
-                }
-
-                tiles[heightPos] = rowDecompiled;
-            }
+            tiles = compileIDSection("Overworld", section);
 
         } else {
             tiles = new int[0][0];
             System.out.println("Map decode warning: No tiles found.");
         }
+
+        if (sections.containsKey("Vents")) {
+            // Decode!
+            java.util.Map<String, Object> section = sections.get("Vents");
+            vents = compileIDSection("Vents", section);
+        } else {
+            vents = new int[0][0];
+            System.out.println("Map decode warning: No vents found.");
+        }
+
+        if (sections.containsKey("Roof")) {
+            // Decode!
+            java.util.Map<String, Object> section = sections.get("Roof");
+            roof = compileIDSection("Roof", section);
+        } else {
+            roof = new int[0][0];
+            System.out.println("Map decode warning: No roof found.");
+        }
+
+        if (sections.containsKey("Underground")) {
+            // Decode!
+            java.util.Map<String, Object> section = sections.get("Underground");
+            underground = compileIDSection("Underground", section);
+        } else {
+            underground = new int[0][0];
+            System.out.println("Map decode warning: No underground found.");
+        }
+
 
         // Decode Object entities
         if (sections.containsKey("Objects")) {
@@ -204,6 +210,38 @@ public class Map {
         backgroundImage = ImageIO.read(background);
     }
 
+    private int[][] compileIDSection(String name, java.util.Map<String, Object> section) {
+        // Get first row, so we can work out width
+        String firstRow = (String) section.get("0");
+        width = firstRow.split("_").length - 1;
+        height = section.size();
+        System.out.println("Section \"" + name + "\" size: " + width + " * " + height);
+
+        int[][] tiles = new int[height][width]; // TODO: Document this
+
+        for (java.util.Map.Entry<String, Object> tile : section.entrySet()) {
+            int heightPos = Integer.parseInt(tile.getKey());
+            String row = (String) tile.getValue();
+            String[] values = row.split("_");
+            int[] rowDecompiled = new int[values.length];
+
+            int widthPos = -1;
+            for (String value : values) {
+                widthPos++;
+                if (value.trim().length() < 1) {
+                    continue;
+                }
+
+                //System.out.println(widthPos);
+                rowDecompiled[widthPos] = Integer.parseInt(value);
+            }
+
+            tiles[heightPos] = rowDecompiled;
+        }
+
+        return tiles;
+    }
+
     public String getName() {
         return (String) get("Info.MapName");
     }
@@ -235,6 +273,20 @@ public class Map {
 
     public int getTile(int x, int y) {
         return tiles[y][x];
+    }
+
+    public int getTile(int x, int y, String view) {
+        if (view.equalsIgnoreCase("World")) {
+            return tiles[y][x];
+        } else if (view.equalsIgnoreCase("Underground")) {
+            return underground[y][x];
+        } else if (view.equalsIgnoreCase("Vents")) {
+            return vents[y][x];
+        } else if (view.equalsIgnoreCase("Roof")) {
+            return roof[y][x];
+        } else {
+            return 0;
+        }
     }
 
     public List<WorldObject> getObjects() {

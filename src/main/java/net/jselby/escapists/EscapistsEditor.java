@@ -11,6 +11,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.net.URL;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 
@@ -92,6 +93,22 @@ public class EscapistsEditor {
 
         // Parse arguments
         System.out.println("Discovered Escapists @ " + escapistsPath.getPath());
+
+        // Check for update
+        Thread updateThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String newVersion = IOUtils.toString(new URL("http://escapists.jselby.net/version.txt")).trim();
+                    if (!newVersion.equalsIgnoreCase(VERSION)) {
+                        dialog("New version found (" + newVersion + "). Download it at http://escapists.jselby.net");
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        updateThread.start();
     }
 
     private static void fatalError(String s) {

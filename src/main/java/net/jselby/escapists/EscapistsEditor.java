@@ -100,8 +100,14 @@ public class EscapistsEditor {
             public void run() {
                 try {
                     String newVersion = IOUtils.toString(new URL("http://escapists.jselby.net/version.txt")).trim();
+                    String message = "";
+                    if (newVersion.contains("\n")) {
+                        message = newVersion.split("\n")[1];
+                        newVersion = newVersion.split("\n")[0].trim();
+                    }
                     if (!newVersion.equalsIgnoreCase(VERSION)) {
-                        dialog("New version found (" + newVersion + "). Download it at http://escapists.jselby.net");
+                        dialog("New version found (" + newVersion + "). " +
+                                "Download it at http://escapists.jselby.net\n" + message);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

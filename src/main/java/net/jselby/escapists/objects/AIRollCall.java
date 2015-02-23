@@ -19,11 +19,6 @@ public class AIRollCall extends WorldObject {
     }
 
     @Override
-    public String getName() {
-        return "AI_RollCall";
-    }
-
-    @Override
     public int getID() {
         return 16;
     }

@@ -1,13 +1,14 @@
 package net.jselby.escapists.editor;
 
-import net.jselby.escapists.EscapistsEditor;
-import net.jselby.escapists.Map;
-import net.jselby.escapists.MapSelectionGUI;
-import net.jselby.escapists.WorldObject;
+import net.jselby.escapists.*;
 import net.jselby.escapists.objects.Light;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.commons.lang3.text.WordUtils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.AbstractDocument;
@@ -25,21 +26,13 @@ import java.util.Arrays;
  * @author j_selby
  */
 public class RenderView extends JFrame {
-    private static final ArrayList<Integer> KEEP_IDS = new ArrayList<>();
-
-    static {
-        KEEP_IDS.addAll(Arrays.asList(
-                17, 19, 22
-        ));
-    }
-
     private final MapRendererComponent renderer;
     private final JTextArea console;
     private final JComboBox tileSelect;
     private final JPanel toolOptions;
 
     // Tools
-    private final JTextField id = new JTextField("0");
+    private final JComboBox id;
     private final JLabel selectedZone = new JLabel("Selected Zone: None");
     private final JTextField selectedZoneEditor = new JTextField();
 
@@ -60,11 +53,15 @@ public class RenderView extends JFrame {
 
         // Configure the defaults
         // ID box
-        id.setAlignmentX(CENTER_ALIGNMENT);
-        id.setMinimumSize(new Dimension(150, 30));
+        ArrayList<Object> objectIds = new ArrayList<>();
+        for (ObjectRegistry.Objects objectId : ObjectRegistry.Objects.values()) {
+            objectIds.add(objectId.getID() + ": "
+                    + WordUtils.capitalize(objectId.name().toLowerCase().replace("_", " ")));
+        }
+        objectIds.add("Other...");
+        id = new JComboBox(objectIds.toArray());
+        id.setSelectedIndex(0);
         id.setMaximumSize(new Dimension(150, 30));
-        ((AbstractDocument)id.getDocument()).setDocumentFilter(
-                new NumberOnlyFilter());
 
         // Build tiles
         ArrayList<Object> icons = new ArrayList<>();
@@ -86,13 +83,13 @@ public class RenderView extends JFrame {
         }
         tileSelect = new JComboBox(icons.toArray());
         tileSelect.setSelectedIndex(0);
-        tileSelect.setMaximumSize(new Dimension(200, 30));
+        tileSelect.setMaximumSize(new Dimension(150, 30));
 
         // Zone editor
         selectedZone.setAlignmentX(CENTER_ALIGNMENT);
         selectedZoneEditor.setAlignmentX(CENTER_ALIGNMENT);
-        selectedZoneEditor.setMinimumSize(new Dimension(150, 30));
-        selectedZoneEditor.setMaximumSize(new Dimension(150, 30));
+        selectedZoneEditor.setMinimumSize(new Dimension(120, 30));
+        selectedZoneEditor.setMaximumSize(new Dimension(120, 30));
         selectedZoneEditor.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
@@ -173,6 +170,8 @@ public class RenderView extends JFrame {
         });
 
         JScrollPane scrollArea = new JScrollPane(renderer);
+        scrollArea.setOpaque(false);
+        scrollArea.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         scrollArea.setWheelScrollingEnabled(true);
         scrollArea.getHorizontalScrollBar().setUnitIncrement(16);
         scrollArea.getVerticalScrollBar().setUnitIncrement(16);
@@ -182,7 +181,7 @@ public class RenderView extends JFrame {
         // Toolbar
         JPanel sidebar = new JPanel();
         sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
-        Dimension sidebarSize = new Dimension(150, 600);
+        Dimension sidebarSize = new Dimension(200, 600);
         sidebar.setPreferredSize(sidebarSize);
         sidebar.setMaximumSize(sidebarSize);
         sidebar.setMinimumSize(sidebarSize);
@@ -196,17 +195,23 @@ public class RenderView extends JFrame {
         console.setEditable(false);
         // Redirect System.out
         System.setOut(new PrintStream(new TextPanePrintStream(console)));
-        console.append("Ready!\n");
+        console.append("- Ready!\n");
+        console.append("- Escapists location: " + editor.escapistsPath + "\n");
+        console.append("- Escapists Editor v0.1, by jselby (http://jselby.net)\n");
 
         JScrollPane scrollPane = new JScrollPane(console);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setMaximumSize(new Dimension(200, 200));
 
         sidebar.add(scrollPane);
-        sidebar.add(Box.createVerticalStrut(50));
+        sidebar.add(Box.createVerticalStrut(20));
 
         // Toolbar options
-        JButton loadMap = new JButton("Load Map");
+        JPanel ioButtons = new JPanel();
+        ioButtons.setAlignmentX(CENTER_ALIGNMENT);
+        ioButtons.setLayout(new BoxLayout(ioButtons, BoxLayout.X_AXIS));
+        ioButtons.setMaximumSize(new Dimension(150, 50));
+        JButton loadMap = new JButton("Load...");
         loadMap.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -221,31 +226,33 @@ public class RenderView extends JFrame {
             }
         });
         loadMap.setAlignmentX(CENTER_ALIGNMENT);
-        loadMap.setMinimumSize(new Dimension(150, 50));
+        loadMap.setMinimumSize(new Dimension(70, 50));
         loadMap.setHorizontalAlignment(SwingConstants.LEADING);
-        sidebar.add(loadMap);
+        ioButtons.add(loadMap);
 
-        JButton saveMap = new JButton("Save Map");
+        JButton saveMap = new JButton("Save...");
         saveMap.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 // Save map
-                try {
-                    // Get our target
-                    JFileChooser fc = new JFileChooser();
-                    int dialog = fc.showSaveDialog(RenderView.this);
-                    if (JFileChooser.APPROVE_OPTION == dialog) {
+                // Get our target
+                JFileChooser fc = new JFileChooser();
+                int dialog = fc.showSaveDialog(RenderView.this);
+                if (JFileChooser.APPROVE_OPTION == dialog) {
+                    try {
                         mapToEdit.save(fc.getSelectedFile());
+                    } catch (Exception error) {
+                        error.printStackTrace();
+                        editor.dialog(error.getMessage());
                     }
-                } catch (IOException e1) {
-                    e1.printStackTrace();
                 }
             }
         });
         saveMap.setAlignmentX(CENTER_ALIGNMENT);
-        saveMap.setMinimumSize(new Dimension(150, 50));
+        saveMap.setMinimumSize(new Dimension(70, 50));
         saveMap.setHorizontalAlignment(SwingConstants.LEADING);
-        sidebar.add(saveMap);
+        ioButtons.add(saveMap);
+        sidebar.add(ioButtons);
 
         JButton properties = new JButton("Properties");
         properties.setMinimumSize(new Dimension(150, 50));
@@ -258,7 +265,37 @@ public class RenderView extends JFrame {
         });
         sidebar.add(properties);
 
-        sidebar.add(Box.createVerticalStrut(50));
+        // Zoom
+        sidebar.add(Box.createVerticalStrut(10));
+        JLabel zoomLabel = new JLabel("Zoom");
+        zoomLabel.setAlignmentX(CENTER_ALIGNMENT);
+        sidebar.add(zoomLabel);
+        final JSlider zoom = new JSlider(JSlider.HORIZONTAL,
+                1, 5, 3);
+        zoom.setMajorTickSpacing(1);
+        zoom.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                float value = zoom.getValue();
+                if (value < 3) {
+                    if (value == 1) {
+                        value = 0.5f;
+                    } else if (value == 2) {
+                        value = 0.75f;
+                    }
+                } else {
+                    value -= 2;
+                    if (value == 2) {
+                        value = 1.5f;
+                    } else if (value == 3) {
+                        value = 2f;
+                    }
+                }
+                renderer.setZoomFactor(value);
+            }
+        });
+        zoom.setAlignmentX(CENTER_ALIGNMENT);
+        sidebar.add(zoom);
 
         // Checkbox for rendering
         final JCheckBox showZones = new JCheckBox();
@@ -276,6 +313,8 @@ public class RenderView extends JFrame {
         });
         showZones.setAlignmentX(CENTER_ALIGNMENT);
         sidebar.add(showZones);
+        sidebar.add(Box.createVerticalStrut(30));
+
 
         // Tool chooser
         String[] rawModes = new String[ActionMode.values().length];
@@ -285,7 +324,7 @@ public class RenderView extends JFrame {
         }
         final JComboBox petList = new JComboBox(rawModes);
         petList.setSelectedIndex(0);
-        petList.setMaximumSize(new Dimension(200, 30));
+        petList.setMaximumSize(new Dimension(150, 30));
         petList.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -299,7 +338,7 @@ public class RenderView extends JFrame {
         sidebar.add(petList);
 
         // Add the options
-        sidebar.add(Box.createVerticalStrut(50));
+        sidebar.add(Box.createVerticalStrut(20));
 
         toolOptions = new JPanel();
         toolOptions.setAlignmentX(CENTER_ALIGNMENT);
@@ -325,10 +364,15 @@ public class RenderView extends JFrame {
                 UnsupportedLookAndFeelException e) {
             EscapistsEditor.fatalError(e);
         }
+        SwingUtilities.updateComponentTreeUI(this);
         setVisible(true);
     }
 
     private void toolHandler(int x, int y) {
+        // Convert x & y with scaling
+        x = (int) (((float) x) / ((float) renderer.getZoomFactor()));
+        y = (int) (((float) y) / ((float) renderer.getZoomFactor()));
+
         // Get object at that position
         WorldObject clickedObject = mapToEdit.getObjectAt(x, y);
 
@@ -336,18 +380,37 @@ public class RenderView extends JFrame {
         switch (mode) {
             case CREATE_OBJECT:
                 // Get ID
-                int idToAdd = id.getText().trim().length() == 0 ? 0 : Integer.parseInt(id.getText());
-                if (idToAdd > 0 && idToAdd < 100) {
-                    mapToEdit.getObjects().add(editor.registry.instanceWithUnknown(idToAdd, x, y));
+                int idToAdd;
+                if (id.getSelectedItem().toString().equalsIgnoreCase("Other...")) {
+                    String output = JOptionPane.showInputDialog(RenderView.this, "Enter an ID (1-150): ").trim();
+                    if (NumberUtils.isNumber(output)) {
+                        int num = Integer.parseInt(output);
+                        if (num > 0 && num < 150) {
+                            mapToEdit.getObjects().add(editor.registry.instanceWithUnknown(num, x, y));
+                            renderer.refresh();
+                        } else {
+                            editor.dialog("Invalid ID entered!");
+                        }
+                    } else {
+                        editor.dialog("Invalid ID entered!");
+                    }
+                    this.x = -1;
+                    this.y = -1;
                 } else {
-                    System.out.println("Invalid ID");
+                    idToAdd = Integer.parseInt(id.getSelectedItem().toString().split(":")[0].trim());
+                    if (idToAdd > 0 && idToAdd < 150) {
+                        mapToEdit.getObjects().add(editor.registry.instanceWithUnknown(idToAdd, x, y));
+                    } else {
+                        editor.dialog("Invalid ID for object!");
+                    }
+                    renderer.refresh();
                 }
                 break;
             case DELETE_OBJECT:
                 mapToEdit.getObjects().remove(clickedObject);
                 break;
             case INFO_OBJECT:
-                System.out.println(clickedObject);
+                System.out.println(clickedObject.getName());
                 break;
             case SET_TILE:
                 // Get tile
@@ -430,9 +493,7 @@ public class RenderView extends JFrame {
                         java.util.List<WorldObject> worldObjects = mapToEdit.getObjects();
                         for (WorldObject object :
                                 worldObjects.toArray(new WorldObject[worldObjects.size()])) {
-                            if (!KEEP_IDS.contains(object.getID())) {
-                                worldObjects.remove(object);
-                            }
+                            worldObjects.remove(object);
                         }
 
                         renderer.refresh();

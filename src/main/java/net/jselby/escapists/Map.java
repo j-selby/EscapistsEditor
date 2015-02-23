@@ -22,6 +22,8 @@ import java.util.List;
  * @author j_selby
  */
 public class Map {
+    private static final String COMPILE_ERROR = "Compile Error: ";
+
     private final int[][] tiles;
     private int width;
     private int height;
@@ -32,10 +34,21 @@ public class Map {
     private java.util.Map<String, java.util.Map<String, Object>> sections = new HashMap<>();
 
     private List<WorldObject> objects = new ArrayList<>();
+    private EscapistsEditor editor;
     private String filename;
 
+    /**
+     * Decodes a map.
+     *
+     * @param editor The editor to pull resources from
+     * @param registry The registry to spawn objects with
+     * @param filename The filename of this map
+     * @param content The content of this map, decrypted.
+     * @throws IOException
+     */
     public Map(EscapistsEditor editor, ObjectRegistry registry,
                String filename, String content) throws IOException {
+        this.editor = editor;
         this.filename = filename;
         System.out.println("Decoding map \"" + filename + "\"...");
 
@@ -240,7 +253,44 @@ public class Map {
         tiles[y][x] = value;
     }
 
+    public int count(ObjectRegistry.Objects object) {
+        return count(object.getID());
+    }
+
+    public int count(int id) {
+        int count = 0;
+        for (WorldObject object : objects) {
+            if (object.getID() == id) {
+                count++;
+            }
+        }
+        return count;
+    }
+
     public void save(File selectedFile) throws IOException {
+        // Do checks
+        if (count(ObjectRegistry.Objects.AI_WP_GUARD_ROLLCALL) == 0) {
+            throw new IOException(COMPILE_ERROR + "Invalid amount of rollcall guard waypoints - \n" +
+                    "You need more then 1.");
+        }
+        if (count(ObjectRegistry.Objects.AI_WP_GUARD_GENERAL) == 0) {
+            throw new IOException(COMPILE_ERROR + "Invalid amount of general guard waypoints - \nYou need more then 1.");
+        }
+
+        // Count tiles, more then 1
+        boolean foundTile = false;
+        for (int[] row : tiles) {
+            for (int tile : row) {
+                if (tile > 0) {
+                    foundTile = true;
+                    break;
+                }
+            }
+        }
+        if (!foundTile) {
+            throw new IOException(COMPILE_ERROR + "You need at least 1 tile in the world!");
+        }
+
         System.out.println("Saving...");
 
         // Serialize tiles

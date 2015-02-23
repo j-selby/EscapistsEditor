@@ -1,4 +1,9 @@
 # Created by .ignore support plugin (hsz.mobi)
+### Escapists output
+EscapistsEditor-*.exe
+
+launch4j.log
+
 ### Maven template
 target/
 pom.xml.tag
@@ -6,6 +11,7 @@ pom.xml.releaseBackup
 pom.xml.versionsBackup
 pom.xml.next
 release.properties
+dependency-reduced-pom.xml
 
 
 ### NetBeans template

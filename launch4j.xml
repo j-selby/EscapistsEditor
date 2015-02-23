@@ -9,8 +9,8 @@
   <chdir>.</chdir>
   <priority>normal</priority>
   <downloadUrl>http://java.com/download</downloadUrl>
-  <supportUrl></supportUrl>
-  <stayAlive>false</stayAlive>
+  <supportUrl>http://www.reddit.com/r/theescapists/comments/2wacp2/unofficial_map_editor/</supportUrl>
+  <stayAlive>true</stayAlive>
   <restartOnCrash>false</restartOnCrash>
   <manifest></manifest>
   <icon>C:\Users\James\Desktop\EscapistsEditor\icon.ico</icon>

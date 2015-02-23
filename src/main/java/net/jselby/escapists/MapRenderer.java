@@ -1,7 +1,7 @@
 package net.jselby.escapists;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
+import java.awt.image.*;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -11,13 +11,20 @@ import java.util.Random;
  * @author j_selby
  */
 public class MapRenderer {
+    private static ObjectRegistry.Objects[] ventObjects = {
+            ObjectRegistry.Objects.VENT,
+            ObjectRegistry.Objects.VENT_SLATS,
+            ObjectRegistry.Objects.LADDER_UP,
+            ObjectRegistry.Objects.PRISONER_STASH
+    };
+
     private static java.util.Map<String, Color> zoneColorMappings = new HashMap<>();
 
     public static BufferedImage render(Map map) {
-        return render(map, false, null);
+        return render(map, false, null, "World");
     }
 
-    public static BufferedImage render(Map map, boolean showZones, String selectedZone) {
+    public static BufferedImage render(Map map, boolean showZones, String selectedZone, String view) {
         // Get tiles, and render it
         BufferedImage off_Image =
                 new BufferedImage((map.getHeight() - 1) * 16, (map.getWidth() - 3) * 16,
@@ -37,12 +44,21 @@ public class MapRenderer {
         // Get tiles
         BufferedImage tiles = map.getTilesImage();
         BufferedImage ground = map.getBackgroundImage();
-        g2.drawImage(ground, null, 0, 0);
+        if (view.equalsIgnoreCase("World")) {
+            g2.drawImage(ground, null, 0, 0);
+        } else {
+            // Draw the underworld, if it is a roof level
+            if (view.equalsIgnoreCase("Roof")) {
+                g2.drawImage(render(map, showZones, selectedZone, "World"), null, 0, 0);
+            }
+            g2.setColor(new Color(1f, 1f, 1f, view.equalsIgnoreCase("Roof") ? 0.7f : 1f));
+            g2.fillRect(0, 0, off_Image.getWidth(), off_Image.getHeight());
+        }
 
         // Tiles
         for (int x = 0; x < map.getWidth(); x++) {
             for (int y = 0; y < map.getHeight(); y++) {
-                int tile = map.getTile(x, y);
+                int tile = map.getTile(x, y, view);
                 if (tile == 0) {
                     continue;
                 }
@@ -62,7 +78,21 @@ public class MapRenderer {
 
         // Objects
         for (WorldObject object : map.getObjects()) {
-            object.draw(g2, gLighting);
+            if (view.equalsIgnoreCase("Vents")) {
+                int idOfObject = object.getID();
+                boolean render = false;
+                for (ObjectRegistry.Objects objectToCheck : ventObjects) {
+                    if (objectToCheck.getID() == idOfObject) {
+                        render = true;
+                        break;
+                    }
+                }
+                if (render) {
+                    object.draw(g2, gLighting);
+                }
+            } else {
+                object.draw(g2, gLighting);
+            }
         }
 
         // Zones

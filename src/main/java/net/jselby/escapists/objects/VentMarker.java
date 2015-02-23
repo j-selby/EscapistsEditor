@@ -5,18 +5,18 @@ import net.jselby.escapists.WorldObject;
 import java.awt.*;
 
 /**
- * Marks where NPCs have to go for their jobs.
+ * Marks where vents are.
  *
  * @author j_selby
  */
-public class AIJobMarker extends WorldObject {
+public class VentMarker extends WorldObject {
     /**
-     * Creates a new JobMarker.
+     * Creates a new VentMarker.
      *
      * @param x The X position of this object
      * @param y The Y position of this object
      */
-    public AIJobMarker(int x, int y) {
+    public VentMarker(int x, int y) {
         super(x, y);
     }
 

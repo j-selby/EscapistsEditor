@@ -81,6 +81,8 @@ public class ObjectRegistry {
         MINE(40),
         MEDICAL_SUPPLIES(48),
         LIGHT(49),
+        VENT(50),
+        VENT_SLATS(51),
         LADDER_UP(52),
         FORCED_PRISONER_BED(54),
         FORCED_PRISONER_DESK(55),

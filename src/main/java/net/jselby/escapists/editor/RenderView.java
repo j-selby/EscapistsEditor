@@ -265,6 +265,22 @@ public class RenderView extends JFrame {
         });
         sidebar.add(properties);
 
+        // View
+        final JComboBox views = new JComboBox(new String[]{
+            "Underground", "World", "Vents", "Roof"
+        });
+        views.setSelectedIndex(1);
+        views.setMaximumSize(new Dimension(150, 30));
+        views.setAlignmentX(CENTER_ALIGNMENT);
+        views.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                renderer.setView((String) views.getSelectedItem());
+                renderer.refresh();
+            }
+        });
+        sidebar.add(views);
+
         // Zoom
         sidebar.add(Box.createVerticalStrut(10));
         JLabel zoomLabel = new JLabel("Zoom");

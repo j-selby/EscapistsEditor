@@ -9,14 +9,17 @@ import java.awt.geom.Point2D;
  * Created by James on 16/02/2015.
  */
 public class Light extends WorldObject {
+    private int argument;
+
     /**
      * Creates a new Light.
      *
      * @param x The X position of this object
      * @param y The Y position of this object
      */
-    public Light(int x, int y) {
+    public Light(int x, int y, int argument) {
         super(x, y);
+        this.argument = argument;
     }
 
     @Override
@@ -26,7 +29,7 @@ public class Light extends WorldObject {
 
     @Override
     public int getIDArgument() {
-        return 1;
+        return argument;
     }
 
     @Override

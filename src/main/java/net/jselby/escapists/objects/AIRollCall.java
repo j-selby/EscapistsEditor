@@ -8,14 +8,17 @@ import java.awt.*;
  * A invisible AI configuration setting where the characters should move for Roll Call.
  */
 public class AIRollCall extends WorldObject {
+    private int argument;
+
     /**
      * Creates a new RollCall marker.
      *
      * @param x The X position of this object
      * @param y The Y position of this object
      */
-    public AIRollCall(int x, int y) {
+    public AIRollCall(int x, int y, int argument) {
         super(x, y);
+        this.argument = argument;
     }
 
     @Override
@@ -25,7 +28,7 @@ public class AIRollCall extends WorldObject {
 
     @Override
     public int getIDArgument() {
-        return 1;
+        return argument;
     }
 
     @Override

@@ -398,13 +398,21 @@ public class RenderView extends JFrame {
         switch (mode) {
             case CREATE_OBJECT:
                 // Get ID
+                int level = 1;
+                if (currentZone.equalsIgnoreCase("Underground")) {
+                    level = 0;
+                } else if (currentZone.equalsIgnoreCase("Vents")) {
+                    level = 2;
+                } else if (currentZone.equalsIgnoreCase("Roof")) {
+                    level = 3;
+                }
                 int idToAdd;
                 if (id.getSelectedItem().toString().equalsIgnoreCase("Other...")) {
                     String output = JOptionPane.showInputDialog(RenderView.this, "Enter an ID (1-150): ").trim();
                     if (NumberUtils.isNumber(output)) {
                         int num = Integer.parseInt(output);
                         if (num > 0 && num < 150) {
-                            mapToEdit.getObjects().add(editor.registry.instanceWithUnknown(num, x, y));
+                            mapToEdit.getObjects().add(editor.registry.instanceWithUnknown(num, x, y, level));
                             renderer.refresh();
                         } else {
                             editor.dialog("Invalid ID entered!");
@@ -417,7 +425,7 @@ public class RenderView extends JFrame {
                 } else {
                     idToAdd = Integer.parseInt(id.getSelectedItem().toString().split(":")[0].trim());
                     if (idToAdd > 0 && idToAdd < 150) {
-                        mapToEdit.getObjects().add(editor.registry.instanceWithUnknown(idToAdd, x, y));
+                        mapToEdit.getObjects().add(editor.registry.instanceWithUnknown(idToAdd, x, y, level));
                     } else {
                         editor.dialog("Invalid ID for object!");
                     }

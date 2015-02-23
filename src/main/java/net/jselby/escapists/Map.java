@@ -154,7 +154,7 @@ public class Map {
                 int x = Integer.parseInt(args[0]);
                 int y = Integer.parseInt(args[1]);
                 int id = Integer.parseInt(args[2]);
-                int unknown = Integer.parseInt(args[3]);
+                int level = Integer.parseInt(args[3]);
 
                 if (id == 0) {
                     continue;
@@ -165,8 +165,8 @@ public class Map {
                 if (classOfObject != null) {
                     try {
                         Constructor<? extends WorldObject> constructor
-                                = classOfObject.getConstructor(Integer.TYPE, Integer.TYPE);
-                        WorldObject instance = constructor.newInstance(x, y);
+                                = classOfObject.getConstructor(Integer.TYPE, Integer.TYPE, Integer.TYPE);
+                        WorldObject instance = constructor.newInstance(x, y, level);
                         objects.add(instance);
                     } catch (InvocationTargetException
                             | NoSuchMethodException
@@ -177,7 +177,7 @@ public class Map {
                         e.printStackTrace();
                     }
                 } else {
-                    objects.add(new WorldObject.Unknown(x, y, id, unknown));
+                    objects.add(new WorldObject.Unknown(x, y, id, level));
                     if (EscapistsEditor.DEBUG) {
                         System.out.println("Map decode warning: Unknown entity: " + id + " @ "
                                 + x + ":" + y + " (" + (x * 16) + ":" + (y * 16) + ")");

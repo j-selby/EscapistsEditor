@@ -81,12 +81,11 @@ public class EscapistsEditor {
         File steamPath = SteamFinder.getSteamPath();
 
         if (steamPath == null) {
-            fatalError("Failed to discover Steam installation.");
+            fatalError("Failed to discover Steam installation with Escapists.");
         }
 
         // Check that Escapists is installed
-        escapistsPath =
-                new File(steamPath, "SteamApps" + File.separator + "common" + File.separator + "The Escapists");
+        escapistsPath = steamPath;
         if (!escapistsPath.exists()) {
             fatalError("Escapists is not installed @ " + escapistsPath.getPath());
         }
@@ -248,6 +247,10 @@ public class EscapistsEditor {
             OutputStream fileOut = new FileOutputStream(new File("escapistseditor.log"));
             System.setOut(new LoggingDebugPrintStream(fileOut, System.out));
             System.setErr(new LoggingDebugPrintStream(fileOut, System.err));
+
+            if (args.length == 0) {
+                showGUI = true;
+            }
 
             // Parse
             EscapistsEditor editor = new EscapistsEditor();

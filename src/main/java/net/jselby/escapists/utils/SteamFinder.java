@@ -14,7 +14,9 @@ public class SteamFinder {
     private static final String[] POSSIBLE_LOCS = new String[] {
             "Program Files (x86)" + File.separator + "Steam" + File.separator,
             "Program Files" + File.separator + "Steam" + File.separator,
-            "Steam" + File.separator
+            "Steam" + File.separator,
+            "Games" + File.separator,
+            "Games" + File.separator + "Steam" + File.separator
     };
 
     /**
@@ -36,7 +38,22 @@ public class SteamFinder {
                     // Make sure that a Steam.dll exists here.
                     File steamFile = new File(steamDir, "Steam.dll");
                     if (steamFile.exists()) {
-                        return steamDir;
+                        // Check that the Escapists is here
+                        if (new File(steamDir,
+                                "SteamApps" + File.separator + "common" + File.separator + "The Escapists").exists()) {
+                            return new File(steamDir,
+                                    "SteamApps" + File.separator + "common" + File.separator + "The Escapists");
+                        }
+                        if (new File(steamDir,
+                                "common" + File.separator + "The Escapists").exists()) {
+                            return new File(steamDir,
+                                    "common" + File.separator + "The Escapists");
+                        }
+                        if (new File(steamDir,
+                                "The Escapists").exists()) {
+                            return new File(steamDir,
+                                    "The Escapists");
+                        }
                     }
                 }
             }

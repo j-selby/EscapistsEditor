@@ -1,5 +1,7 @@
 package net.jselby.escapists;
 
+import org.apache.commons.lang3.text.WordUtils;
+
 import java.awt.*;
 
 /**
@@ -26,7 +28,19 @@ public abstract class WorldObject {
      * Returns the human-readable name of this object.
      * @return A constant String name
      */
-    public abstract String getName();
+    public String getName() {
+        String providedName = null;
+        for (ObjectRegistry.Objects object : ObjectRegistry.Objects.values()) {
+            if (object.getID() == getID()) {
+                providedName = WordUtils.capitalize(object.name().toLowerCase().replace("_", " "));
+            }
+        }
+        if (providedName == null) {
+            providedName = WordUtils.capitalize(getClass().getSimpleName().toLowerCase().replace("_", " "))
+                    + " (ID: " + getID() + ")";
+        }
+        return getX() + ":" + getY() + " = " + providedName;
+    }
 
     /**
      * Returns the ID of this object.
@@ -80,11 +94,6 @@ public abstract class WorldObject {
         @Override
         public int getIDArgument() {
             return this.argument;
-        }
-
-        @Override
-        public String getName() {
-            return "Unknown";
         }
 
         @Override

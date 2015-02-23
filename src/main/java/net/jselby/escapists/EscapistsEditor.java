@@ -9,8 +9,6 @@ import org.apache.commons.io.IOUtils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.text.NumberFormat;
@@ -104,7 +102,7 @@ public class EscapistsEditor {
         System.exit(1);
     }
 
-    private void dialog(String s) {
+    public void dialog(String s) {
         System.out.println(s);
         if (showGUI) {
             JOptionPane.showMessageDialog(null, s);
@@ -125,7 +123,7 @@ public class EscapistsEditor {
                 maps.add("Custom" + File.separator + file.getName());
             }
         }
-        System.out.println("Rendering " + maps.size() + " maps.");
+        System.out.println("Listing " + maps.size() + " maps.");
         return maps.toArray(new String[maps.size()]);
     }
 
@@ -309,7 +307,7 @@ public class EscapistsEditor {
                 editor.edit(editor.editMap, null);
             }
         } catch (Exception e) {
-            fatalError(e);
+           fatalError(e);
         }
     }
 

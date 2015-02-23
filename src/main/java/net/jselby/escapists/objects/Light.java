@@ -20,11 +20,6 @@ public class Light extends WorldObject {
     }
 
     @Override
-    public String getName() {
-        return "Render_Light";
-    }
-
-    @Override
     public int getID() {
         return 49;
     }

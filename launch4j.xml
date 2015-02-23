@@ -2,8 +2,8 @@
 <launch4jConfig>
   <dontWrapJar>false</dontWrapJar>
   <headerType>gui</headerType>
-  <jar>C:\Users\James\Desktop\EscapistsEditor\target\EscapistsEditor-1.0-SNAPSHOT.jar</jar>
-  <outfile>C:\Users\James\Desktop\EscapistsEditor\EscapistsEditor-1.0.exe</outfile>
+  <jar>.\target\EscapistsEditor-1.0-SNAPSHOT.jar</jar>
+  <outfile>.\EscapistsEditor-1.0.exe</outfile>
   <errTitle>Escapists Map Editor</errTitle>
   <cmdLine></cmdLine>
   <chdir>.</chdir>
@@ -13,7 +13,7 @@
   <stayAlive>true</stayAlive>
   <restartOnCrash>false</restartOnCrash>
   <manifest></manifest>
-  <icon>C:\Users\James\Desktop\EscapistsEditor\icon.ico</icon>
+  <icon>.\icon.ico</icon>
   <jre>
     <path></path>
     <bundledJre64Bit>false</bundledJre64Bit>
@@ -24,18 +24,18 @@
     <runtimeBits>64/32</runtimeBits>
   </jre>
   <splash>
-    <file>C:\Users\James\Desktop\EscapistsEditor\headerimage.bmp</file>
+    <file>.\headerimage.bmp</file>
     <waitForWindow>true</waitForWindow>
     <timeout>60</timeout>
     <timeoutErr>true</timeoutErr>
   </splash>
   <versionInfo>
-    <fileVersion>1.1.0.0</fileVersion>
-    <txtFileVersion>1.1.BUILD28</txtFileVersion>
+    <fileVersion>1.1.7.0</fileVersion>
+    <txtFileVersion>1.1.BUILD34</txtFileVersion>
     <fileDescription>Escapists Map Editor</fileDescription>
     <copyright>Editor: jselby, Game: Mouldy Toof Studios, Team17</copyright>
-    <productVersion>1.1.0.0</productVersion>
-    <txtProductVersion>1.1.BUILD28</txtProductVersion>
+    <productVersion>1.1.7.0</productVersion>
+    <txtProductVersion>1.1.BUILD34</txtProductVersion>
     <productName>Escapists Map Editor</productName>
     <companyName></companyName>
     <internalName>net.jselby.escapists.EscapistsEditor</internalName>

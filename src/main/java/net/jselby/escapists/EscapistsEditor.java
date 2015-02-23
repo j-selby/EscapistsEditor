@@ -13,6 +13,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 
 /**
@@ -62,6 +63,20 @@ public class EscapistsEditor {
         System.out.println("The Escapists Editor v0.1");
         System.out.println("By jselby");
 
+        System.out.println("=========================");
+        System.out.println("Operating system: " + System.getProperty("os.name"));
+        System.out.println("Java version: " + System.getProperty("java.version"));
+
+        Runtime runtime = Runtime.getRuntime();
+        NumberFormat format = NumberFormat.getInstance();
+        long maxMemory = runtime.maxMemory();
+        long allocatedMemory = runtime.totalMemory();
+        long freeMemory = runtime.freeMemory();
+        System.out.println("Free memory: " + format.format(freeMemory / 1024 / 1024) + " MB");
+        System.out.println("Allocated memory: " + format.format(allocatedMemory / 1024 / 1024) + " MB");
+        System.out.println("Used memory: " + format.format(((allocatedMemory - freeMemory)) / 1024 / 1024) + " MB");
+        System.out.println("=========================");
+
         registry = new ObjectRegistry("net.jselby.escapists.objects");
 
         // Discover Escapists directory
@@ -79,7 +94,6 @@ public class EscapistsEditor {
         }
 
         // Parse arguments
-        System.out.println("=====================");
     }
 
     private static void fatalError(String s) {
@@ -232,6 +246,11 @@ public class EscapistsEditor {
 
     public static void main(String[] args) {
         try {
+            // Redirect SysOut
+            OutputStream fileOut = new FileOutputStream(new File("escapistseditor.log"));
+            System.setOut(new LoggingDebugPrintStream(fileOut, System.out));
+            System.setErr(new LoggingDebugPrintStream(fileOut, System.err));
+
             // Parse
             EscapistsEditor editor = new EscapistsEditor();
 
@@ -290,7 +309,16 @@ public class EscapistsEditor {
                 editor.edit(editor.editMap, null);
             }
         } catch (Exception e) {
-            fatalError("Error: " + e.getMessage());
+            fatalError(e);
         }
+    }
+
+    public static void fatalError(Exception e) {
+        String string = "Error: ";
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        PrintStream stream = new PrintStream(out);
+        e.printStackTrace(stream);
+        string += out.toString();
+        fatalError(string);
     }
 }

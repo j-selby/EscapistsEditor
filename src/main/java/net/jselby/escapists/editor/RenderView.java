@@ -289,7 +289,11 @@ public class RenderView extends JFrame {
         petList.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                setMode(ActionMode.values()[petList.getSelectedIndex()]);
+                try {
+                    setMode(ActionMode.values()[petList.getSelectedIndex()]);
+                } catch (Exception err) {
+                    EscapistsEditor.fatalError(err);
+                }
             }
         });
         sidebar.add(petList);
@@ -319,7 +323,7 @@ public class RenderView extends JFrame {
                 InstantiationException |
                 IllegalAccessException |
                 UnsupportedLookAndFeelException e) {
-            e.printStackTrace();
+            EscapistsEditor.fatalError(e);
         }
         setVisible(true);
     }

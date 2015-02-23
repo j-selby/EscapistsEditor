@@ -11,12 +11,6 @@ import java.util.Random;
  * @author j_selby
  */
 public class MapRenderer {
-    private static ObjectRegistry.Objects[] ventObjects = {
-            ObjectRegistry.Objects.VENT,
-            ObjectRegistry.Objects.VENT_SLATS,
-            ObjectRegistry.Objects.LADDER_UP,
-            ObjectRegistry.Objects.PRISONER_STASH
-    };
 
     private static java.util.Map<String, Color> zoneColorMappings = new HashMap<>();
 
@@ -40,6 +34,15 @@ public class MapRenderer {
         // Add some minimal darkness to the world
         gLighting.setColor(new Color(0f, 0f, 0f, 0.1f));
         gLighting.fillRect(0, 0, lighting.getWidth(), lighting.getHeight());
+
+        int level = 1;
+        if (view.equalsIgnoreCase("Underground")) {
+            level = 0;
+        } else if (view.equalsIgnoreCase("Vents")) {
+            level = 2;
+        } else if (view.equalsIgnoreCase("Roof")) {
+            level = 3;
+        }
 
         // Get tiles
         BufferedImage tiles = map.getTilesImage();
@@ -78,19 +81,7 @@ public class MapRenderer {
 
         // Objects
         for (WorldObject object : map.getObjects()) {
-            if (view.equalsIgnoreCase("Vents")) {
-                int idOfObject = object.getID();
-                boolean render = false;
-                for (ObjectRegistry.Objects objectToCheck : ventObjects) {
-                    if (objectToCheck.getID() == idOfObject) {
-                        render = true;
-                        break;
-                    }
-                }
-                if (render) {
-                    object.draw(g2, gLighting);
-                }
-            } else {
+            if (object.getIDArgument() == level) {
                 object.draw(g2, gLighting);
             }
         }

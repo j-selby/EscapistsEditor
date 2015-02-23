@@ -10,14 +10,17 @@ import java.awt.*;
  * @author j_selby
  */
 public class VentMarker extends WorldObject {
+    private int argument;
+
     /**
      * Creates a new VentMarker.
      *
      * @param x The X position of this object
      * @param y The Y position of this object
      */
-    public VentMarker(int x, int y) {
+    public VentMarker(int x, int y, int argument) {
         super(x, y);
+        this.argument = argument;
     }
 
     @Override
@@ -27,7 +30,7 @@ public class VentMarker extends WorldObject {
 
     @Override
     public int getIDArgument() {
-        return 1;
+        return argument;
     }
 
     @Override

@@ -28,8 +28,8 @@ public class ObjectRegistry {
             try {
                 // X:Y
                 Constructor<? extends WorldObject> constructor
-                        = type.getConstructor(new Class[]{Integer.TYPE, Integer.TYPE});
-                WorldObject instance = constructor.newInstance(-1, -1);
+                        = type.getConstructor(new Class[]{Integer.TYPE, Integer.TYPE, Integer.TYPE});
+                WorldObject instance = constructor.newInstance(-1, -1, 0);
                 objects.put(instance.getID(), type);
             } catch (InstantiationException |
                     InvocationTargetException |
@@ -40,17 +40,17 @@ public class ObjectRegistry {
         }
     }
 
-    public WorldObject instanceWithUnknown(int idToAdd, int x, int y) {
+    public WorldObject instanceWithUnknown(int idToAdd, int x, int y, int level) {
         Class<? extends WorldObject> gameObjectClass = objects.get(idToAdd);
         if (gameObjectClass == null) {
-            return new WorldObject.Unknown(x, y, idToAdd, 1);
+            return new WorldObject.Unknown(x, y, idToAdd, level);
         }
 
         try {
             // X:Y
             Constructor<? extends WorldObject> constructor
-                    = gameObjectClass.getConstructor(new Class[]{Integer.TYPE, Integer.TYPE});
-            return constructor.newInstance(x, y);
+                    = gameObjectClass.getConstructor(new Class[]{Integer.TYPE, Integer.TYPE, Integer.TYPE});
+            return constructor.newInstance(x, y, level);
         } catch (InstantiationException |
                 InvocationTargetException |
                 NoSuchMethodException |

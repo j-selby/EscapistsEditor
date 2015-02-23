@@ -498,6 +498,15 @@ public class RenderView extends JFrame {
                 renderer.setShowZones(true);
                 toolOptions.add(selectedZone);
                 toolOptions.add(selectedZoneEditor);
+                JButton manualEdit = new JButton("Manual...");
+                manualEdit.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        new ZonesDialog(RenderView.this, renderer, mapToEdit);
+                    }
+                });
+                manualEdit.setAlignmentX(CENTER_ALIGNMENT);
+                toolOptions.add(manualEdit);
                 break;
             case CLEAR_ALL_TILES:
                 JLabel warning = new JLabel("This will wipe out ALL tiles!");

@@ -38,6 +38,7 @@ public class Map {
     private java.util.Map<String, java.util.Map<String, Object>> sections = new HashMap<>();
 
     private List<WorldObject> objects = new ArrayList<>();
+
     private EscapistsEditor editor;
     private String filename;
 
@@ -465,5 +466,9 @@ public class Map {
         if (discoveredSection != null) {
             discoveredSection.put(key, value);
         }
+    }
+
+    public java.util.Map<String, Object> getZones() {
+        return sections.get("Zones");
     }
 }

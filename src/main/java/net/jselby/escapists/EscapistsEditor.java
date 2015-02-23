@@ -67,7 +67,6 @@ public class EscapistsEditor {
 
         Runtime runtime = Runtime.getRuntime();
         NumberFormat format = NumberFormat.getInstance();
-        long maxMemory = runtime.maxMemory();
         long allocatedMemory = runtime.totalMemory();
         long freeMemory = runtime.freeMemory();
         System.out.println("Free memory: " + format.format(freeMemory / 1024 / 1024) + " MB");

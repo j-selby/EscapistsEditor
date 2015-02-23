@@ -46,6 +46,7 @@ public class RenderView extends JFrame {
 
     private boolean showZone;
     private java.util.Map.Entry<String, Object> selectedZoneElement;
+    private String currentZone = "World";
 
     public RenderView(final EscapistsEditor editor, final Map mapToEdit) throws IOException {
         this.editor = editor;
@@ -275,6 +276,7 @@ public class RenderView extends JFrame {
         views.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                currentZone = (String) views.getSelectedItem();
                 renderer.setView((String) views.getSelectedItem());
                 renderer.refresh();
             }
@@ -392,7 +394,7 @@ public class RenderView extends JFrame {
         // Get object at that position
         WorldObject clickedObject = mapToEdit.getObjectAt(x, y);
 
-        System.out.println(mode.name() + " @" + x + ":" + y);
+        System.out.println(mode.name() + " @ " + currentZone + ":" + x + ":" + y);
         switch (mode) {
             case CREATE_OBJECT:
                 // Get ID
@@ -430,8 +432,7 @@ public class RenderView extends JFrame {
                 break;
             case SET_TILE:
                 // Get tile
-                mapToEdit.setTile(x, y,
-                tileSelect.getSelectedIndex());
+                mapToEdit.setTile(x, y, tileSelect.getSelectedIndex(), currentZone);
                 break;
             case ZONE_EDIT:
                 // Get the zone at this point
@@ -491,6 +492,7 @@ public class RenderView extends JFrame {
                 toolOptions.add(selectedZoneEditor);
                 break;
             case CLEAR_ALL_TILES:
+                // TODO: Update for multilayer
                 JLabel warning = new JLabel("This will wipe out ALL tiles!");
                 JLabel warning2 = new JLabel("(And objects safe to delete)");
                 JButton button = new JButton("Continue anyway...");
@@ -501,9 +503,15 @@ public class RenderView extends JFrame {
                         for (int y = 0; y < mapToEdit.getHeight(); y++) {
                             for (int x = 0; x < mapToEdit.getWidth(); x++) {
                                 mapToEdit.setTile(x, y, 0);
+                                mapToEdit.setTile(x, y, 0, "Vents");
+                                mapToEdit.setTile(x, y, 0, "Underground");
+                                mapToEdit.setTile(x, y, 0, "Roof");
                             }
                         }
                         mapToEdit.setTile(0, 0, 1); // Game renderer crashs without 1 block
+                        mapToEdit.setTile(0, 0, 1, "Vents");
+                        mapToEdit.setTile(0, 0, 1, "Underground");
+                        mapToEdit.setTile(0, 0, 1, "Roof");
 
                         // Delete safe objects
                         java.util.List<WorldObject> worldObjects = mapToEdit.getObjects();

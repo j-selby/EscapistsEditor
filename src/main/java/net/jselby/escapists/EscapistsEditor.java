@@ -90,6 +90,7 @@ public class EscapistsEditor {
         }
 
         // Parse arguments
+        System.out.println("Discovered Escapists @ " + escapistsPath.getPath());
     }
 
     private static void fatalError(String s) {

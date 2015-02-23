@@ -35,6 +35,8 @@ public class SteamFinder {
                 File steamDir = new File(drive, possibleLoc);
 
                 if (steamDir.exists()) {
+                    System.out.println("Discovered possible Steam location @ " + steamDir.getPath());
+
                     // Make sure that a Steam.dll exists here.
                     File steamFile = new File(steamDir, "Steam.dll");
                     if (steamFile.exists()) {

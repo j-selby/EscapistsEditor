@@ -217,7 +217,9 @@ public class Map {
         height = section.size();
         System.out.println("Section \"" + name + "\" size: " + width + " * " + height);
 
-        int[][] tiles = new int[height][width]; // TODO: Document this
+        // This is stored in a y-x format, so that it can be more easily converted to its original format.
+        // This is flipped by most get methods, so this should be abstract.
+        int[][] tiles = new int[height][width];
 
         for (java.util.Map.Entry<String, Object> tile : section.entrySet()) {
             int heightPos = Integer.parseInt(tile.getKey());

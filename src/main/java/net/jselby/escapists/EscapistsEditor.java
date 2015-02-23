@@ -46,6 +46,9 @@ public class EscapistsEditor {
     @Parameter(names = "--render-all", description = "Renders all maps.")
     private boolean renderAll;
 
+    @Parameter(names = "--escapists-path", description = "Forces a path for The Escapists install directory.")
+    private String escapistsPathUser;
+
 
     // -- Internal vars
     /**
@@ -79,14 +82,18 @@ public class EscapistsEditor {
         registry = new ObjectRegistry("net.jselby.escapists.objects");
 
         // Discover Escapists directory
-        File steamPath = SteamFinder.getSteamPath();
+        if (escapistsPathUser == null) {
+            File steamPath = SteamFinder.getSteamPath();
 
-        if (steamPath == null) {
-            fatalError("Failed to discover Steam installation with Escapists.");
+            if (steamPath == null) {
+                fatalError("Failed to discover Steam installation with Escapists.");
+            }
+
+            // Check that Escapists is installed
+            escapistsPath = steamPath;
+        } else {
+            escapistsPath = new File(escapistsPathUser);
         }
-
-        // Check that Escapists is installed
-        escapistsPath = steamPath;
         if (!escapistsPath.exists()) {
             fatalError("Escapists is not installed @ " + escapistsPath.getPath());
         }

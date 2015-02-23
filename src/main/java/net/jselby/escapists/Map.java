@@ -305,6 +305,18 @@ public class Map {
         tiles[y][x] = value;
     }
 
+    public void setTile(int x, int y, int selectedIndex, String view) {
+        if (view.equalsIgnoreCase("World")) {
+            tiles[y][x] = selectedIndex;
+        } else if (view.equalsIgnoreCase("Underground")) {
+            underground[y][x] = selectedIndex;
+        } else if (view.equalsIgnoreCase("Vents")) {
+            vents[y][x] = selectedIndex;
+        } else if (view.equalsIgnoreCase("Roof")) {
+            roof[y][x] = selectedIndex;
+        }
+    }
+
     public int count(ObjectRegistry.Objects object) {
         return count(object.getID());
     }
@@ -357,6 +369,33 @@ public class Map {
             allSections += y + "=" + arrayBuild + "\n";
         }
 
+        allSections += "[Underground]\n";
+        for (int y = 0; y < underground.length; y++) {
+            String arrayBuild = "";
+            for (int x = 0; x < underground[y].length; x++) {
+                arrayBuild += underground[y][x] + "_";
+            }
+            allSections += y + "=" + arrayBuild + "\n";
+        }
+
+        allSections += "[Vents]\n";
+        for (int y = 0; y < vents.length; y++) {
+            String arrayBuild = "";
+            for (int x = 0; x < vents[y].length; x++) {
+                arrayBuild += vents[y][x] + "_";
+            }
+            allSections += y + "=" + arrayBuild + "\n";
+        }
+
+        allSections += "[Roof]\n";
+        for (int y = 0; y < roof.length; y++) {
+            String arrayBuild = "";
+            for (int x = 0; x < roof[y].length; x++) {
+                arrayBuild += roof[y][x] + "_";
+            }
+            allSections += y + "=" + arrayBuild + "\n";
+        }
+
         // Serialize Objects
         allSections += "[Objects]\n";
         int count = 1;
@@ -377,7 +416,9 @@ public class Map {
         // Build sections
         for (java.util.Map.Entry<String, java.util.Map<String, Object>> entry : sections.entrySet()) {
             String sectionId = entry.getKey();
-            if (sectionId.equalsIgnoreCase("Tiles") || sectionId.equalsIgnoreCase("Objects")) {
+            if (sectionId.equalsIgnoreCase("Tiles") || sectionId.equalsIgnoreCase("Objects")
+                    || sectionId.equalsIgnoreCase("Underground") || sectionId.equalsIgnoreCase("Vents")
+                    || sectionId.equalsIgnoreCase("Roof")) {
                 continue;
             }
             java.util.Map<String, Object> entries = entry.getValue();

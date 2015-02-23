@@ -124,7 +124,9 @@ public class MapRenderer {
         }
 
         // Merge lighting
-        g2.drawImage(lighting, null, 0, 0);
+        if (view.equalsIgnoreCase("World")) {
+            g2.drawImage(lighting, null, 0, 0);
+        }
         return off_Image;
     }
 }

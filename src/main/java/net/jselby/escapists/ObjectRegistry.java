@@ -84,6 +84,7 @@ public class ObjectRegistry {
         VENT(50),
         VENT_SLATS(51),
         LADDER_UP(52),
+        LADDER_DOWN(53),
         FORCED_PRISONER_BED(54),
         FORCED_PRISONER_DESK(55),
         GUARD_BED(56),

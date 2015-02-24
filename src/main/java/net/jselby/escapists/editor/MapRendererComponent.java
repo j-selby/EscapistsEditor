@@ -1,10 +1,13 @@
 package net.jselby.escapists.editor;
 
+import net.jselby.escapists.EscapistsEditor;
 import net.jselby.escapists.Map;
 import net.jselby.escapists.MapRenderer;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 
@@ -20,17 +23,19 @@ public class MapRendererComponent extends JPanel {
     private Map mapToEdit;
 
     private BufferedImage render;
-    private boolean showZones;
-    private String selectedZone;
 
     private float zoomFactor = 1.0f;
     private String view = "World";
+    private MapRenderer renderer;
 
     public MapRendererComponent(Map map, ClickListener clickListener, MouseMotionListener motionListener) {
         this.mapToEdit = map;
 
         addMouseListener(clickListener);
         addMouseMotionListener(motionListener);
+
+        // Build the renderer
+        renderer = new MapRenderer();
 
         if (mapToEdit != null) {
             Dimension size = new Dimension((map.getHeight() - 1) * 16, (map.getWidth() - 3) * 16);
@@ -71,7 +76,7 @@ public class MapRendererComponent extends JPanel {
     public void refresh() {
         // Render a snapshot
         if (mapToEdit != null) {
-            render = MapRenderer.render(mapToEdit, showZones, selectedZone, view);
+            render = renderer.render(mapToEdit, view);
         }
 
         setIgnoreRepaint(false);
@@ -88,11 +93,11 @@ public class MapRendererComponent extends JPanel {
     }
 
     public void setShowZones(boolean showZones) {
-        this.showZones = showZones;
+        renderer.showZones = showZones;
     }
 
     public void setSelectedZone(String selectedZone) {
-        this.selectedZone = selectedZone;
+        renderer.selectedZone = selectedZone;
     }
 
     public void setView(String view) {

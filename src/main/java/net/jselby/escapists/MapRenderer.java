@@ -15,7 +15,7 @@ public class MapRenderer {
 
     // These are public for ease-of-use
     public boolean showZones = false;
-    public String selectedZone = null;
+    public boolean zoneEditing = false;
 
     public String view = "World";
 
@@ -93,5 +93,9 @@ public class MapRenderer {
         layerCache.put(mainLayer.getLayerName(), renderPlatform);
 
         return renderPlatform;
+    }
+
+    public ZoneLayer getZoning() {
+        return (ZoneLayer) layers.get(4);
     }
 }

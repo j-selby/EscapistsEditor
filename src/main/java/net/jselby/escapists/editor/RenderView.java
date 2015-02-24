@@ -443,33 +443,7 @@ public class RenderView extends JFrame {
                 mapToEdit.setTile(x, y, tileSelect.getSelectedIndex(), currentZone);
                 break;
             case ZONE_EDIT:
-                // Get the zone at this point
-                int size = Integer.MAX_VALUE;
-                for (java.util.Map.Entry<String, Object> values : mapToEdit.getMap("Zones").entrySet()) {
-                    String value = ((String) values.getValue()).trim();
-                    if (!value.contains("_")) {
-                        continue;
-                    }
-                    String[] args = value.split("_");
-                    int x1 = Integer.parseInt(args[0]);
-                    int y1 = Integer.parseInt(args[1]);
-                    int x2 = Integer.parseInt(args[2]);
-                    int y2 = Integer.parseInt(args[3]);
-                    int absX = x * 16;
-                    int absY = y * 16;
-                    int mySize = (x2 - x1) * (y2 - y1);
-                    if (absX > x1 && absX < x2 && absY > y1 && absY < y2 && mySize < size) {
-                        size = mySize;
-                        selectedZoneElement = values;
-                    }
-                }
-                selectedZoneEditor.setText(selectedZoneElement != null
-                        ? selectedZoneElement.getValue().toString().trim() : null);
-                selectedZoneEditor.setEditable(selectedZoneElement != null);
-                selectedZone.setText("Selected Zone: " +
-                        (selectedZoneElement == null ? "None" : selectedZoneElement.getKey()));
-                renderer.setSelectedZone(selectedZoneElement != null ? selectedZoneElement.getKey() : null);
-                renderer.refresh();
+                // Handled upstream
                 break;
         }
 
@@ -481,7 +455,7 @@ public class RenderView extends JFrame {
         toolOptions.removeAll();
 
         renderer.setShowZones(showZone);
-        renderer.setSelectedZone(null);
+        renderer.setEditZones(false);
         switch (mode) {
             case CREATE_OBJECT:
                 toolOptions.add(new JLabel("ID:"));
@@ -495,6 +469,7 @@ public class RenderView extends JFrame {
                 toolOptions.add(tileSelect);
                 break;
             case ZONE_EDIT:
+                renderer.setEditZones(true);
                 renderer.setShowZones(true);
                 toolOptions.add(selectedZone);
                 toolOptions.add(selectedZoneEditor);

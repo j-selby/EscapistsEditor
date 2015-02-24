@@ -12,7 +12,11 @@ import java.util.Random;
  * Renders zones ontop of the world.
  */
 public class ZoneLayer extends Layer {
+
+    private static final int margin = 10;
+
     private java.util.Map<String, Color> zoneColorMappings = new HashMap<>();
+    private Object zoneClicked;
 
     @Override
     public void render(Map map, MapRenderer renderer, BufferedImage image, Graphics2D g,
@@ -35,19 +39,43 @@ public class ZoneLayer extends Layer {
             zoneColorMappings.put(values.getKey(), color);
             g.setColor(color);
             g.fillRect(x1, y1, x2 - x1, y2 - y1);
+
+            g.setColor(Color.RED);
+            g.drawRect(x1, y1, x2 - x1, y2 - y1);
+
+            // Draw little dragging spots
+            if (renderer.zoneEditing) {
+                g.setColor(Color.WHITE);
+                g.fillRect(x1, y1, margin, margin); // Top left
+                g.fillRect(x2 - margin, y1, margin, margin); // Top right
+                g.fillRect(x2 - margin, y2 - margin, margin, margin); // Bottom right
+                g.fillRect(x1, y2 - margin, margin, margin); // Bottom left
+                g.setColor(Color.BLACK);
+                g.drawRect(x1, y1, margin, margin); // Top left
+                g.drawRect(x2 - margin, y1, margin, margin); // Top right
+                g.drawRect(x2 - margin, y2 - margin, margin, margin); // Bottom right
+                g.drawRect(x1, y2 - margin, margin, margin); // Bottom left
+            }
+
             g.setColor(Color.BLACK);
             g.drawString(values.getKey(), x1, y1 + 12);
-
-            if (renderer.selectedZone != null
-                    && values.getKey().trim().equalsIgnoreCase(renderer.selectedZone.trim())) {
-                g.setColor(Color.RED);
-                g.drawRect(x1, y1, x2 - x1, y2 - y1);
-            }
         }
     }
 
     @Override
     public String getLayerName() {
         return "Zones";
+    }
+
+    public void mouseDragged(int x, int y) {
+        // Update the zone accordingly
+        if (zoneClicked != null) {
+
+        }
+
+    }
+
+    public void mouseDown(int x, int y) {
+        // Get the zone this refers to
     }
 }

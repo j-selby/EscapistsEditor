@@ -3,8 +3,9 @@ package net.jselby.escapists;
 import net.jselby.escapists.layers.*;
 
 import java.awt.*;
-import java.awt.image.*;
-import java.util.*;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Renders maps into a BufferedImage.

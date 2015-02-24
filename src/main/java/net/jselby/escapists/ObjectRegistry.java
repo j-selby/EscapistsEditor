@@ -2,11 +2,8 @@ package net.jselby.escapists;
 
 import org.reflections.Reflections;
 
-import java.awt.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**

@@ -16,7 +16,10 @@ public class ZoneLayer extends Layer {
     private static final int margin = 10;
 
     private java.util.Map<String, Color> zoneColorMappings = new HashMap<>();
-    private Object zoneClicked;
+    private java.util.Map.Entry<String, Object> zoneClicked;
+
+    private int origX;
+    private int origY;
 
     @Override
     public void render(Map map, MapRenderer renderer, BufferedImage image, Graphics2D g,
@@ -67,15 +70,84 @@ public class ZoneLayer extends Layer {
         return "Zones";
     }
 
-    public void mouseDragged(int x, int y) {
+    public void mouseDragged(Map map, int x, int y) {
         // Update the zone accordingly
         if (zoneClicked != null) {
+            // Move the point around
+            int absX = x;
+            int absY = y;
 
+            // Build arguments
+            String[] args = zoneClicked.getValue().toString().trim().split("_");
+            int zoneX1 = Integer.parseInt(args[0]);
+            int zoneY1 = Integer.parseInt(args[1]);
+            int zoneX2 = Integer.parseInt(args[2]);
+            int zoneY2 = Integer.parseInt(args[3]);
+
+            // Update the actual values
+            int diffX = absX - origX;
+            int diffY = absY - origY;
+
+            int margin = 12;
+            // Check if it is in a corner
+            if (origX < zoneX1 + margin
+                    && origY < zoneY1 + margin) { // Top left corner
+                zoneX1 += diffX;
+                zoneY1 += diffY;
+            } else if (origX > zoneX2 - margin
+                    && origY < zoneY1 + margin) { // Top right corner
+                zoneX2 += diffX;
+                zoneY1 += diffY;
+            } else if (origX > zoneX2 - margin
+                    && origY > zoneY2 - margin) { // Bottom right corner
+                zoneX2 += diffX;
+                zoneY2 += diffY;
+            } else if (origX < zoneX1 + margin
+                    && origY > zoneY2 - margin) { // Bottom left corner
+                zoneX1 += diffX;
+                zoneY2 += diffY;
+            } else {
+                zoneX1 += diffX;
+                zoneX2 += diffX;
+                zoneY1 += diffY;
+                zoneY2 += diffY;
+            }
+
+            origX = absX;
+            origY = absY;
+
+            // Update it
+            String builtArg = zoneX1 + "_" + zoneY1 + "_" + zoneX2 + "_" + zoneY2;
+            zoneClicked.setValue(builtArg);
         }
 
     }
 
-    public void mouseDown(int x, int y) {
+    public void mouseDown(Map map, int x, int y) {
+        int absX = x;
+        int absY = y;
+
+        origX = absX;
+        origY = absY;
+
         // Get the zone this refers to
+        for (java.util.Map.Entry<String, Object> values : map.getMap("Zones").entrySet()) {
+            String[] args = values.getValue().toString().trim().split("_");
+            if (args.length != 4) {
+                continue;
+            }
+
+            int zoneX1 = Integer.parseInt(args[0]);
+            int zoneY1 = Integer.parseInt(args[1]);
+            int zoneX2 = Integer.parseInt(args[2]);
+            int zoneY2 = Integer.parseInt(args[3]);
+
+            if (absX > zoneX1 && absX < zoneX2
+                    && absY > zoneY1 && absY < zoneY2) {
+                System.out.println("Zones");
+                zoneClicked = values;
+                break;
+            }
+        }
     }
 }

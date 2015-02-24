@@ -56,7 +56,7 @@ public abstract class WorldObject {
 
     @Override
     public String toString() {
-        return getX() + ":" + getY() + ", ID: " + getID() + ":" + getIDArgument();
+        return "ID: " + getID();
     }
 
     /**
@@ -72,6 +72,15 @@ public abstract class WorldObject {
 
     public int getY() {
         return y;
+    }
+
+    public ObjectRegistry.Objects asWorldDictionary() {
+        for (ObjectRegistry.Objects object : ObjectRegistry.Objects.values()) {
+            if (object.getID() == getID()) {
+                return object;
+            }
+        }
+        return null;
     }
 
     public static class Unknown extends WorldObject {

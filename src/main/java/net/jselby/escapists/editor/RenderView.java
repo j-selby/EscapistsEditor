@@ -84,6 +84,40 @@ public class RenderView extends JFrame {
         // Configure the view
         setLayout(new BoxLayout(this.getContentPane(), BoxLayout.X_AXIS));
 
+        // Add a small panel at the bottom for position etc
+        final JPanel mousePosition = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+
+                // Get a object, if applicable
+
+                WorldObject object = mapToEdit != null ? mapToEdit.getObjectAt(x, y, currentZone) : null;
+                String objectName = null;
+                if (object != null) {
+                    if (object.asWorldDictionary() == null) {
+                        objectName = object.getClass().getName();
+                    } else {
+                        objectName = WordUtils.capitalize(object.asWorldDictionary().name().toLowerCase().replace("_", " "));
+                    }
+                }
+                String objectDef = (object != null ? (", Object " + object.toString() + " (" + objectName + ")") : "");
+
+                String worldElements = "X: " + x + ", Y: " + y
+                        + objectDef
+                        + (mapToEdit != null ? (", Tile: " + mapToEdit.getTile(x, y, currentZone)) : "");
+
+                // Render a top bar
+                int width = getWidth();
+                int height = 20;
+                g.setColor(new Color(0f, 0f, 0f, 1f));
+                g.fillRect(0, 0, width, height);
+                g.setColor(Color.white);
+                g.drawString(worldElements, 10, 12);
+            }
+        };
+        mousePosition.setIgnoreRepaint(false);
+
         renderer = new MapRendererComponent(mapToEdit, new ClickListener() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -97,6 +131,10 @@ public class RenderView extends JFrame {
                 } else {
                     return;
                 }
+
+                // Convert x & y with scaling
+                x = (int) (((float) x) / ((float) renderer.getZoomFactor()));
+                y = (int) (((float) y) / ((float) renderer.getZoomFactor()));
 
                 toolHandler(x, y);
             }
@@ -119,18 +157,53 @@ public class RenderView extends JFrame {
                     return;
                 }
 
+                // Convert x & y with scaling
+                x = (int) (((float) x) / ((float) renderer.getZoomFactor()));
+                y = (int) (((float) y) / ((float) renderer.getZoomFactor()));
+
                 toolHandler(x, y);
+            }
+
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                int newX = e.getX() / 16;
+                int newY = e.getY() / 16;
+                if (newX != x || newY != y) {
+                    x = newX;
+                    y = newY;
+                } else {
+                    return;
+                }
+
+                // Convert x & y with scaling
+                x = (int) (((float) x) / ((float) renderer.getZoomFactor()));
+                y = (int) (((float) y) / ((float) renderer.getZoomFactor()));
+
+                mousePosition.repaint();
             }
         });
 
-        JScrollPane scrollArea = new JScrollPane(renderer);
+        // Add scroll bars to the screen
+        final JScrollPane scrollArea = new JScrollPane(renderer);
         scrollArea.setOpaque(false);
         scrollArea.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         scrollArea.setWheelScrollingEnabled(true);
         scrollArea.getHorizontalScrollBar().setUnitIncrement(16);
         scrollArea.getVerticalScrollBar().setUnitIncrement(16);
         scrollArea.setPreferredSize(new Dimension(700, 600));
-        add(scrollArea);
+
+        // Create a wrapper for the area
+        final JPanel scrollAreaWrapper = new JPanel();
+        scrollAreaWrapper.setIgnoreRepaint(false);
+        scrollAreaWrapper.setLayout(new BorderLayout());
+        scrollAreaWrapper.setPreferredSize(new Dimension(700, 600));
+        scrollAreaWrapper.add(scrollArea, BorderLayout.CENTER);
+
+        // Put it together
+        mousePosition.setPreferredSize(new Dimension(700, 20));
+        scrollAreaWrapper.add(scrollArea, BorderLayout.CENTER);
+        scrollAreaWrapper.add(mousePosition, BorderLayout.SOUTH);
+        add(scrollAreaWrapper);
 
         // Toolbar
         JPanel sidebar = new JPanel();
@@ -341,9 +414,6 @@ public class RenderView extends JFrame {
     }
 
     private void toolHandler(int x, int y) {
-        // Convert x & y with scaling
-        x = (int) (((float) x) / ((float) renderer.getZoomFactor()));
-        y = (int) (((float) y) / ((float) renderer.getZoomFactor()));
 
         // Get object at that position
         WorldObject clickedObject = mapToEdit.getObjectAt(x, y, currentZone);

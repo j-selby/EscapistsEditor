@@ -6,7 +6,7 @@
 
     <groupId>net.jselby.escapists</groupId>
     <artifactId>EscapistsEditor</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.1.4-SNAPSHOT</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -46,12 +46,6 @@
                             <filters>
                                 <filter>
                                     <artifact>net.jselby.escapists:EscapistsEditor</artifact>
-                                    <includes>
-                                        <include>**/**</include>
-                                    </includes>
-                                </filter>
-                                <filter>
-                                    <artifact>commons-logging:commons-logging</artifact>
                                     <includes>
                                         <include>**/**</include>
                                     </includes>
@@ -100,6 +94,5 @@
             <artifactId>jcommander</artifactId>
             <version>1.47</version>
         </dependency>
-
     </dependencies>
 </project>

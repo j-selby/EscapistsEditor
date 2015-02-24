@@ -2,7 +2,7 @@
 <launch4jConfig>
   <dontWrapJar>false</dontWrapJar>
   <headerType>gui</headerType>
-  <jar>.\target\EscapistsEditor-1.0-SNAPSHOT.jar</jar>
+  <jar>.\target\EscapistsEditor-1.1.4-SNAPSHOT.jar</jar>
   <outfile>.\EscapistsEditor-1.0.exe</outfile>
   <errTitle>Escapists Map Editor</errTitle>
   <cmdLine></cmdLine>

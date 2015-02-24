@@ -202,7 +202,7 @@ public class EscapistsEditor {
         // Decode it
         Map map = new Map(this, registry, mapPath.getPath(), content);
 
-        BufferedImage image = MapRenderer.render(map);
+        BufferedImage image = new MapRenderer().render(map, "World");
 
         File parent = new File("renders");
         if (!parent.exists()) {
@@ -314,7 +314,7 @@ public class EscapistsEditor {
                     editor.editMap == null &&
                     !editor.renderAll) {
                 // Select a map through a GUI first
-                editor.showGUI = true;
+                showGUI = true;
                 RenderView view = new RenderView(editor, null);
                 view.setEnabled(false);
                 MapSelectionGUI gui = new MapSelectionGUI(editor);

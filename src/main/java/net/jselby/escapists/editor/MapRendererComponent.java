@@ -1,6 +1,5 @@
 package net.jselby.escapists.editor;
 
-import net.jselby.escapists.EscapistsEditor;
 import net.jselby.escapists.Map;
 import net.jselby.escapists.MapRenderer;
 
@@ -28,7 +27,7 @@ public class MapRendererComponent extends JPanel {
     private String view = "World";
     private MapRenderer renderer;
 
-    public MapRendererComponent(Map map, ClickListener clickListener, MouseMotionListener motionListener) {
+    public MapRendererComponent(final Map map, ClickListener clickListener, MouseMotionListener motionListener) {
         this.mapToEdit = map;
 
         addMouseListener(clickListener);
@@ -56,8 +55,8 @@ public class MapRendererComponent extends JPanel {
             @Override
             public void mousePressed(MouseEvent e) {
                 if (renderer.showZones && renderer.zoneEditing) {
-                    renderer.getZoning().mouseDown((int) ((float) getX() / (float) zoomFactor),
-                            (int) ((float) getY() / (float) zoomFactor));
+                    renderer.getZoning().mouseDown(map, (int) ((float) e.getX() / (float) zoomFactor),
+                            (int) ((float) e.getY() / (float) zoomFactor));
                     refresh();
                 }
             }
@@ -67,8 +66,8 @@ public class MapRendererComponent extends JPanel {
             @Override
             public void mouseDragged(MouseEvent e) {
                 if (renderer.showZones && renderer.zoneEditing) {
-                    renderer.getZoning().mouseDragged((int) ((float) getX() / (float) zoomFactor),
-                            (int) ((float) getY() / (float) zoomFactor));
+                    renderer.getZoning().mouseDragged(map, (int) ((float) e.getX() / (float) zoomFactor),
+                            (int) ((float) e.getY() / (float) zoomFactor));
                     refresh();
                 }
             }

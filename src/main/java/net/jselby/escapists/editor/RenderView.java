@@ -1,7 +1,6 @@
 package net.jselby.escapists.editor;
 
 import net.jselby.escapists.*;
-import net.jselby.escapists.objects.Light;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.text.WordUtils;
 
@@ -11,14 +10,12 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.text.AbstractDocument;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * The render view shows the render in a window, and has toolbar options addiitonally.
@@ -33,8 +30,6 @@ public class RenderView extends JFrame {
 
     // Tools
     private final JComboBox id;
-    private final JLabel selectedZone = new JLabel("Selected Zone: None");
-    private final JTextField selectedZoneEditor = new JTextField();
 
     private EscapistsEditor editor;
     private Map mapToEdit;
@@ -85,48 +80,6 @@ public class RenderView extends JFrame {
         tileSelect = new JComboBox(icons.toArray());
         tileSelect.setSelectedIndex(0);
         tileSelect.setMaximumSize(new Dimension(150, 30));
-
-        // Zone editor
-        selectedZone.setAlignmentX(CENTER_ALIGNMENT);
-        selectedZoneEditor.setAlignmentX(CENTER_ALIGNMENT);
-        selectedZoneEditor.setMinimumSize(new Dimension(120, 30));
-        selectedZoneEditor.setMaximumSize(new Dimension(120, 30));
-        selectedZoneEditor.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                genericEvent(e);
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                genericEvent(e);
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                genericEvent(e);
-            }
-
-            public void genericEvent(DocumentEvent e) {
-                if (selectedZoneEditor.getText().split("_").length == 4) {
-                    // Make sure we have numbers
-                    for (String str : selectedZoneEditor.getText().split("_")) {
-                        try {
-                            int number = Integer.parseInt(str);
-                            if (number < 0 || number > (96 * 16)) {
-                                System.out.println("Invalid number: out of range");
-                                return;
-                            }
-                        } catch (Exception err) {
-                            System.out.println("Invalid number: not a number");
-                            return;
-                        }
-                    }
-                    selectedZoneElement.setValue(selectedZoneEditor.getText());
-                    renderer.refresh();
-                }
-            }
-        });
 
         // Configure the view
         setLayout(new BoxLayout(this.getContentPane(), BoxLayout.X_AXIS));
@@ -444,7 +397,7 @@ public class RenderView extends JFrame {
                 break;
             case ZONE_EDIT:
                 // Handled upstream
-                break;
+                return;
         }
 
         // Redraw the object
@@ -471,8 +424,6 @@ public class RenderView extends JFrame {
             case ZONE_EDIT:
                 renderer.setEditZones(true);
                 renderer.setShowZones(true);
-                toolOptions.add(selectedZone);
-                toolOptions.add(selectedZoneEditor);
                 JButton manualEdit = new JButton("Manual...");
                 manualEdit.addActionListener(new ActionListener() {
                     @Override

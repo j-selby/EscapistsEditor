@@ -448,9 +448,18 @@ public class Map {
         }
     }
 
-    public WorldObject getObjectAt(int x, int y) {
+    public WorldObject getObjectAt(int x, int y, String view) {
+        int level = 1;
+        if (view.equalsIgnoreCase("Underground")) {
+            level = 0;
+        } else if (view.equalsIgnoreCase("Vents")) {
+            level = 2;
+        } else if (view.equalsIgnoreCase("Roof")) {
+            level = 3;
+        }
+
         for (WorldObject object : objects) {
-            if (object.getX() == x && object.getY() == y) {
+            if (object.getX() == x && object.getY() == y && object.getIDArgument() == level) {
                 return object;
             }
         }

@@ -112,7 +112,13 @@ public class ObjectRegistry {
         JOB_SELECTION(46),
         JOB_CLEANING_SUPPLIES(47),
         JOB_DELIVERIES_TRUCK(78),
+        JOB_FABRIC_CHEST(79),
+        JOB_CLOTHING_STORAGE(80),
+        JOB_BOOK_CHEST(81),
         JOB_MAILROOM_FILE(82),
+        JOB_GARDENING_TOOLS(89),
+        JOB_DELIVERIES_RED_BOX(92),
+        JOB_DELIVERIES_BLUE_BOX(93),
 
         // Doors
         DOOR_GENERAL(24),
@@ -123,10 +129,12 @@ public class ObjectRegistry {
         DOOR_JANITOR(29),
         DOOR_RED_KEY(30),
         DOOR_METALSHOP(31),
+        DOOR_LIBRARIAN(37),
         DOOR_WOODSHOP(38),
         DOOR_PRISON_ENTRANCE(75),
         DOOR_MAILROOM(83),
         DOOR_GARDENING(84),
+        DOOR_TAILORSHOP(85),
         DOOR_DELIVERIES(86),
         DOOR_JUNGLE_ENTRANCE(95),
 
@@ -136,6 +144,10 @@ public class ObjectRegistry {
         TRAINING_WEIGHT(8),
         TRAINING_INTERNET(69),
         TRAINING_JOGGING(90),
+        TRAINING_PRESSUPS(91),
+        TRAINING_SKIPPING(96),
+        TRAINING_PUNCHBAG(97),
+        TRAINING_SPEEDBAG(98),
         TRAINING_CHINUP(102),
 
         // Jeep

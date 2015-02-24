@@ -84,6 +84,7 @@ public class ObjectRegistry {
         VENT(50),
         VENT_SLATS(51),
         LADDER_UP(52),
+        LADDER_DOWN(53),
         FORCED_PRISONER_BED(54),
         FORCED_PRISONER_DESK(55),
         GUARD_BED(56),
@@ -110,6 +111,7 @@ public class ObjectRegistry {
         JOB_METAL_TOOLS(45),
         JOB_SELECTION(46),
         JOB_CLEANING_SUPPLIES(47),
+        JOB_DELIVERIES_TRUCK(78),
         JOB_MAILROOM_FILE(82),
 
         // Doors

@@ -392,7 +392,7 @@ public class RenderView extends JFrame {
         y = (int) (((float) y) / ((float) renderer.getZoomFactor()));
 
         // Get object at that position
-        WorldObject clickedObject = mapToEdit.getObjectAt(x, y);
+        WorldObject clickedObject = mapToEdit.getObjectAt(x, y, currentZone);
 
         System.out.println(mode.name() + " @ " + currentZone + ":" + x + ":" + y);
         switch (mode) {

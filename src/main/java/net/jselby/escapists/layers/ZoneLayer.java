@@ -60,8 +60,8 @@ public class ZoneLayer extends Layer {
                 g.drawRect(x1, y2 - margin, margin, margin); // Bottom left
             }
 
-            g.setColor(Color.BLACK);
-            g.drawString(values.getKey(), x1, y1 + 12);
+            g.setColor(Color.WHITE);
+            g.drawString(values.getKey(), x1 + 12, y1 + 12);
         }
     }
 
@@ -130,6 +130,8 @@ public class ZoneLayer extends Layer {
         origX = absX;
         origY = absY;
 
+        int minZoneSize = Integer.MAX_VALUE;
+
         // Get the zone this refers to
         for (java.util.Map.Entry<String, Object> values : map.getMap("Zones").entrySet()) {
             String[] args = values.getValue().toString().trim().split("_");
@@ -142,11 +144,14 @@ public class ZoneLayer extends Layer {
             int zoneX2 = Integer.parseInt(args[2]);
             int zoneY2 = Integer.parseInt(args[3]);
 
-            if (absX > zoneX1 && absX < zoneX2
+            int width = zoneX2 - zoneX1;
+            int height = zoneY2 - zoneY1;
+            int size = width * height;
+
+            if (minZoneSize > size && absX > zoneX1 && absX < zoneX2
                     && absY > zoneY1 && absY < zoneY2) {
-                System.out.println("Zones");
+                minZoneSize = size;
                 zoneClicked = values;
-                break;
             }
         }
     }

@@ -324,7 +324,8 @@ public class RenderView extends JFrame {
         setSize(800 + 150, 600);
         setLocationRelativeTo(null);
 
-        setTitle("Escapists Map Editor");
+        setTitle("Escapists Map Editor v" + EscapistsEditor.VERSION + " - " +
+                (mapToEdit == null ? "No map loaded" : mapToEdit.getName()));
         setIconImage(ImageIO.read(getClass().getResource("/icon.png")));
         try {
             UIManager.setLookAndFeel(

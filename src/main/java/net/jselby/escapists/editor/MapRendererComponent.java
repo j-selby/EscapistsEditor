@@ -52,6 +52,28 @@ public class MapRendererComponent extends JPanel {
             origWidth = 1;
         }
 
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (renderer.showZones && renderer.zoneEditing) {
+                    renderer.getZoning().mouseDown((int) ((float) getX() / (float) zoomFactor),
+                            (int) ((float) getY() / (float) zoomFactor));
+                    refresh();
+                }
+            }
+        });
+
+        addMouseMotionListener(new MouseAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                if (renderer.showZones && renderer.zoneEditing) {
+                    renderer.getZoning().mouseDragged((int) ((float) getX() / (float) zoomFactor),
+                            (int) ((float) getY() / (float) zoomFactor));
+                    refresh();
+                }
+            }
+        });
+
         refresh();
     }
 
@@ -96,15 +118,15 @@ public class MapRendererComponent extends JPanel {
         renderer.showZones = showZones;
     }
 
-    public void setSelectedZone(String selectedZone) {
-        renderer.selectedZone = selectedZone;
-    }
-
     public void setView(String view) {
         this.view = view;
     }
 
     public String getView() {
         return view;
+    }
+
+    public void setEditZones(boolean editZones) {
+        renderer.zoneEditing = editZones;
     }
 }

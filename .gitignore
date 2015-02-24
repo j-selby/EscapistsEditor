@@ -2,6 +2,7 @@
 ### Escapists output
 EscapistsEditor-*.exe
 escapistseditor.log
+*.map
 
 launch4j.log
 

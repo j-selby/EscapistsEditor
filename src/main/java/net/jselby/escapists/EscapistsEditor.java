@@ -83,7 +83,7 @@ public class EscapistsEditor {
 
         // Discover Escapists directory
         if (escapistsPathUser == null) {
-            File steamPath = SteamFinder.getSteamPath();
+            File steamPath = SteamFinder.getSteamPath(this);
 
             if (steamPath == null) {
                 fatalError("Failed to discover Steam installation with Escapists.");

@@ -1,5 +1,9 @@
 package net.jselby.escapists.utils;
 
+import net.jselby.escapists.EscapistsEditor;
+
+import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
 import java.io.File;
 
 /**
@@ -23,8 +27,9 @@ public class SteamFinder {
      * Discovers a steam installation.
      *
      * @return A steam installation, or null if one was not found.
+     * @param editor
      */
-    public static File getSteamPath() {
+    public static File getSteamPath(EscapistsEditor editor) {
         // TODO: Support platforms other then Windows.
         // Discover drive letters
         File[] drives = File.listRoots();
@@ -58,6 +63,33 @@ public class SteamFinder {
                         }
                     }
                 }
+            }
+        }
+
+        // Ask user to find directory, if we are in a GUI.
+        editor.dialog("No Stream installation detected. Please locate The Escapists in the following prompt.");
+        JFileChooser chooser = new JFileChooser();
+        chooser.setFileFilter(new FileFilter() {
+            @Override
+            public boolean accept(File f) {
+                return f.isDirectory();
+            }
+
+            @Override
+            public String getDescription() {
+                return "Directory";
+            }
+        });
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        int result = chooser.showOpenDialog(null);
+        if (JFileChooser.APPROVE_OPTION == result) {
+            // Check for Escapists here
+            File resultFile = chooser.getSelectedFile();
+            File escapistsTest = new File(resultFile, "TheEscapists.exe");
+            if (escapistsTest.exists()) {
+                return resultFile;
+            } else {
+                editor.fatalError(new Exception("Invalid directory (No TheEscapists.exe)"));
             }
         }
 

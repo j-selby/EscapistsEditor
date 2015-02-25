@@ -1,15 +1,12 @@
 package net.jselby.escapists.editor;
 
 import net.jselby.escapists.*;
-import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.commons.lang3.text.WordUtils;
+import net.jselby.escapists.utils.StringUtils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -52,7 +49,7 @@ public class RenderView extends JFrame {
         ArrayList<Object> objectIds = new ArrayList<>();
         for (ObjectRegistry.Objects objectId : ObjectRegistry.Objects.values()) {
             objectIds.add(objectId.getID() + ": "
-                    + WordUtils.capitalize(objectId.name().toLowerCase().replace("_", " ")));
+                    + StringUtils.capitalize(objectId.name().toLowerCase().replace("_", " ")));
         }
         objectIds.add("Other...");
         id = new JComboBox(objectIds.toArray());
@@ -98,7 +95,7 @@ public class RenderView extends JFrame {
                     if (object.asWorldDictionary() == null) {
                         objectName = object.getClass().getName();
                     } else {
-                        objectName = WordUtils.capitalize(object.asWorldDictionary().name().toLowerCase().replace("_", " "));
+                        objectName = StringUtils.capitalize(object.asWorldDictionary().name().toLowerCase().replace("_", " "));
                     }
                 }
                 String objectDef = (object != null ? (", Object " + object.toString() + " (" + objectName + ")") : "");
@@ -433,7 +430,7 @@ public class RenderView extends JFrame {
                 int idToAdd;
                 if (id.getSelectedItem().toString().equalsIgnoreCase("Other...")) {
                     String output = JOptionPane.showInputDialog(RenderView.this, "Enter an ID (1-150): ").trim();
-                    if (NumberUtils.isNumber(output)) {
+                    if (StringUtils.isNumber(output)) {
                         int num = Integer.parseInt(output);
                         if (num > 0 && num < 150) {
                             mapToEdit.getObjects().add(editor.registry.instanceWithUnknown(num, x, y, level));

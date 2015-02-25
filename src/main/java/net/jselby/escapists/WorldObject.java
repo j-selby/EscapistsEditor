@@ -1,6 +1,6 @@
 package net.jselby.escapists;
 
-import org.apache.commons.lang3.text.WordUtils;
+import net.jselby.escapists.utils.StringUtils;
 
 import java.awt.*;
 
@@ -32,11 +32,11 @@ public abstract class WorldObject {
         String providedName = null;
         for (ObjectRegistry.Objects object : ObjectRegistry.Objects.values()) {
             if (object.getID() == getID()) {
-                providedName = WordUtils.capitalize(object.name().toLowerCase().replace("_", " "));
+                providedName = StringUtils.capitalize(object.name().toLowerCase().replace("_", " "));
             }
         }
         if (providedName == null) {
-            providedName = WordUtils.capitalize(getClass().getSimpleName().toLowerCase().replace("_", " "))
+            providedName = StringUtils.capitalize(getClass().getSimpleName().toLowerCase().replace("_", " "))
                     + " (ID: " + getID() + ")";
         }
         return getX() + ":" + getY() + " = " + providedName;

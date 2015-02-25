@@ -1,6 +1,8 @@
 package net.jselby.escapists;
 
-import org.reflections.Reflections;
+import net.jselby.escapists.objects.AIRollCall;
+import net.jselby.escapists.objects.Light;
+import net.jselby.escapists.objects.VentMarker;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -12,15 +14,21 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author j_selby
  */
 public class ObjectRegistry {
-    public java.util.Map<Integer, Class<? extends WorldObject>> objects = new ConcurrentHashMap<>();
+
+    private static final Class<? extends WorldObject>[] CUSTOM_CLASSES = new Class[] {
+            AIRollCall.class,
+            Light.class,
+            VentMarker.class
+    };
+
+    public final ConcurrentHashMap<Integer, Class<? extends WorldObject>> objects = new ConcurrentHashMap<>();
 
     /**
      * Creates a new ObjectRegistry
      * @param packageName The package to discover WorldObjects under
      */
     public ObjectRegistry(String packageName) {
-        Reflections reflections = new Reflections(packageName);
-        for (Class<? extends WorldObject> type : reflections.getSubTypesOf(WorldObject.class)) {
+        for (Class<? extends WorldObject> type : CUSTOM_CLASSES) {
             // Create a instance to work out what ID this has
             try {
                 // X:Y

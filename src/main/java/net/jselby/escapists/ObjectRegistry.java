@@ -160,7 +160,9 @@ public class ObjectRegistry {
         AI_WP_PRISONER_GENERAL(18),
         AI_WP_GUARD_GENERAL(19),
         AI_WP_GUARD_MEALS(22),
+        AI_WP_PRISONER_MEALS(23),
         AI_WP_GUARD_EXERCISE(39),
+        AI_WP_EMPLOYMENT_OFFICER(73),
         AI_WP_DOCTOR_WORK(94),
         ;
 

@@ -37,8 +37,11 @@ public class ZoneLayer extends Layer {
             int y2 = Integer.parseInt(args[3]);
 
             Random r = new Random();
-            Color color = zoneColorMappings.getOrDefault(values.getKey(),
-                    new Color(r.nextFloat(), r.nextFloat(), r.nextFloat(), 0.3f));
+            if (!zoneColorMappings.containsKey(values.getKey())) {
+                zoneColorMappings.put(values.getKey(),
+                        new Color(r.nextFloat(), r.nextFloat(), r.nextFloat(), 0.3f));
+            }
+            Color color = zoneColorMappings.get(values.getKey());
             zoneColorMappings.put(values.getKey(), color);
             g.setColor(color);
             g.fillRect(x1, y1, x2 - x1, y2 - y1);

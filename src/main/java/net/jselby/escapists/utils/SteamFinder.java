@@ -19,6 +19,7 @@ public class SteamFinder {
             "Program Files (x86)" + File.separator + "Steam" + File.separator,
             "Program Files" + File.separator + "Steam" + File.separator,
             "Steam" + File.separator,
+            "SteamLibrary" + File.separator,
             "Games" + File.separator,
             "Games" + File.separator + "Steam" + File.separator
     };

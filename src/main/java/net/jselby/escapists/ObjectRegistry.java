@@ -95,6 +95,7 @@ public class ObjectRegistry {
         GUARD_BED(56),
         PRISON_SNIPER(57),
         SOLITARY_BED(59),
+        ROOF_SPOTLIGHTS(60),
         PRISONER_STASH(61),
         JUNGLE_CHECKPOINT_GUARD(62),
         GENERATOR(65),

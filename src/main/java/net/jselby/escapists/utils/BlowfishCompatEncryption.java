@@ -7,18 +7,32 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 /**
+ * Decrypts Escapists map and resource files, using their default key.
+ * <br>
+ * <br>
  * Solution idea from - http://stackoverflow.com/questions/11422497/whats-the-difference-between-blowfish-and-blowfish-compat
- *
+ * <br>
  * Removing the null bytes at the end of the decrypted content is fine since we are dealing with strings
  * http://stackoverflow.com/questions/5672012/mcrypt-encrypt-adding-s-bunch-of-00-to-end-of-string
  *
  * @author Zirow (code) - Major kudos!
- */
-public class BlowfishCompatEncryption {
+ **/
+public final class BlowfishCompatEncryption {
+    private BlowfishCompatEncryption() {}
 
+    /**
+     * The default encryption key used by the Escapists.
+     *
+     * This is a magic value!
+     */
     private static final String ENCRYPTION_KEY = "mothking";
 
-
+    /**
+     * Decrypts a Blowfish encrypted file using the built-in key.
+     *
+     * @param t The file to read and decrypt
+     * @return The byte contents of this file decrypted
+     **/
     public static byte[] decrypt(File t) throws IOException {
         // get the data
         FileInputStream fis = new FileInputStream(t);
@@ -29,11 +43,18 @@ public class BlowfishCompatEncryption {
         return decryptBytes(data, ENCRYPTION_KEY.getBytes());
     }
 
+    /**
+     * Decrypts the specified byte array encrypted via Blowfish using
+     * the specified key.
+     *
+     * @param data The data to decrypt
+     * @param key The key to use for decryption
+     * @return The decrypted bytes
+     **/
     private static byte[] decryptBytes(byte[] data, byte[] key) throws IOException {
         try {
             SecretKeySpec skeySpec = new SecretKeySpec(key, "Blowfish");
             Cipher cipher;
-
 
             // get the cipher
             String cipherInstName = "Blowfish/ECB/NoPadding";
@@ -67,17 +88,31 @@ public class BlowfishCompatEncryption {
         }
     }
 
-    public static byte[] encrypt(File contents) throws IOException {
+    /**
+     * Encrypts a Blowfish encrypted file using the built-in key.
+     *
+     * @param t The file to read and encrypt
+     * @return The byte contents of this file encrypted
+     **/
+    public static byte[] encrypt(File t) throws IOException {
 
         // get the data
-        FileInputStream fis = new FileInputStream(contents);
-        byte[] data = new byte[(int) contents.length()];
+        FileInputStream fis = new FileInputStream(t);
+        byte[] data = new byte[(int) t.length()];
         fis.read(data);
         fis.close();
 
         return encryptBytes(data, ENCRYPTION_KEY.getBytes());
     }
 
+    /**
+     * Encrypted the specified byte array via Blowfish using
+     * the specified key.
+     *
+     * @param data The data to encrypt
+     * @param key The key to use for encryption
+     * @return The encrypted bytes
+     **/
     private static byte[] encryptBytes(byte[] data, byte[] key) throws IOException {
         try {
             ///*
@@ -115,6 +150,12 @@ public class BlowfishCompatEncryption {
         }
     }
 
+    /**
+     * Swaps around bytes in the specified array to remain compatible with
+     * Blowfish-Compat encryption.
+     *
+     * @param data The data to reverse.
+     */
     private static void inplaceReverse(byte[] data) {
         byte a0, a1, a2, a3;
         for (int i = 0; i < data.length; i += 4) {

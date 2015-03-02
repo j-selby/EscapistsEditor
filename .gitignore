@@ -18,7 +18,6 @@ dependency-reduced-pom.xml
 
 ### NetBeans template
 nbproject/private/
-build/
 nbbuild/
 dist/
 nbdist/

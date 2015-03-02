@@ -35,10 +35,7 @@ public final class BlowfishCompatEncryption {
      **/
     public static byte[] decrypt(File t) throws IOException {
         // get the data
-        FileInputStream fis = new FileInputStream(t);
-        byte[] data = new byte[(int) t.length()];
-        fis.read(data);
-        fis.close();
+        byte[] data = IOUtils.toByteArray(t);
 
         return decryptBytes(data, ENCRYPTION_KEY.getBytes());
     }
@@ -97,10 +94,7 @@ public final class BlowfishCompatEncryption {
     public static byte[] encrypt(File t) throws IOException {
 
         // get the data
-        FileInputStream fis = new FileInputStream(t);
-        byte[] data = new byte[(int) t.length()];
-        fis.read(data);
-        fis.close();
+        byte[] data = IOUtils.toByteArray(t);
 
         return encryptBytes(data, ENCRYPTION_KEY.getBytes());
     }

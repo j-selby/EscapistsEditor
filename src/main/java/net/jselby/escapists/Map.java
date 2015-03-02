@@ -215,7 +215,6 @@ public class Map {
         String firstRow = (String) section.get("0");
         width = firstRow.split("_").length - 1;
         height = section.size();
-        System.out.println("Section \"" + name + "\" size: " + width + " * " + height);
 
         // This is stored in a y-x format, so that it can be more easily converted to its original format.
         // This is flipped by most get methods, so this should be abstract.

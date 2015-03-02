@@ -21,7 +21,7 @@ public class RoofLayer extends Layer {
         g.setColor(new Color(1f, 1f, 1f, 0.8f));
         g.fillRect(0, 0, image.getWidth(), image.getHeight());
 
-        genericRender(map, renderer, image, g, tileCache, tiles, ground, 3);
+        genericRender(map, image, g, tileCache, tiles, 3);
     }
 
     public String getLayerName() {

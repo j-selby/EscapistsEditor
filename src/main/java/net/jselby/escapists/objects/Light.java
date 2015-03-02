@@ -6,7 +6,9 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 
 /**
- * Created by James on 16/02/2015.
+ * A light, rendered using a gradient onto the screen.
+ *
+ * @author j_selby
  */
 public class Light extends WorldObject {
     private int argument;
@@ -37,7 +39,7 @@ public class Light extends WorldObject {
         int radius = 3;
         // The random addition (16, 0) is due to how The Escapists renders them
         int centerX = getX() * 16 + 16;
-        int centerY = getY() * 16 + 0;
+        int centerY = getY() * 16;
 
         Point2D center = new Point2D.Float(centerX, centerY);
         float[] dist = {0.0f, 0.2f, 0.9f};

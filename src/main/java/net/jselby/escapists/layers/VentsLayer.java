@@ -19,7 +19,7 @@ public class VentsLayer extends Layer {
         g.setColor(Color.WHITE);
         g.fillRect(0, 0, image.getWidth(), image.getHeight());
 
-        genericRender(map, renderer, image, g, tileCache, tiles, ground, 2);
+        genericRender(map, image, g, tileCache, tiles, 2);
     }
 
     public String getLayerName() {

@@ -63,7 +63,7 @@ public abstract class WorldObject {
     /**
      * Draw this object. Must be relative to coords.
      * @param g Graphics place to draw onto
-     * @param gLighting
+     * @param gLighting Graphics to draw lighting onto
      */
     public abstract void draw(Graphics2D g, Graphics2D gLighting);
 

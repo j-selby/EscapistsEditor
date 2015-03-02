@@ -438,7 +438,9 @@ public class Map {
             out.flush();
         }
         byte[] encryptedBytes = BlowfishCompatEncryption.encrypt(temp);
-        temp.delete();
+        if (!temp.delete()) {
+            System.out.println("Failed to delete temporary file.");
+        }
 
         System.out.println("Writing to " + selectedFile.getPath());
         try (FileOutputStream out = new FileOutputStream(selectedFile)) {

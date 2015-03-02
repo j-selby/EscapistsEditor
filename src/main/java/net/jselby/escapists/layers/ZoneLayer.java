@@ -77,8 +77,6 @@ public class ZoneLayer extends Layer {
         // Update the zone accordingly
         if (zoneClicked != null) {
             // Move the point around
-            int absX = x;
-            int absY = y;
 
             // Build arguments
             String[] args = zoneClicked.getValue().toString().trim().split("_");
@@ -88,8 +86,8 @@ public class ZoneLayer extends Layer {
             int zoneY2 = Integer.parseInt(args[3]);
 
             // Update the actual values
-            int diffX = absX - origX;
-            int diffY = absY - origY;
+            int diffX = x - origX;
+            int diffY = y - origY;
 
             int margin = 12;
             // Check if it is in a corner
@@ -116,8 +114,8 @@ public class ZoneLayer extends Layer {
                 zoneY2 += diffY;
             }
 
-            origX = absX;
-            origY = absY;
+            origX = x;
+            origY = y;
 
             // Update it
             String builtArg = zoneX1 + "_" + zoneY1 + "_" + zoneX2 + "_" + zoneY2;
@@ -127,11 +125,9 @@ public class ZoneLayer extends Layer {
     }
 
     public void mouseDown(Map map, int x, int y) {
-        int absX = x;
-        int absY = y;
 
-        origX = absX;
-        origY = absY;
+        origX = x;
+        origY = y;
 
         int minZoneSize = Integer.MAX_VALUE;
 
@@ -151,8 +147,8 @@ public class ZoneLayer extends Layer {
             int height = zoneY2 - zoneY1;
             int size = width * height;
 
-            if (minZoneSize > size && absX > zoneX1 && absX < zoneX2
-                    && absY > zoneY1 && absY < zoneY2) {
+            if (minZoneSize > size && x > zoneX1 && x < zoneX2
+                    && y > zoneY1 && y < zoneY2) {
                 minZoneSize = size;
                 zoneClicked = values;
             }

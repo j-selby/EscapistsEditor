@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 
@@ -27,7 +28,7 @@ public class MapRendererComponent extends JPanel {
     private String view = "World";
     private MapRenderer renderer;
 
-    public MapRendererComponent(final Map map, ClickListener clickListener, MouseMotionListener motionListener) {
+    public MapRendererComponent(final Map map, MouseListener clickListener, MouseMotionListener motionListener) {
         this.mapToEdit = map;
 
         addMouseListener(clickListener);

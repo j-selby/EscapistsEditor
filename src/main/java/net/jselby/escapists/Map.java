@@ -1,7 +1,6 @@
 package net.jselby.escapists;
 
 import net.jselby.escapists.utils.BlowfishCompatEncryption;
-import org.apache.commons.io.IOUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -436,7 +435,8 @@ public class Map {
         // Save it
         File temp = new File(".temp.map");
         try (FileOutputStream out = new FileOutputStream(temp)) {
-            IOUtils.write(allSections, out);
+            out.write(allSections.getBytes());
+            out.flush();
         }
         byte[] encryptedBytes = BlowfishCompatEncryption.encrypt(temp);
         temp.delete();

@@ -5,7 +5,6 @@ import com.beust.jcommander.Parameter;
 import net.jselby.escapists.editor.RenderView;
 import net.jselby.escapists.utils.BlowfishCompatEncryption;
 import net.jselby.escapists.utils.SteamFinder;
-import org.apache.commons.io.IOUtils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -106,7 +105,17 @@ public class EscapistsEditor {
             @Override
             public void run() {
                 try {
-                    String newVersion = IOUtils.toString(new URL("http://escapists.jselby.net/version.txt")).trim();
+                    // Read in the Stream
+                    InputStream in = new URL("http://escapists.jselby.net/version.txt").openStream();
+                    byte[] buffer = new byte[1024];
+                    int len = 0;
+                    ByteArrayOutputStream out = new ByteArrayOutputStream();
+                    while((len = in.read(buffer)) != -1) {
+                        out.write(buffer, 0, len);
+                    }
+                    in.close();
+
+                    String newVersion = new String(out.toByteArray()).trim();
                     String message = "";
                     if (newVersion.contains("\n")) {
                         message = newVersion.split("\n")[1];
@@ -176,7 +185,8 @@ public class EscapistsEditor {
         File decryptedMap = new File(name.split("\\.")[0] + ".decrypted.map");
         System.out.println("Decrypting \"" + name + " to \"" + decryptedMap.getPath() + "\"...");
         try (FileOutputStream out = new FileOutputStream(decryptedMap)) {
-            IOUtils.write(content, out);
+            out.write(content.getBytes());
+            out.flush();
         }
     }
 
@@ -239,7 +249,8 @@ public class EscapistsEditor {
         }
         System.out.println("Decrypting \"" + name + " to \"" + decryptedMap.getPath() + "\"...");
         try (FileOutputStream out = new FileOutputStream(decryptedMap)) {
-            IOUtils.write(content, out);
+            out.write(content);
+            out.flush();
         }
     }
 

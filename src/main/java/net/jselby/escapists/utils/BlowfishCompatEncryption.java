@@ -3,7 +3,6 @@ package net.jselby.escapists.utils;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 
 /**

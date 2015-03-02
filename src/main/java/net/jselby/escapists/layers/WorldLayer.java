@@ -18,7 +18,7 @@ public class WorldLayer extends Layer {
         // Draw the ground texture
         g.drawImage(ground, null, 0, 0);
 
-        genericRender(map, renderer, image, g, tileCache, tiles, ground, 1);
+        genericRender(map, image, g, tileCache, tiles, 1);
     }
 
     public String getLayerName() {

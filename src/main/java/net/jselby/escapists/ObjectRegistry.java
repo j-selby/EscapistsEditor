@@ -184,7 +184,7 @@ public class ObjectRegistry {
 
         /**
          * Basic constructor for all objects in a ENUM
-         * @param id
+         * @param id The ID of the object
          */
         Objects(int id) {
             this.id = id;
@@ -192,7 +192,7 @@ public class ObjectRegistry {
 
         /**
          * Basic constructor for all objects in a ENUM
-         * @param id
+         * @param id The ID of the object
          */
         Objects(int id, double drawXRelative, double drawYRelative) {
             this.id = id;

@@ -19,13 +19,12 @@ public abstract class Layer {
                        BufferedImage tiles,
                        BufferedImage ground);
 
-    protected void genericRender(Map map, MapRenderer renderer,
+    protected void genericRender(Map map,
 
                                  BufferedImage image, Graphics2D g,
 
                                  java.util.Map<Integer, BufferedImage> tileCache,
                                  BufferedImage tiles,
-                                 BufferedImage ground,
 
                                  int layer) {
         BufferedImage lighting =

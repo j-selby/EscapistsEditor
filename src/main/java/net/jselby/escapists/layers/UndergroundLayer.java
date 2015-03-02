@@ -19,7 +19,7 @@ public class UndergroundLayer extends Layer {
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, image.getWidth(), image.getHeight());
 
-        genericRender(map, renderer, image, g, tileCache, tiles, ground, 0);
+        genericRender(map, image, g, tileCache, tiles, 0);
     }
 
     public String getLayerName() {

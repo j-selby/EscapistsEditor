@@ -28,7 +28,7 @@ public class SteamFinder {
      * Discovers a steam installation.
      *
      * @return A steam installation, or null if one was not found.
-     * @param editor
+     * @param editor The editor to use for generating prompts
      */
     public static File getSteamPath(EscapistsEditor editor) {
         // TODO: Support platforms other then Windows.
@@ -90,7 +90,7 @@ public class SteamFinder {
             if (escapistsTest.exists()) {
                 return resultFile;
             } else {
-                editor.fatalError(new Exception("Invalid directory (No TheEscapists.exe)"));
+                EscapistsEditor.fatalError(new Exception("Invalid directory (No TheEscapists.exe)"));
             }
         }
 

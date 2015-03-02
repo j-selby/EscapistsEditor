@@ -207,7 +207,9 @@ public class EscapistsEditor {
 
         File parent = new File("renders");
         if (!parent.exists()) {
-            parent.mkdir();
+            if (!parent.mkdir()) {
+                fatalError("Failed to create output directory: \"" + parent.getPath() + "\".");
+            }
         }
         File outputfile = new File(parent, rawName.toLowerCase() + ".png");
         ImageIO.write(image, "png", outputfile);
@@ -250,8 +252,6 @@ public class EscapistsEditor {
             name += ".map";
         }
 
-        String rawName = new File(name).getName().split("\\.")[0];
-
         File mapPath = new File(name);
 
         if (!mapPath.exists()) {
@@ -270,7 +270,7 @@ public class EscapistsEditor {
             JOptionPane.showMessageDialog(null, "Failed to load resources.");
             System.exit(1);
         }
-        RenderView view = new RenderView(this, map);
+        new RenderView(this, map);
         if (oldView != null) {
             oldView.dispose();
         }

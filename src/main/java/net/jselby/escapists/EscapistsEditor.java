@@ -158,7 +158,7 @@ public class EscapistsEditor {
     }
 
     public void dump(String name) throws IOException {
-        if (!name.endsWith(".cmap") && !name.endsWith(".map")) {
+        if (!name.contains(".cmap") && !name.contains(".map")) {
             name += ".map";
         }
 
@@ -181,7 +181,7 @@ public class EscapistsEditor {
     }
 
     public void render(String name) throws IOException {
-        if (!name.endsWith(".cmap") && !name.endsWith(".map")) {
+        if (!name.contains(".cmap") && !name.contains(".map")) {
             name += ".map";
         }
 
@@ -215,7 +215,7 @@ public class EscapistsEditor {
     }
 
     private void encrypt(String name, boolean install) throws IOException {
-        if (!name.endsWith(".cmap") && !name.endsWith(".map")) {
+        if (!name.contains(".cmap") && !name.contains(".map")) {
             name += ".map";
         }
 
@@ -244,7 +244,7 @@ public class EscapistsEditor {
     }
 
     public void edit(String name, RenderView oldView) throws IOException {
-        if (!name.endsWith(".cmap") && !name.endsWith(".map")) {
+        if (!name.contains(".cmap") && !name.contains(".map")) {
             name += ".map";
         }
 

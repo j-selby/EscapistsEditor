@@ -3,6 +3,7 @@ package net.jselby.escapists;
 import net.jselby.escapists.utils.StringUtils;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 /**
  * A world object is a editable entity in the world, which can be interacted with, open, close, or configure
@@ -112,9 +113,25 @@ public abstract class WorldObject {
 
         @Override
         public void draw(Graphics2D g, Graphics2D gLighting) {
+            // Try to grab the texture for this asset
+            BufferedImage img = asWorldDictionary() != null ? asWorldDictionary().getTexture() : null;
+            if (img != null) {
+                int relativeDrawX = (int) (asWorldDictionary().getDrawX() * 16);
+                int relativeDrawY = (int) (asWorldDictionary().getDrawY() * 16);
+                g.drawImage(img,
+                        null,
+                        getX() * 16 + relativeDrawX,
+                        getY() * 16 + relativeDrawY);
+            } else {
+                if (asWorldDictionary() != null
+                        && asWorldDictionary().name().toLowerCase().startsWith("ai")
+                        && !EscapistsEditor.showGUI) {
+                    return;
+                }
                 g.setColor(new Color(1f, 0f, 0f, 1f));
                 g.drawRect(getX() * 16, getY() * 16, 16, 16);
                 g.drawString(getID() + "", getX() * 16 + 2, getY() * 16 + 12);
+            }
         }
     }
 }

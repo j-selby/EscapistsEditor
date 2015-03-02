@@ -1,9 +1,9 @@
 package net.jselby.escapists;
 
-import net.jselby.escapists.objects.AIRollCall;
-import net.jselby.escapists.objects.Light;
-import net.jselby.escapists.objects.VentMarker;
+import net.jselby.escapists.objects.*;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ConcurrentHashMap;
@@ -16,7 +16,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ObjectRegistry {
 
     private static final Class<? extends WorldObject>[] CUSTOM_CLASSES = new Class[] {
-            AIRollCall.class,
             Light.class,
             VentMarker.class
     };
@@ -71,8 +70,8 @@ public class ObjectRegistry {
         BED(1),
         CHAIR(2),
         TOILET(3),
-        OVEN(4),
-        WASHING_MACHINE(5),
+        OVEN(4, 0, -1),
+        WASHING_MACHINE(5, 0, -1),
         PERSONAL_DESK(9),
         FREEZER(10),
         SERVING_TABLE(11),
@@ -97,12 +96,11 @@ public class ObjectRegistry {
         SOLITARY_BED(59),
         ROOF_SPOTLIGHTS(60),
         PRISONER_STASH(61),
-        JUNGLE_CHECKPOINT_GUARD(62),
+        JUNGLE_CHECKPOINT_GUARD(62, 0, -1),
         GENERATOR(65),
-        CABINET(68),
+        CABINET(68, 0, -1),
         VISITATION_GUEST_SEAT(70),
         VISITATION_PLAYER_SEAT(71),
-        ISLAND_DOCK(72),
         PAYPHONE(74),
         CABLE_TV(87),
         SUN_LOUNGER(88),
@@ -114,10 +112,10 @@ public class ObjectRegistry {
         JOB_PREPARED_WOOD(42),
         JOB_RAW_METAL(43),
         JOB_PREPARED_METAL(44),
-        JOB_METAL_TOOLS(45),
+        JOB_METAL_TOOLS(45, 0, -1),
         JOB_SELECTION(46),
         JOB_CLEANING_SUPPLIES(47),
-        JOB_DELIVERIES_TRUCK(78),
+        JOB_DELIVERIES_TRUCK(78, -1.5, -1),
         JOB_FABRIC_CHEST(79),
         JOB_CLOTHING_STORAGE(80),
         JOB_BOOK_CHEST(81),
@@ -143,17 +141,18 @@ public class ObjectRegistry {
         DOOR_TAILORSHOP(85),
         DOOR_DELIVERIES(86),
         DOOR_JUNGLE_ENTRANCE(95),
+        DOOR_VENT_ORANGE(103),
 
         // Training
-        TRAINING_BOOKSHELF(6),
+        TRAINING_BOOKSHELF(6, 0, -1),
         TRAINING_TREADMILL(7),
         TRAINING_WEIGHT(8),
         TRAINING_INTERNET(69),
         TRAINING_JOGGING(90),
         TRAINING_PRESSUPS(91),
         TRAINING_SKIPPING(96),
-        TRAINING_PUNCHBAG(97),
-        TRAINING_SPEEDBAG(98),
+        TRAINING_PUNCHBAG(97, 0, -1),
+        TRAINING_SPEEDBAG(98, 0, -1),
         TRAINING_CHINUP(102),
 
         // Jeep
@@ -171,11 +170,17 @@ public class ObjectRegistry {
         AI_WP_GUARD_MEALS(22),
         AI_WP_PRISONER_MEALS(23),
         AI_WP_GUARD_EXERCISE(39),
+        AI_NPC_SPAWN(72),
         AI_WP_EMPLOYMENT_OFFICER(73),
         AI_WP_DOCTOR_WORK(94),
         ;
 
         private final int id;
+        private double drawXRelative;
+        private double drawYRelative;
+
+        private BufferedImage texture;
+        private boolean textureLoaded;
 
         /**
          * Basic constructor for all objects in a ENUM
@@ -185,8 +190,45 @@ public class ObjectRegistry {
             this.id = id;
         }
 
+        /**
+         * Basic constructor for all objects in a ENUM
+         * @param id
+         */
+        Objects(int id, double drawXRelative, double drawYRelative) {
+            this.id = id;
+            this.drawXRelative = drawXRelative;
+            this.drawYRelative = drawYRelative;
+        }
+
         public int getID() {
             return id;
+        }
+
+        public double getDrawX() {
+            return drawXRelative;
+        }
+
+        public double getDrawY() {
+            return drawYRelative;
+        }
+
+        public BufferedImage getTexture() {
+            if (textureLoaded) {
+                return texture;
+            }
+
+            textureLoaded = true;
+
+            // Load it, if possible
+            try {
+                texture = ImageIO.read(getClass()
+                        .getResource("/objects/" + name().toLowerCase() + ".png"));
+            } catch (IllegalArgumentException ignored) {
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return texture;
         }
 
         public WorldObject asWorldObject(int x, int y) {

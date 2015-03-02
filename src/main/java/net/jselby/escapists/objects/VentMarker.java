@@ -3,6 +3,7 @@ package net.jselby.escapists.objects;
 import net.jselby.escapists.WorldObject;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 /**
  * Marks where vents are.
@@ -35,6 +36,16 @@ public class VentMarker extends WorldObject {
 
     @Override
     public void draw(Graphics2D g, Graphics2D gLighting) {
+        BufferedImage img = asWorldDictionary() != null ? asWorldDictionary().getTexture() : null;
+        if (img != null) {
+            int relativeDrawX = (int) (asWorldDictionary().getDrawX() * 16);
+            int relativeDrawY = (int) (asWorldDictionary().getDrawY() * 16);
+            g.drawImage(img,
+                    null,
+                    getX() * 16 + relativeDrawX,
+                    getY() * 16 + relativeDrawY);
+        }
+
         int x1 = getX() * 16;
         int y1 = getY() * 16;
         int x2 = x1 + 16;

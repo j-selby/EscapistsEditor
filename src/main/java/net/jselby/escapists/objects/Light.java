@@ -41,7 +41,7 @@ public class Light extends WorldObject {
 
         Point2D center = new Point2D.Float(centerX, centerY);
         float[] dist = {0.0f, 0.2f, 0.9f};
-        Color[] colors = {new Color(1f, 1f, 1f, 0.7f), new Color(1f, 1f, 1f, 0.6f), new Color(1f, 1f, 1f, 0f)};
+        Color[] colors = {new Color(1f, 1f, 1f, 0.4f), new Color(1f, 1f, 1f, 0.3f), new Color(1f, 1f, 1f, 0f)};
         RadialGradientPaint p =
                 new RadialGradientPaint(center, (radius - 1) * 16, dist,
                         colors, MultipleGradientPaint.CycleMethod.NO_CYCLE);

@@ -4,6 +4,7 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import net.jselby.escapists.editor.RenderView;
 import net.jselby.escapists.utils.BlowfishCompatEncryption;
+import net.jselby.escapists.utils.IOUtils;
 import net.jselby.escapists.utils.SteamFinder;
 
 import javax.imageio.ImageIO;
@@ -20,7 +21,7 @@ import java.util.ArrayList;
  * @author j_selbys
  */
 public class EscapistsEditor {
-    public static final String VERSION = "1.2.3";
+    public static final String VERSION = "1.3.0";
     public static final boolean DEBUG = false;
 
     // -- Arguments
@@ -59,7 +60,7 @@ public class EscapistsEditor {
      * Create a new default registry for objects
      */
     public ObjectRegistry registry;
-    private static boolean showGUI;
+    public static boolean showGUI;
 
     private void start() {
         System.out.println("The Escapists Editor v" + VERSION);
@@ -105,17 +106,7 @@ public class EscapistsEditor {
             @Override
             public void run() {
                 try {
-                    // Read in the Stream
-                    InputStream in = new URL("http://escapists.jselby.net/version.txt").openStream();
-                    byte[] buffer = new byte[1024];
-                    int len = 0;
-                    ByteArrayOutputStream out = new ByteArrayOutputStream();
-                    while((len = in.read(buffer)) != -1) {
-                        out.write(buffer, 0, len);
-                    }
-                    in.close();
-
-                    String newVersion = new String(out.toByteArray()).trim();
+                    String newVersion = IOUtils.toString(new URL("http://escapists.jselby.net/version.txt")).trim();
                     String message = "";
                     if (newVersion.contains("\n")) {
                         message = newVersion.split("\n")[1];

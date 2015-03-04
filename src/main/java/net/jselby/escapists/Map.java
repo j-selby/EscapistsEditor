@@ -54,7 +54,7 @@ public class Map {
                String filename, String content) throws IOException {
         this.editor = editor;
         this.filename = filename;
-        System.out.println("Decoding map \"" + filename + "\"...");
+        System.out.println(" - Decoding map \"" + filename + "\"...");
 
         // Get the raw filename
         String rawName = new File(filename).getName().split("\\.")[0];
@@ -80,7 +80,7 @@ public class Map {
                 continue;
 
             } else if (command.startsWith("[")) {
-                System.out.println("Map decode warning: Invalid syntax (\"[\") @ line " + lineNum);
+                System.out.println(" > Map decode warning: Invalid syntax (\"[\") @ line " + lineNum);
                 continue;
 
             }
@@ -88,7 +88,7 @@ public class Map {
             // OK: Read this key
             if (line.contains("=")) {
                 if (currentSection == null) {
-                    System.out.println("Map decode warning: No section defined @ line " + lineNum);
+                    System.out.println(" > Map decode warning: No section defined @ line " + lineNum);
                     continue;
                 }
 
@@ -100,7 +100,7 @@ public class Map {
 
             } else {
                 if (line.trim().length() > 0) {
-                    System.out.println("Map decode warning: Invalid syntax (no \"*=*\" or \"[*]\") @ line " + lineNum);
+                    System.out.println(" > Map decode warning: Invalid syntax (no \"*=*\" or \"[*]\") @ line " + lineNum);
                 }
             }
         }
@@ -113,7 +113,7 @@ public class Map {
 
         } else {
             tiles = new int[0][0];
-            System.out.println("Map decode warning: No tiles found.");
+            System.out.println(" > Map decode warning: No tiles found.");
         }
 
         if (sections.containsKey("Vents")) {
@@ -122,7 +122,7 @@ public class Map {
             vents = compileIDSection("Vents", section);
         } else {
             vents = new int[0][0];
-            System.out.println("Map decode warning: No vents found.");
+            System.out.println(" > Map decode warning: No vents found.");
         }
 
         if (sections.containsKey("Roof")) {
@@ -131,7 +131,7 @@ public class Map {
             roof = compileIDSection("Roof", section);
         } else {
             roof = new int[0][0];
-            System.out.println("Map decode warning: No roof found.");
+            System.out.println(" > Map decode warning: No roof found.");
         }
 
         if (sections.containsKey("Underground")) {
@@ -140,7 +140,7 @@ public class Map {
             underground = compileIDSection("Underground", section);
         } else {
             underground = new int[0][0];
-            System.out.println("Map decode warning: No underground found.");
+            System.out.println(" > Map decode warning: No underground found.");
         }
 
 
@@ -172,27 +172,27 @@ public class Map {
                             | NoSuchMethodException
                             | IllegalAccessException
                             | InstantiationException e) {
-                        System.err.println("Map decode warning: Failed to create entity: " + id + " @ "
+                        System.err.println(" > Map decode warning: Failed to create entity: " + id + " @ "
                                 + x + ":" + y + " (" + (x * 16) + ":" + (y * 16) + ")");
                         e.printStackTrace();
                     }
                 } else {
                     objects.add(new WorldObject.Unknown(x, y, id, level));
                     if (EscapistsEditor.DEBUG) {
-                        System.out.println("Map decode warning: Unknown entity: " + id + " @ "
+                        System.out.println(" > Map decode warning: Unknown entity: " + id + " @ "
                                 + x + ":" + y + " (" + (x * 16) + ":" + (y * 16) + ")");
                     }
                 }
             }
         } else {
-            System.out.println("Map decode warning: No objects/entities found.");
+            System.out.println(" > Map decode warning: No objects/entities found.");
         }
 
         // Decode tiles for this
         File tilesFile = new File(editor.escapistsPath, "Data" +
                 File.separator + "images" + File.separator + "tiles_" + rawName + ".gif");
         if (!tilesFile.exists()) {
-            System.out.println("No tiles found for \"" + rawName + "\". Using \"perks\".");
+            System.out.println(" > No tiles found for \"" + rawName + "\". Using \"perks\".");
             tilesFile = new File(editor.escapistsPath, "Data" +
                     File.separator + "images" + File.separator + "tiles_perks.gif");
         }
@@ -200,7 +200,7 @@ public class Map {
         File background = new File(editor.escapistsPath, "Data" +
                 File.separator + "images" + File.separator + "ground_" + rawName + ".gif");
         if (!background.exists()) {
-            System.out.println("No background found for \"" + rawName + "\". Using \"perks\".");
+            System.out.println(" > No background found for \"" + rawName + "\". Using \"perks\".");
             background = new File(editor.escapistsPath, "Data" +
                     File.separator + "images" + File.separator + "ground_perks.gif");
         }
@@ -208,6 +208,8 @@ public class Map {
         // Decrypt the tiles themselves
         tilesImage = ImageIO.read(new ByteArrayInputStream(BlowfishCompatEncryption.decrypt(tilesFile)));
         backgroundImage = ImageIO.read(background);
+
+        System.out.println(" > Done.");
     }
 
     private int[][] compileIDSection(String name, java.util.Map<String, Object> section) {

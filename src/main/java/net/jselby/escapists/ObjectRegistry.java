@@ -1,6 +1,7 @@
 package net.jselby.escapists;
 
-import net.jselby.escapists.objects.*;
+import net.jselby.escapists.objects.Light;
+import net.jselby.escapists.objects.VentMarker;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

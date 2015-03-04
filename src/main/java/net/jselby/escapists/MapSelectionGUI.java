@@ -77,7 +77,7 @@ public class MapSelectionGUI extends JFrame {
                         @Override
                         public void run() {
                             try {
-                                editor.edit(fc.getSelectedFile().getAbsolutePath(), null);
+                                editor.edit(fc.getSelectedFile().getAbsolutePath());
                             } catch (Exception e1) {
                                 JOptionPane.
                                         showConfirmDialog(MapSelectionGUI.this,
@@ -111,13 +111,9 @@ public class MapSelectionGUI extends JFrame {
                     @Override
                     public void run() {
                         try {
-                            editor.edit((String) mapsSelector.getSelectedItem(), null);
+                            editor.edit((String) mapsSelector.getSelectedItem());
                         } catch (IOException e1) {
                             e1.printStackTrace();
-                        }
-
-                        if (oldView != null) {
-                            oldView.dispose();
                         }
 
                         dispose();

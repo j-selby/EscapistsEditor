@@ -6,7 +6,7 @@
 
     <groupId>net.jselby.escapists</groupId>
     <artifactId>EscapistsEditor</artifactId>
-    <version>1.3.0-SNAPSHOT</version>
+    <version>1.4.0-SNAPSHOT</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -44,12 +44,6 @@
                             </transformers>
 
                             <filters>
-                                <filter>
-                                    <artifact>net.jselby.escapists:EscapistsEditor</artifact>
-                                    <includes>
-                                        <include>**/**</include>
-                                    </includes>
-                                </filter>
                                 <filter>
                                     <artifact>*:*</artifact>
                                     <excludes>

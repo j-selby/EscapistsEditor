@@ -21,7 +21,7 @@ import java.util.ArrayList;
  * @author j_selbys
  */
 public class EscapistsEditor {
-    public static final String VERSION = "1.3.0";
+    public static final String VERSION = "1.4.0";
     public static final boolean DEBUG = false;
 
     // -- Arguments
@@ -61,6 +61,9 @@ public class EscapistsEditor {
      */
     public ObjectRegistry registry;
     public static boolean showGUI;
+    private RenderView view;
+
+    public static String updateMessage;
 
     private void start() {
         System.out.println("The Escapists Editor v" + VERSION);
@@ -112,7 +115,9 @@ public class EscapistsEditor {
                         message = newVersion.split("\n")[1];
                         newVersion = newVersion.split("\n")[0].trim();
                     }
-                    if (!newVersion.equalsIgnoreCase(VERSION)) {
+                    if (!newVersion.equalsIgnoreCase(VERSION) && newVersion.length() != 0) {
+                        updateMessage = newVersion + "\n" + message;
+
                         dialog("New version found (" + newVersion + "). " +
                                 "Download it at http://escapists.jselby.net\n" + message);
                     }
@@ -133,7 +138,11 @@ public class EscapistsEditor {
     }
 
     public void dialog(String s) {
-        System.out.println(s);
+        System.out.println(" - Dialog: ");
+        for (String split : s.split("\n")) {
+            System.out.println(" > " + split);
+        }
+
         if (showGUI) {
             JOptionPane.showMessageDialog(null, s);
         }
@@ -158,7 +167,7 @@ public class EscapistsEditor {
     }
 
     public void dump(String name) throws IOException {
-        if (!name.contains(".cmap") && !name.contains(".map")) {
+        if (!name.toLowerCase().contains(".cmap") && !name.toLowerCase().contains(".map")) {
             name += ".map";
         }
 
@@ -182,7 +191,7 @@ public class EscapistsEditor {
     }
 
     public void render(String name) throws IOException {
-        if (!name.contains(".cmap") && !name.contains(".map")) {
+        if (!name.toLowerCase().contains(".cmap") && !name.toLowerCase().contains(".map")) {
             name += ".map";
         }
 
@@ -218,7 +227,7 @@ public class EscapistsEditor {
     }
 
     private void encrypt(String name, boolean install) throws IOException {
-        if (!name.contains(".cmap") && !name.contains(".map")) {
+        if (!name.toLowerCase().contains(".cmap") && !name.toLowerCase().contains(".map")) {
             name += ".map";
         }
 
@@ -247,8 +256,26 @@ public class EscapistsEditor {
         }
     }
 
-    public void edit(String name, RenderView oldView) throws IOException {
-        if (!name.contains(".cmap") && !name.contains(".map")) {
+    public void edit(byte[] decryptedBytes) throws IOException {
+        String contents = new String(decryptedBytes);
+
+        Map map = new Map(this, registry, "", contents);
+
+        if (map.getTilesImage() == null && showGUI) {
+            JOptionPane.showMessageDialog(null, "Failed to load resources.");
+            System.exit(1);
+        }
+
+        if (view != null) {
+            view.setEnabled(true);
+            view.setMap(map);
+        } else {
+            view = new RenderView(this, map);
+        }
+    }
+
+    public void edit(String name) throws IOException {
+        if (!name.toLowerCase().contains(".cmap") && !name.toLowerCase().contains(".map")) {
             name += ".map";
         }
 
@@ -270,9 +297,11 @@ public class EscapistsEditor {
             JOptionPane.showMessageDialog(null, "Failed to load resources.");
             System.exit(1);
         }
-        new RenderView(this, map);
-        if (oldView != null) {
-            oldView.dispose();
+        if (view != null) {
+            view.setEnabled(true);
+            view.setMap(map);
+        } else {
+            view = new RenderView(this, map);
         }
     }
 
@@ -317,11 +346,7 @@ public class EscapistsEditor {
                     !editor.renderAll) {
                 // Select a map through a GUI first
                 showGUI = true;
-                RenderView view = new RenderView(editor, null);
-                view.setEnabled(false);
-                MapSelectionGUI gui = new MapSelectionGUI(editor);
-                gui.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-                gui.setOldView(view);
+                editor.view = new RenderView(editor, null);
             }
 
             if (editor.decryptFile != null) {
@@ -342,7 +367,7 @@ public class EscapistsEditor {
                 }
             }
             if (editor.editMap != null) {
-                editor.edit(editor.editMap, null);
+                editor.edit(editor.editMap);
             }
         } catch (Exception e) {
            fatalError(e);

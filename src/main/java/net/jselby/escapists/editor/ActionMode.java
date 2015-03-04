@@ -15,21 +15,13 @@ public enum ActionMode {
      */
     DELETE_OBJECT("Delete Object"),
     /**
-     * Toolbar option for discovering info about objects.
-     */
-    INFO_OBJECT("Object Info"),
-    /**
      * Toolbar option for setting tiles within a map.
      */
     SET_TILE("Set Tile"),
     /**
      * Toolbar option for editing map zone.
      */
-    ZONE_EDIT("Edit Zones"),
-    /**
-     * Toolbar option for clearing all zones, which provides an effective new map.
-     */
-    CLEAR_ALL_TILES("Clear ALL Tiles");
+    ZONE_EDIT("Edit Zones");
 
     private String title;
 

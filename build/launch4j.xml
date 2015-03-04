@@ -2,7 +2,7 @@
 <launch4jConfig>
   <dontWrapJar>false</dontWrapJar>
   <headerType>gui</headerType>
-  <jar>..\target\EscapistsEditor-1.4.0-SNAPSHOT.jar</jar>
+  <jar>..\target\EscapistsEditor-1.4.1-SNAPSHOT.jar</jar>
   <outfile>.\EscapistsEditor-1.0.exe</outfile>
   <errTitle>Escapists Map Editor</errTitle>
   <cmdLine></cmdLine>
@@ -30,12 +30,12 @@
     <timeoutErr>true</timeoutErr>
   </splash>
   <versionInfo>
-    <fileVersion>1.4.0.0</fileVersion>
-    <txtFileVersion>1.4.0.0</txtFileVersion>
+    <fileVersion>1.4.1.0</fileVersion>
+    <txtFileVersion>1.4.1.0</txtFileVersion>
     <fileDescription>Escapists Map Editor</fileDescription>
     <copyright>Editor: jselby, Game: Mouldy Toof Studios, Team17</copyright>
-    <productVersion>1.4.0.0</productVersion>
-    <txtProductVersion>1.4.0.0</txtProductVersion>
+    <productVersion>1.4.1.0</productVersion>
+    <txtProductVersion>1.4.1.0</txtProductVersion>
     <productName>Escapists Map Editor</productName>
     <companyName></companyName>
     <internalName>net.jselby.escapists.EscapistsEditor</internalName>

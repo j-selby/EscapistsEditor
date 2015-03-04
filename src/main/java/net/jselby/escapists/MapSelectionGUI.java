@@ -88,10 +88,6 @@ public class MapSelectionGUI extends JFrame {
                                 System.exit(1);
                             }
 
-                            if (oldView != null) {
-                                oldView.dispose();
-                            }
-
                             dispose();
                         }
                     });

@@ -1,17 +1,19 @@
 package net.jselby.escapists.editor;
 
 import net.jselby.escapists.*;
+import net.jselby.escapists.utils.IOUtils;
 import net.jselby.escapists.utils.StringUtils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.ArrayList;
 
 /**
@@ -21,8 +23,11 @@ import java.util.ArrayList;
  */
 public class RenderView extends JFrame {
     private final MapRendererComponent renderer;
-    private final JTextArea console;
-    private final JComboBox tileSelect;
+
+    private final JPanel sidebar;
+    private JScrollPane tileSelect;
+    private JLabel selectedTile;
+
     private final JPanel toolOptions;
 
     // Tools
@@ -37,12 +42,12 @@ public class RenderView extends JFrame {
     private ActionMode mode = ActionMode.CREATE_OBJECT;
 
     private boolean showZone;
-    private java.util.Map.Entry<String, Object> selectedZoneElement;
     private String currentZone = "World";
+    private JPanel iconPanel;
 
-    public RenderView(final EscapistsEditor editor, final Map mapToEdit) throws IOException {
+    public RenderView(final EscapistsEditor editor, Map renderMap) throws IOException {
         this.editor = editor;
-        this.mapToEdit = mapToEdit;
+        this.mapToEdit = renderMap;
 
         // Configure the defaults
         // ID box
@@ -53,33 +58,115 @@ public class RenderView extends JFrame {
         }
         objectIds.add("Other...");
         id = new JComboBox(objectIds.toArray());
+        id.setFocusable(false);
+        id.setFont(new Font(Font.DIALOG, Font.PLAIN, 10));
         id.setSelectedIndex(0);
         id.setMaximumSize(new Dimension(150, 30));
 
         // Build tiles
-        ArrayList<Object> icons = new ArrayList<>();
-        icons.add(new ImageIcon(ImageIO.read(getClass().getResource("/defaulttile.png"))));
-        if (mapToEdit != null) {
-            BufferedImage tiles = mapToEdit.getTilesImage();
-            int tileCount = (tiles.getWidth() / 16) * (tiles.getHeight() / 16);
-            for (int i = 0; i < tileCount; i++) {
-                int tileX = (int) Math.floor(((double) i) / (tiles.getHeight() / 16));
-                int tileY = i - (tileX * (tiles.getHeight() / 16));
-
-                int absTileX = tileX * 16;
-                int absTileY = tileY * 16;
-
-                BufferedImage tileRender = tiles.getSubimage(absTileX, absTileY, 16, 16);
-                ImageIcon icon = new ImageIcon(tileRender, "1");
-                icons.add(icon);
-            }
-        }
-        tileSelect = new JComboBox(icons.toArray());
-        tileSelect.setSelectedIndex(0);
-        tileSelect.setMaximumSize(new Dimension(150, 30));
+        iconPanel = new JPanel();
+        tileSelect = new JScrollPane(iconPanel);
+        updateTiling();
 
         // Configure the view
-        setLayout(new BoxLayout(this.getContentPane(), BoxLayout.X_AXIS));
+        setLayout(new BorderLayout());
+
+        // Add a menu bar
+        final JMenuBar menuBar = new JMenuBar();
+        JMenu fileMenu = new JMenu("File");
+        fileMenu.add(new AbstractAction("New") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    editor.edit(IOUtils.toByteArray(
+                            getClass().getResource("/blank.decrypted.map")));
+                } catch (IOException e1) {
+                    EscapistsEditor.fatalError(e1);
+                }
+            }
+        });
+        fileMenu.add(new AbstractAction("Load...") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Save map
+                try {
+                    RenderView.this.setEnabled(false);
+                    new MapSelectionGUI(editor).setOldView(
+                            RenderView.this);
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
+        fileMenu.add(new AbstractAction("Save...") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Save map
+                // Get our target
+                JFileChooser fc = new JFileChooser();
+                int dialog = fc.showSaveDialog(RenderView.this);
+                if (JFileChooser.APPROVE_OPTION == dialog) {
+                    try {
+                        mapToEdit.save(fc.getSelectedFile());
+                    } catch (Exception error) {
+                        error.printStackTrace();
+                        editor.dialog(error.getMessage());
+                    }
+                }
+            }
+        });
+        fileMenu.addSeparator();
+        fileMenu.add(new AbstractAction("Exit") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0);
+            }
+        });
+
+        menuBar.add(fileMenu);
+        final JMenu propertiesMenu = new JMenu("Properties");
+
+        propertiesMenu.addMenuListener(new MenuListener() {
+            @Override
+            public void menuSelected(MenuEvent e) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (RenderView.this.mapToEdit != null) {
+                            new PropertiesDialog(RenderView.this, renderer, RenderView.this.mapToEdit);
+                        } else {
+                            editor.dialog("You must have a map loaded!");
+                        }
+                    }
+                });
+
+            }
+
+            public void menuDeselected(MenuEvent e) {}
+            public void menuCanceled(MenuEvent e) {}
+        });
+        menuBar.add(propertiesMenu);
+
+        JMenu aboutMenu = new JMenu("About");
+        aboutMenu.addMenuListener(new MenuListener() {
+            @Override
+            public void menuSelected(MenuEvent e) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        editor.dialog("Editor by jselby (http://jselby.net)\nGame by Mouldy Toof Studios & Team17");
+                    }
+                });
+            }
+
+            public void menuDeselected(MenuEvent e) {}
+            public void menuCanceled(MenuEvent e) {}
+        });
+        menuBar.add(aboutMenu);
+        menuBar.setAlignmentX(LEFT_ALIGNMENT);
+        menuBar.setOpaque(false);
+        menuBar.setPreferredSize(new Dimension(700, 20));
+        add(menuBar, BorderLayout.BEFORE_FIRST_LINE);
 
         // Add a small panel at the bottom for position etc
         final JPanel mousePosition = new JPanel() {
@@ -120,14 +207,8 @@ public class RenderView extends JFrame {
             public void mousePressed(MouseEvent e) {
                 // Get position
 
-                int newX = e.getX() / 16;
-                int newY = e.getY() / 16;
-                if (newX != x || newY != y) {
-                    x = newX;
-                    y = newY;
-                } else {
-                    return;
-                }
+                x = e.getX() / 16;
+                y = e.getY() / 16;
 
                 // Convert x & y with scaling
                 x = (int) (((float) x) / ((float) renderer.getZoomFactor()));
@@ -187,112 +268,107 @@ public class RenderView extends JFrame {
         scrollArea.setWheelScrollingEnabled(true);
         scrollArea.getHorizontalScrollBar().setUnitIncrement(16);
         scrollArea.getVerticalScrollBar().setUnitIncrement(16);
-        scrollArea.setPreferredSize(new Dimension(700, 600));
+        scrollArea.setPreferredSize(new Dimension(700, 580));
 
         // Create a wrapper for the area
         final JPanel scrollAreaWrapper = new JPanel();
         scrollAreaWrapper.setIgnoreRepaint(false);
         scrollAreaWrapper.setLayout(new BorderLayout());
-        scrollAreaWrapper.setPreferredSize(new Dimension(700, 600));
-        scrollAreaWrapper.add(scrollArea, BorderLayout.CENTER);
+        scrollAreaWrapper.setPreferredSize(new Dimension(700, 580));
 
         // Put it together
         mousePosition.setPreferredSize(new Dimension(700, 20));
         scrollAreaWrapper.add(scrollArea, BorderLayout.CENTER);
-        scrollAreaWrapper.add(mousePosition, BorderLayout.SOUTH);
+        scrollAreaWrapper.add(mousePosition, BorderLayout.NORTH);
         add(scrollAreaWrapper);
 
+        // Implement controls for this scrollArea
+        final int scrollIncrements = 16;
+        getRootPane().getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.VK_UNDEFINED), "moveRight");
+        getRootPane().getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.VK_UNDEFINED), "moveLeft");
+        getRootPane().getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, KeyEvent.VK_UNDEFINED), "moveUp");
+        getRootPane().getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, KeyEvent.VK_UNDEFINED), "moveDown");
+        getRootPane().getActionMap().put("moveRight", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Point position = scrollArea.getViewport().getViewPosition();
+                position.translate(scrollIncrements, 0);
+                if (position.getX() >= 0 && position.getY() >= 0
+                        && (position.getX() + scrollArea.getViewport().getWidth())
+                        < scrollArea.getHorizontalScrollBar().getMaximum()
+                        && (position.getY() + scrollArea.getViewport().getHeight())
+                        < scrollArea.getVerticalScrollBar().getMaximum()) {
+                    scrollArea.getViewport().setViewPosition(position);
+                }
+            }
+        });
+        getRootPane().getActionMap().put("moveLeft", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Point position = scrollArea.getViewport().getViewPosition();
+                position.translate(-scrollIncrements, 0);
+                if (position.getX() >= 0 && position.getY() >= 0
+                        && (position.getX() + scrollArea.getViewport().getWidth())
+                        < scrollArea.getHorizontalScrollBar().getMaximum()
+                        && (position.getY() + scrollArea.getViewport().getHeight())
+                        < scrollArea.getVerticalScrollBar().getMaximum()) {
+                    scrollArea.getViewport().setViewPosition(position);
+                }
+            }
+        });
+        getRootPane().getActionMap().put("moveUp", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Point position = scrollArea.getViewport().getViewPosition();
+                position.translate(0, -scrollIncrements);
+                if (position.getX() >= 0 && position.getY() >= 0
+                        && (position.getX() + scrollArea.getViewport().getWidth())
+                        < scrollArea.getHorizontalScrollBar().getMaximum()
+                        && (position.getY() + scrollArea.getViewport().getHeight())
+                        < scrollArea.getVerticalScrollBar().getMaximum()) {
+                    scrollArea.getViewport().setViewPosition(position);
+                }
+            }
+        });
+        getRootPane().getActionMap().put("moveDown", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Point position = scrollArea.getViewport().getViewPosition();
+                position.translate(0, scrollIncrements);
+                if (position.getX() >= 0 && position.getY() >= 0
+                        && (position.getX() + scrollArea.getViewport().getWidth())
+                        < scrollArea.getHorizontalScrollBar().getMaximum()
+                        && (position.getY() + scrollArea.getViewport().getHeight())
+                        < scrollArea.getVerticalScrollBar().getMaximum()) {
+                    scrollArea.getViewport().setViewPosition(position);
+                }
+            }
+        });
+
         // Toolbar
-        JPanel sidebar = new JPanel();
+        sidebar = new JPanel();
         sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
         Dimension sidebarSize = new Dimension(200, 600);
         sidebar.setPreferredSize(sidebarSize);
         sidebar.setMaximumSize(sidebarSize);
         sidebar.setMinimumSize(sidebarSize);
         sidebar.setAlignmentY(TOP_ALIGNMENT);
-        add(sidebar);
+        add(sidebar, BorderLayout.WEST);
 
-        // Toolbar textbox
-        console = new JTextArea();
-        console.setLineWrap(true);
-        console.setAutoscrolls(true);
-        console.setEditable(false);
-        // Redirect System.out
-        System.setOut(new PrintStream(new TextPanePrintStream(console)));
-        console.append("- Ready!\n");
-        console.append("- Escapists location: " + editor.escapistsPath + "\n");
-        console.append("- Escapists Editor v" + EscapistsEditor.VERSION + ", by jselby (http://jselby.net)\n");
+        sidebar.add(Box.createVerticalStrut(10));
 
-        JScrollPane scrollPane = new JScrollPane(console);
-        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        scrollPane.setMaximumSize(new Dimension(200, 200));
+        JLabel displayLabel = new JLabel("Display");
+        displayLabel.setAlignmentX(CENTER_ALIGNMENT);
+        displayLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
+        sidebar.add(displayLabel);
 
-        sidebar.add(scrollPane);
-        sidebar.add(Box.createVerticalStrut(20));
-
-        // Toolbar options
-        JPanel ioButtons = new JPanel();
-        ioButtons.setAlignmentX(CENTER_ALIGNMENT);
-        ioButtons.setLayout(new BoxLayout(ioButtons, BoxLayout.X_AXIS));
-        ioButtons.setMaximumSize(new Dimension(150, 50));
-        JButton loadMap = new JButton("Load...");
-        loadMap.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                // Save map
-                try {
-                    RenderView.this.setEnabled(false);
-                    new MapSelectionGUI(editor).setOldView(
-                            RenderView.this);
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
-            }
-        });
-        loadMap.setAlignmentX(CENTER_ALIGNMENT);
-        loadMap.setMinimumSize(new Dimension(70, 50));
-        loadMap.setHorizontalAlignment(SwingConstants.LEADING);
-        ioButtons.add(loadMap);
-
-        JButton saveMap = new JButton("Save...");
-        saveMap.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                // Save map
-                // Get our target
-                JFileChooser fc = new JFileChooser();
-                int dialog = fc.showSaveDialog(RenderView.this);
-                if (JFileChooser.APPROVE_OPTION == dialog) {
-                    try {
-                        mapToEdit.save(fc.getSelectedFile());
-                    } catch (Exception error) {
-                        error.printStackTrace();
-                        editor.dialog(error.getMessage());
-                    }
-                }
-            }
-        });
-        saveMap.setAlignmentX(CENTER_ALIGNMENT);
-        saveMap.setMinimumSize(new Dimension(70, 50));
-        saveMap.setHorizontalAlignment(SwingConstants.LEADING);
-        ioButtons.add(saveMap);
-        sidebar.add(ioButtons);
-
-        JButton properties = new JButton("Properties");
-        properties.setMinimumSize(new Dimension(150, 50));
-        properties.setAlignmentX(CENTER_ALIGNMENT);
-        properties.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new PropertiesDialog(RenderView.this, renderer, mapToEdit);
-            }
-        });
-        sidebar.add(properties);
+        sidebar.add(Box.createVerticalStrut(10));
 
         // View
         final JComboBox views = new JComboBox(new String[]{
             "Underground", "World", "Vents", "Roof"
         });
+        views.setFocusable(false);
         views.setSelectedIndex(1);
         views.setMaximumSize(new Dimension(150, 30));
         views.setAlignmentX(CENTER_ALIGNMENT);
@@ -304,6 +380,10 @@ public class RenderView extends JFrame {
                 renderer.refresh();
             }
         });
+        JLabel viewLabel = new JLabel("Layer");
+        viewLabel.setAlignmentX(CENTER_ALIGNMENT);
+        sidebar.add(viewLabel);
+        sidebar.add(Box.createVerticalStrut(10));
         sidebar.add(views);
 
         // Zoom
@@ -313,6 +393,7 @@ public class RenderView extends JFrame {
         sidebar.add(zoomLabel);
         final JSlider zoom = new JSlider(JSlider.HORIZONTAL,
                 1, 5, 3);
+        zoom.setFocusable(false);
         zoom.setMajorTickSpacing(1);
         zoom.addChangeListener(new ChangeListener() {
             @Override
@@ -340,6 +421,7 @@ public class RenderView extends JFrame {
 
         // Checkbox for rendering
         final JCheckBox showZones = new JCheckBox();
+        showZones.setFocusable(false);
         showZones.setText("Show Zones");
         showZones.addActionListener(new ActionListener() {
             @Override
@@ -356,6 +438,15 @@ public class RenderView extends JFrame {
         sidebar.add(showZones);
         sidebar.add(Box.createVerticalStrut(30));
 
+        JComponent seperator = (JComponent) Box.createRigidArea(new Dimension(150, 10));
+        seperator.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.BLACK));
+        sidebar.add(seperator);
+
+        JLabel toolLabel = new JLabel("Tools");
+        toolLabel.setAlignmentX(CENTER_ALIGNMENT);
+        toolLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
+        sidebar.add(toolLabel);
+        sidebar.add(Box.createVerticalStrut(10));
 
         // Tool chooser
         String[] rawModes = new String[ActionMode.values().length];
@@ -364,7 +455,8 @@ public class RenderView extends JFrame {
             rawModes[i] = values[i].getTitle();
         }
         final JComboBox petList = new JComboBox(rawModes);
-        petList.setSelectedIndex(0);
+        petList.setFocusable(false);
+        petList.setSelectedIndex(2);
         petList.setMaximumSize(new Dimension(150, 30));
         petList.addActionListener(new ActionListener() {
             @Override
@@ -387,7 +479,7 @@ public class RenderView extends JFrame {
         sidebar.add(toolOptions);
 
 
-        setMode(ActionMode.values()[0]);
+        setMode(ActionMode.values()[petList.getSelectedIndex()]);
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
@@ -406,16 +498,90 @@ public class RenderView extends JFrame {
                 UnsupportedLookAndFeelException e) {
             EscapistsEditor.fatalError(e);
         }
+
+        for (java.util.Map.Entry<Object, Object> entry : javax.swing.UIManager.getDefaults().entrySet()) {
+            Object key = entry.getKey();
+            Object value = javax.swing.UIManager.get(key);
+            if (value != null && value instanceof javax.swing.plaf.FontUIResource) {
+                javax.swing.plaf.FontUIResource f = new javax.swing.plaf.FontUIResource(Font.DIALOG, Font.PLAIN, 12);
+                javax.swing.UIManager.put(key, f);
+            }
+        }
+
         SwingUtilities.updateComponentTreeUI(this);
-        setVisible(true);
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                setVisible(true);
+            }
+        });
+    }
+
+    private void updateTiling() throws IOException {
+        ArrayList<Object> icons = new ArrayList<>();
+        icons.add(new ImageIcon(ImageIO.read(getClass().getResource("/defaulttile.png"))));
+        iconPanel.removeAll();
+        iconPanel.setLayout(new GridLayout(0, 4));
+        tileSelect.setPreferredSize(new Dimension(150, 250));
+        if (mapToEdit != null) {
+            BufferedImage tiles = mapToEdit.getTilesImage();
+            int tileCount = (tiles.getWidth() / 16) * (tiles.getHeight() / 16);
+            int realSize = (150) / 4 - (5 * 2);
+            for (int i = -1; i < tileCount; i++) {
+                int tileX = (int) Math.floor(((double) i) / (tiles.getHeight() / 16));
+                int tileY = i - (tileX * (tiles.getHeight() / 16));
+
+                int absTileX = tileX * 16;
+                int absTileY = tileY * 16;
+
+                BufferedImage newImage;
+                if (i > -1) {
+                    BufferedImage tileRender = tiles.getSubimage(absTileX, absTileY, 16, 16);
+                    // Resize
+                    newImage = new BufferedImage(realSize, realSize, BufferedImage.TYPE_INT_RGB);
+                    Graphics g = newImage.createGraphics();
+                    g.drawImage(tileRender, 0, 0, realSize, realSize, null);
+                    g.dispose();
+                } else {
+                    newImage = ImageIO.read(getClass().getResource("/defaulttile.png"));
+                }
+
+                ImageIcon icon = new ImageIcon(newImage, "1");
+                final JLabel representation = new JLabel(icon);
+                representation.setName("Tile " + (i + 1));
+                representation.setMaximumSize(new Dimension(realSize, realSize));
+                representation.setMinimumSize(new Dimension(realSize, realSize));
+                representation.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+                representation.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mousePressed(MouseEvent e) {
+                        if (selectedTile != null) {
+                            selectedTile.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+                        }
+                        selectedTile = representation;
+                        representation.setBorder(BorderFactory.createMatteBorder(5, 5, 5, 5, Color.BLUE));
+                    }
+                });
+                if (i == -1) {
+                    selectedTile = representation;
+                    representation.setBorder(BorderFactory.createMatteBorder(5, 5, 5, 5, Color.BLUE));
+                }
+                iconPanel.add(representation);
+            }
+        } else {
+            System.out.println("Null!");
+        }
     }
 
     private void toolHandler(int x, int y) {
+        if (mapToEdit == null) {
+            return;
+        }
 
         // Get object at that position
         WorldObject clickedObject = mapToEdit.getObjectAt(x, y, currentZone);
 
-        System.out.println(mode.name() + " @ " + currentZone + ":" + x + ":" + y);
+        //System.out.println(mode.name() + " @ " + currentZone + ":" + x + ":" + y);
         switch (mode) {
             case CREATE_OBJECT:
                 // Get ID
@@ -456,12 +622,12 @@ public class RenderView extends JFrame {
             case DELETE_OBJECT:
                 mapToEdit.getObjects().remove(clickedObject);
                 break;
-            case INFO_OBJECT:
-                System.out.println(clickedObject.getName());
-                break;
             case SET_TILE:
                 // Get tile
-                mapToEdit.setTile(x, y, tileSelect.getSelectedIndex(), currentZone);
+                if (selectedTile != null) {
+                    int id = Integer.parseInt(selectedTile.getName().split(" ")[1].trim());
+                    mapToEdit.setTile(x, y, id, currentZone);
+                }
                 break;
             case ZONE_EDIT:
                 // Handled upstream
@@ -473,6 +639,7 @@ public class RenderView extends JFrame {
     }
 
     public void setMode(ActionMode mode) {
+        System.out.println(" - Selecting tool: " + mode.name());
         toolOptions.removeAll();
 
         renderer.setShowZones(showZone);
@@ -484,8 +651,6 @@ public class RenderView extends JFrame {
                 break;
             case DELETE_OBJECT:
                 break;
-            case INFO_OBJECT:
-                break;
             case SET_TILE:
                 toolOptions.add(tileSelect);
                 break;
@@ -496,49 +661,14 @@ public class RenderView extends JFrame {
                 manualEdit.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        new ZonesDialog(RenderView.this, renderer, mapToEdit);
+                        if (mapToEdit != null) {
+                            new ZonesDialog(RenderView.this, renderer, mapToEdit);
+                        }
                     }
                 });
                 manualEdit.setAlignmentX(CENTER_ALIGNMENT);
                 toolOptions.add(manualEdit);
                 break;
-            case CLEAR_ALL_TILES:
-                JLabel warning = new JLabel("This will wipe out ALL tiles!");
-                JLabel warning2 = new JLabel("(And objects safe to delete)");
-                JButton button = new JButton("Continue anyway...");
-                button.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        // Delete all tiles
-                        for (int y = 0; y < mapToEdit.getHeight(); y++) {
-                            for (int x = 0; x < mapToEdit.getWidth(); x++) {
-                                mapToEdit.setTile(x, y, 0);
-                                mapToEdit.setTile(x, y, 0, "Vents");
-                                mapToEdit.setTile(x, y, 0, "Underground");
-                                mapToEdit.setTile(x, y, 0, "Roof");
-                            }
-                        }
-                        mapToEdit.setTile(0, 0, 1); // Game renderer crashs without 1 block
-                        mapToEdit.setTile(0, 0, 1, "Vents");
-                        mapToEdit.setTile(0, 0, 1, "Underground");
-                        mapToEdit.setTile(0, 0, 1, "Roof");
-
-                        // Delete safe objects
-                        java.util.List<WorldObject> worldObjects = mapToEdit.getObjects();
-                        for (WorldObject object :
-                                worldObjects.toArray(new WorldObject[worldObjects.size()])) {
-                            worldObjects.remove(object);
-                        }
-
-                        renderer.refresh();
-                    }
-                });
-                warning.setAlignmentX(CENTER_ALIGNMENT);
-                warning2.setAlignmentX(CENTER_ALIGNMENT);
-                button.setAlignmentX(CENTER_ALIGNMENT);
-                toolOptions.add(warning);
-                toolOptions.add(warning2);
-                toolOptions.add(button);
         }
 
         renderer.refresh();
@@ -547,5 +677,19 @@ public class RenderView extends JFrame {
         toolOptions.repaint();
 
         this.mode = mode;
+    }
+
+    public void setMap(Map newMap) {
+        mapToEdit = newMap;
+        setTitle("Escapists Map Editor v" + EscapistsEditor.VERSION + " - " +
+                (mapToEdit == null ? "No map loaded" : mapToEdit.getName()));
+        try {
+            updateTiling();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        validate();
+        repaint();
+        renderer.setMap(mapToEdit);
     }
 }

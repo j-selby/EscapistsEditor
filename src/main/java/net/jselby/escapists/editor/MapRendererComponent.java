@@ -17,8 +17,8 @@ import java.awt.image.BufferedImage;
  * @author j_selby
  */
 public class MapRendererComponent extends JPanel {
-    private final float origWidth;
-    private final float origHeight;
+    private float origWidth;
+    private float origHeight;
 
     private Map mapToEdit;
 
@@ -36,21 +36,6 @@ public class MapRendererComponent extends JPanel {
 
         // Build the renderer
         renderer = new MapRenderer();
-
-        if (mapToEdit != null) {
-            Dimension size = new Dimension((map.getHeight() - 1) * 16, (map.getWidth() - 3) * 16);
-            setSize(size);
-            setPreferredSize(size);
-            setMaximumSize(size);
-            setMinimumSize(size);
-
-            // These are inverted, don't worry.
-            origWidth = (map.getHeight() - 1) * 16;
-            origHeight = (map.getWidth() - 3) * 16;
-        } else {
-            origHeight = 1;
-            origWidth = 1;
-        }
 
         addMouseListener(new MouseAdapter() {
             @Override
@@ -74,15 +59,20 @@ public class MapRendererComponent extends JPanel {
             }
         });
 
-        refresh();
+        setMap(map);
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         Graphics2D graphics2D = (Graphics2D) g;
-        graphics2D.scale(zoomFactor, zoomFactor);
 
-        g.drawImage(render, 0, 0, null);
+        if (render != null) {
+            graphics2D.scale(zoomFactor, zoomFactor);
+            g.drawImage(render, 0, 0, null);
+        } else {
+            graphics2D.drawString("No map loaded!", 10, 20);
+            graphics2D.drawString("Check the \"File\" menu at the top left.", 10, 40);
+        }
 
         // Change the size of the panel
         Dimension size = new Dimension((int) (origWidth * zoomFactor),(int) (origHeight * zoomFactor));
@@ -128,5 +118,28 @@ public class MapRendererComponent extends JPanel {
 
     public void setEditZones(boolean editZones) {
         renderer.zoneEditing = editZones;
+    }
+
+    public void setMap(Map map) {
+
+        renderer = new MapRenderer();
+        this.mapToEdit = map;
+
+        if (mapToEdit != null) {
+            Dimension size = new Dimension((map.getHeight() - 1) * 16, (map.getWidth() - 3) * 16);
+            setSize(size);
+            setPreferredSize(size);
+            setMaximumSize(size);
+            setMinimumSize(size);
+
+            // These are inverted, don't worry.
+            origWidth = (map.getHeight() - 1) * 16;
+            origHeight = (map.getWidth() - 3) * 16;
+        } else {
+            origHeight = 300;
+            origWidth = 300;
+        }
+
+        refresh();
     }
 }

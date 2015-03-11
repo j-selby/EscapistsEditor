@@ -599,8 +599,10 @@ public class RenderView extends JFrame {
                     if (StringUtils.isNumber(output)) {
                         int num = Integer.parseInt(output);
                         if (num > 0 && num < 150) {
-                            mapToEdit.getObjects().add(editor.registry.instanceWithUnknown(num, x, y, level));
-                            renderer.refresh();
+                            if (!mapToEdit.isObjectAt(x, y, num, level)) {
+                                mapToEdit.getObjects().add(editor.registry.instanceWithUnknown(num, x, y, level));
+                                renderer.refresh();
+                            }
                         } else {
                             editor.dialog("Invalid ID entered!");
                         }
@@ -612,11 +614,14 @@ public class RenderView extends JFrame {
                 } else {
                     idToAdd = Integer.parseInt(id.getSelectedItem().toString().split(":")[0].trim());
                     if (idToAdd > 0 && idToAdd < 150) {
-                        mapToEdit.getObjects().add(editor.registry.instanceWithUnknown(idToAdd, x, y, level));
+                        // Check for existing object
+                        if (!mapToEdit.isObjectAt(x, y, idToAdd, level)) {
+                            mapToEdit.getObjects().add(editor.registry.instanceWithUnknown(idToAdd, x, y, level));
+                            renderer.refresh();
+                        }
                     } else {
                         editor.dialog("Invalid ID for object!");
                     }
-                    renderer.refresh();
                 }
                 break;
             case DELETE_OBJECT:

@@ -1,5 +1,6 @@
 package net.jselby.escapists;
 
+import net.jselby.escapists.filters.PreFilters;
 import net.jselby.escapists.utils.BlowfishCompatEncryption;
 
 import javax.imageio.ImageIO;
@@ -208,6 +209,9 @@ public class Map {
         // Decrypt the tiles themselves
         tilesImage = ImageIO.read(new ByteArrayInputStream(BlowfishCompatEncryption.decrypt(tilesFile)));
         backgroundImage = ImageIO.read(background);
+
+        // Pre filter me
+        PreFilters.run(this);
 
         System.out.println(" > Done.");
     }
@@ -482,5 +486,15 @@ public class Map {
 
     public java.util.Map<String, Object> getZones() {
         return sections.get("Zones");
+    }
+
+    public boolean isObjectAt(int x, int y, int id, int layer) {
+        for (WorldObject obj : objects) {
+            if (obj.getID() == id && obj.getX() == x
+                    && obj.getY() == y && obj.getIDArgument() == layer) {
+                return true;
+            }
+        }
+        return false;
     }
 }

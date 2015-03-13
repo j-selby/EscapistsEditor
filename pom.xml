@@ -6,7 +6,7 @@
 
     <groupId>net.jselby.escapists</groupId>
     <artifactId>EscapistsEditor</artifactId>
-    <version>1.4.4b-SNAPSHOT</version>
+    <version>1.4.5-SNAPSHOT</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

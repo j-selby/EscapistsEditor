@@ -144,6 +144,13 @@ public class ObjectRegistry {
         DOOR_JUNGLE_ENTRANCE(95),
         DOOR_VENT_ORANGE(103),
 
+        // Ziplines
+        ZIPLINE_START_UP(76),
+        ZIPLINE_END(77),
+        ZIPLINE_START_DOWN(99),
+        ZIPLINE_START_RIGHT(100),
+        ZIPLINE_START_LEFT(101),
+
         // Training
         TRAINING_BOOKSHELF(6, 0, -1),
         TRAINING_TREADMILL(7),

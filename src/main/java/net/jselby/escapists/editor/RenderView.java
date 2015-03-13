@@ -568,8 +568,6 @@ public class RenderView extends JFrame {
                 }
                 iconPanel.add(representation);
             }
-        } else {
-            System.out.println("Null!");
         }
     }
 

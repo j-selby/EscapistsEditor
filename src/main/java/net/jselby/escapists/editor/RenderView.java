@@ -66,6 +66,7 @@ public class RenderView extends JFrame {
         // Build tiles
         iconPanel = new JPanel();
         tileSelect = new JScrollPane(iconPanel);
+        tileSelect.getVerticalScrollBar().setUnitIncrement(16);
         updateTiling();
 
         // Configure the view

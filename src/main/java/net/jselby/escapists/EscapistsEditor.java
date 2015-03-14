@@ -167,11 +167,9 @@ public class EscapistsEditor {
     }
 
     public void dump(String name) throws IOException {
-        if (!name.toLowerCase().contains(".cmap") && !name.toLowerCase().contains(".map")) {
-            name += ".map";
-        }
-
         File mapPath = new File(name);
+        String fileExtension = mapPath.getName().contains(".") ? ("." + mapPath.getName().split("\\.")[1]) : "";
+
         if (!mapPath.exists()) {
             mapPath = new File(escapistsPath, "Data" + File.separator + "Maps" + File.separator + name);
             if (!mapPath.exists()) {
@@ -182,7 +180,7 @@ public class EscapistsEditor {
 
         // Decrypt it
         String content = new String(BlowfishCompatEncryption.decrypt(mapPath));
-        File decryptedMap = new File(name.split("\\.")[0] + ".decrypted.map");
+        File decryptedMap = new File(name.split("\\.")[0] + ".decrypted." + fileExtension);
         System.out.println("Decrypting \"" + name + " to \"" + decryptedMap.getPath() + "\"...");
         try (FileOutputStream out = new FileOutputStream(decryptedMap)) {
             out.write(content.getBytes());
@@ -191,12 +189,7 @@ public class EscapistsEditor {
     }
 
     public void render(String name) throws IOException {
-        if (!name.toLowerCase().contains(".cmap") && !name.toLowerCase().contains(".map")) {
-            name += ".map";
-        }
-
         String rawName = new File(name).getName().split("\\.")[0];
-
         File mapPath = new File(name);
         if (!mapPath.exists()) {
             mapPath = new File(escapistsPath, "Data" + File.separator + "Maps" + File.separator + name);
@@ -227,11 +220,8 @@ public class EscapistsEditor {
     }
 
     private void encrypt(String name, boolean install) throws IOException {
-        if (!name.toLowerCase().contains(".cmap") && !name.toLowerCase().contains(".map")) {
-            name += ".map";
-        }
-
         File mapPath = new File(name);
+        String fileExtension = mapPath.getName().contains(".") ? ("." + mapPath.getName().split("\\.")[1]) : "";
         if (!mapPath.exists()) {
             mapPath = new File(escapistsPath, "Data" + File.separator + "Maps" + File.separator + name);
             if (!mapPath.exists()) {
@@ -247,7 +237,7 @@ public class EscapistsEditor {
             decryptedMap = new File(escapistsPath, "Data" + File.separator + "Maps"
                     + File.separator + name.split("\\.")[0] + ".map");
         } else {
-            decryptedMap = new File(name.split("\\.")[0] + ".encrypted.map");
+            decryptedMap = new File(name.split("\\.")[0] + ".encrypted." + fileExtension);
         }
         System.out.println("Decrypting \"" + name + " to \"" + decryptedMap.getPath() + "\"...");
         try (FileOutputStream out = new FileOutputStream(decryptedMap)) {
@@ -275,10 +265,6 @@ public class EscapistsEditor {
     }
 
     public void edit(String name) throws IOException {
-        if (!name.toLowerCase().contains(".cmap") && !name.toLowerCase().contains(".map")) {
-            name += ".map";
-        }
-
         File mapPath = new File(name);
 
         if (!mapPath.exists()) {
@@ -289,7 +275,7 @@ public class EscapistsEditor {
             }
         }
 
-        String contents  = new String(BlowfishCompatEncryption.decrypt(mapPath));
+        String contents = new String(BlowfishCompatEncryption.decrypt(mapPath));
 
         Map map = new Map(this, registry, mapPath.getPath(), contents);
 

@@ -179,11 +179,11 @@ public class EscapistsEditor {
         }
 
         // Decrypt it
-        String content = new String(BlowfishCompatEncryption.decrypt(mapPath));
-        File decryptedMap = new File(name.split("\\.")[0] + ".decrypted." + fileExtension);
+        byte[] content = BlowfishCompatEncryption.decrypt(mapPath);
+        File decryptedMap = new File(name.split("\\.")[0] + ".decrypted" + fileExtension);
         System.out.println("Decrypting \"" + name + " to \"" + decryptedMap.getPath() + "\"...");
         try (FileOutputStream out = new FileOutputStream(decryptedMap)) {
-            out.write(content.getBytes());
+            out.write(content);
             out.flush();
         }
     }
@@ -237,7 +237,7 @@ public class EscapistsEditor {
             decryptedMap = new File(escapistsPath, "Data" + File.separator + "Maps"
                     + File.separator + name.split("\\.")[0] + ".map");
         } else {
-            decryptedMap = new File(name.split("\\.")[0] + ".encrypted." + fileExtension);
+            decryptedMap = new File(name.split("\\.")[0] + ".encrypted" + fileExtension);
         }
         System.out.println("Decrypting \"" + name + " to \"" + decryptedMap.getPath() + "\"...");
         try (FileOutputStream out = new FileOutputStream(decryptedMap)) {

@@ -23,11 +23,13 @@ import java.util.List;
  */
 public class Map {
     private static final String COMPILE_ERROR = "Compile Error: ";
+    public static final int DEFAULT_WIDTH = 96;
+    public static final int DEFAULT_HEIGHT = 93;
 
-    private final int[][] tiles;
-    private final int[][] vents;
-    private final int[][] roof;
-    private final int[][] underground;
+    private int[][] tiles;
+    private int[][] vents;
+    private int[][] roof;
+    private int[][] underground;
 
     private int width;
     private int height;
@@ -212,6 +214,10 @@ public class Map {
 
         // Pre filter me
         PreFilters.run(this);
+        if (tiles.length > 0) {
+            width = tiles[0].length - 1;
+            height = tiles.length;
+        }
 
         System.out.println(" > Done.");
     }
@@ -283,6 +289,9 @@ public class Map {
     }
 
     public int getTile(int x, int y, String view) {
+        if (x >= width || y >= height) {
+            throw new IllegalArgumentException("Fetching bad location @ " + x + ":" + y);
+        }
         if (view.equalsIgnoreCase("World")) {
             return tiles[y][x];
         } else if (view.equalsIgnoreCase("Underground")) {
@@ -496,5 +505,31 @@ public class Map {
             }
         }
         return false;
+    }
+
+    public int[][] getTiles(String section) {
+        if (section.equalsIgnoreCase("World")) {
+            return tiles;
+        } else if (section.equalsIgnoreCase("Underground")) {
+            return underground;
+        } else if (section.equalsIgnoreCase("Vents")) {
+            return vents;
+        } else if (section.equalsIgnoreCase("Roof")) {
+            return roof;
+        } else {
+            return null;
+        }
+    }
+
+    public void setTiles(String section, int[][] tiles) {
+        if (section.equalsIgnoreCase("World")) {
+            this.tiles = tiles;
+        } else if (section.equalsIgnoreCase("Underground")) {
+            this.underground = tiles;
+        } else if (section.equalsIgnoreCase("Vents")) {
+            this.vents = tiles;
+        } else if (section.equalsIgnoreCase("Roof")) {
+            this.roof = tiles;
+        }
     }
 }

@@ -24,5 +24,26 @@ public class PreFilters {
                 currentObjects.add(str);
             }
         }
+
+        if (map.getWidth() != Map.DEFAULT_WIDTH || map.getHeight() != Map.DEFAULT_HEIGHT) {
+            // Assuming array sizing is broken.
+            System.out.println(" > Map decode warning: Bad width/height of tiles. Repairing array...");
+
+            String[] sections = new String[] {
+                    "World", "Underground", "Vents", "Roof"
+            };
+            for (String section : sections) {
+                int[][] newArray = new int[Map.DEFAULT_HEIGHT][Map.DEFAULT_WIDTH + 1];
+                int[][] oldArray = map.getTiles(section);
+                for (int y = 0; y < oldArray.length; y++) {
+                    for (int x = 0; x < oldArray[y].length; x++) {
+                        if (newArray.length > y && newArray[y].length > x) {
+                            newArray[y][x] = oldArray[y][x];
+                        }
+                    }
+                }
+                map.setTiles(section, newArray);
+            }
+        }
     }
 }

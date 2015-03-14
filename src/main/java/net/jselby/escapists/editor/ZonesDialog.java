@@ -100,7 +100,10 @@ public class ZonesDialog extends JDialog {
         scrollableContent.add(Box.createVerticalStrut(10));
         scrollableContent.add(Box.createVerticalGlue());
 
-        add(new JScrollPane(scrollableContent));
+        JScrollPane scroller = new JScrollPane(scrollableContent);
+        scroller.getVerticalScrollBar().setUnitIncrement(16);
+
+        add(scroller);
 
         setSize(new Dimension(640, 480));
         setResizable(false);

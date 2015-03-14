@@ -1,6 +1,7 @@
 package net.jselby.escapists.editor;
 
 import net.jselby.escapists.Map;
+import net.jselby.escapists.utils.StringUtils;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -173,7 +174,8 @@ public class PropertiesDialog extends JDialog {
     }
 
     private static JComponent[] booleanField(final Map mapToEdit, String name, final String valueSrc) {
-        int startingContent = Integer.parseInt((((String) mapToEdit.get(valueSrc)).trim()));
+        String val = (((String) mapToEdit.get(valueSrc)).trim());
+        int startingContent = StringUtils.isNumber(val) ? Integer.parseInt(val) : 0;
 
         JLabel label = new JLabel(name);
 

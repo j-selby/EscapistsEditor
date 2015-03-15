@@ -5,6 +5,9 @@ import net.jselby.escapists.MapRenderer;
 import net.jselby.escapists.utils.IOUtils;
 
 import javax.swing.*;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
+import javax.swing.text.html.HTMLEditorKit;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -12,7 +15,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 /**
@@ -64,31 +67,54 @@ public class MapRendererComponent extends JPanel {
             }
         });
 
-        final JTextArea area = new JTextArea();
+        final JEditorPane area = new JEditorPane();
         area.setEditable(false);
-        area.setLineWrap(true);
         area.setOpaque(false);
         area.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 16));
         area.setText("Escapists Map Editor\n" +
                 "Written by jselby\nhttp://redd.it/2wacp2\n\n" +
                 "You don't have a map loaded currently - \n Go to File in the top left, and press a button there!\n" +
-                "\nUpdate log:\nLoading...");
+                "\nLoading...");
         area.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        area.addHyperlinkListener(new HyperlinkListener() {
+            public void hyperlinkUpdate(HyperlinkEvent e) {
+                if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+                    if(Desktop.isDesktopSupported()) {
+                        try {
+                            Desktop.getDesktop().browse(e.getURL().toURI());
+                        } catch (IOException | URISyntaxException e1) {
+                            e1.printStackTrace();
+                        }
+                    }
+                }
+            }
+        });
         new Thread(new Runnable() {
             @Override
             public void run() {
                 String txt;
                 try {
-                    txt = IOUtils.toString(new URL("http://escapists.jselby.net/version.txt"));
+                    txt = IOUtils.toString(new URL("http://escapists.jselby.net/welcome.html"));
                 } catch (IOException e) {
                     e.printStackTrace();
-                    txt = "Failed to load update log: " + e.getClass().getSimpleName() + ": " + e.getLocalizedMessage();
+                    txt = area.getText().replace("Loading...",
+                            "Failed to load daily content: " +
+                                    e.getClass().getSimpleName() +
+                                    ": " + e.getLocalizedMessage() + "\n\n\n");
                 }
-                txt = "    " + txt.replace("\n", "\n    ");
-                area.setText(area.getText().replace("Loading...", txt));
+                final String finalTxt = txt;
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
+                        if (!finalTxt.contains("Failed")) {
+                            area.setContentType("text/html");
+                            area.setEditorKit(new HTMLEditorKit());
+                        }
+                        try {
+                            area.setText(finalTxt);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                         panel.validate();
                     }
                 });

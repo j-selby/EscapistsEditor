@@ -69,7 +69,7 @@ public class MapRenderer {
         // Get tiles, and render it
         BufferedImage renderPlatform =
                 new BufferedImage((map.getHeight() - 1) * 16, (map.getWidth() - 3) * 16,
-                        BufferedImage.TYPE_INT_ARGB);
+                        BufferedImage.TYPE_INT_RGB);
 
         Graphics2D g = renderPlatform.createGraphics();
 

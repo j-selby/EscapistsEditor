@@ -40,6 +40,7 @@ public class RenderView extends JFrame {
     private int y;
 
     private ActionMode mode = ActionMode.CREATE_OBJECT;
+    private int bigBrush;
 
     private boolean showZone;
     private String currentZone = "World";
@@ -188,9 +189,11 @@ public class RenderView extends JFrame {
                 }
                 String objectDef = (object != null ? (", Object " + object.toString() + " (" + objectName + ")") : "");
 
+                boolean validPosition = x >= 0 && y >= 0 && ((mapToEdit != null &&
+                        x < mapToEdit.getHeight() && y < mapToEdit.getWidth()) || mapToEdit == null);
                 String worldElements = "X: " + x + ", Y: " + y
                         + objectDef
-                        + (mapToEdit != null ? (", Tile: " + mapToEdit.getTile(x, y, currentZone)) : "");
+                        + ((mapToEdit != null && validPosition) ? (", Tile: " + mapToEdit.getTile(x, y, currentZone)) : "");
 
                 // Render a top bar
                 int width = getWidth();
@@ -580,7 +583,6 @@ public class RenderView extends JFrame {
         // Get object at that position
         WorldObject clickedObject = mapToEdit.getObjectAt(x, y, currentZone);
 
-        //System.out.println(mode.name() + " @ " + currentZone + ":" + x + ":" + y);
         switch (mode) {
             case CREATE_OBJECT:
                 // Get ID
@@ -630,7 +632,19 @@ public class RenderView extends JFrame {
                 // Get tile
                 if (selectedTile != null) {
                     int id = Integer.parseInt(selectedTile.getName().split(" ")[1].trim());
-                    mapToEdit.setTile(x, y, id, currentZone);
+                    for (int relativeX = -bigBrush; relativeX <= bigBrush; relativeX++) {
+                        for (int relativeY = -bigBrush; relativeY <= bigBrush; relativeY++) {
+                            int myX = x + relativeX;
+                            int myY = y + relativeY;
+                            if (myX >= 0 && myY >= 0 && myX < mapToEdit.getWidth() && myY < mapToEdit.getHeight()) {
+                                try {
+                                    mapToEdit.setTile(myX, myY, id, currentZone);
+                                } catch (Exception e) {
+                                    System.out.println("Error @ setting " + myX + ":" + myY);
+                                }
+                            }
+                        }
+                    }
                 }
                 break;
             case ZONE_EDIT:
@@ -656,6 +670,22 @@ public class RenderView extends JFrame {
             case DELETE_OBJECT:
                 break;
             case SET_TILE:
+
+                JLabel zoomLabel = new JLabel("Brush size");
+                zoomLabel.setAlignmentX(CENTER_ALIGNMENT);
+                toolOptions.add(zoomLabel);
+                final JSlider zoom = new JSlider(JSlider.HORIZONTAL,
+                        0, 5, 0);
+                zoom.setFocusable(false);
+                zoom.setMajorTickSpacing(1);
+                zoom.addChangeListener(new ChangeListener() {
+                    @Override
+                    public void stateChanged(ChangeEvent e) {
+                        bigBrush = zoom.getValue();
+                    }
+                });
+                zoom.setAlignmentX(CENTER_ALIGNMENT);
+                toolOptions.add(zoom);
                 toolOptions.add(tileSelect);
                 break;
             case ZONE_EDIT:

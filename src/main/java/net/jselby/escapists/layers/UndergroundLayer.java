@@ -15,8 +15,9 @@ public class UndergroundLayer extends Layer {
                        java.util.Map<Integer, BufferedImage> tileCache,
                        BufferedImage tiles, BufferedImage ground) {
 
-        // Black out everything
-        g.setColor(Color.BLACK);
+        g.drawImage(renderer.layerCache.get("World"), null, 0, 0);
+
+        g.setColor(new Color(0f, 0f, 0f, 0.8f));
         g.fillRect(0, 0, image.getWidth(), image.getHeight());
 
         genericRender(map, image, g, tileCache, tiles, 0);

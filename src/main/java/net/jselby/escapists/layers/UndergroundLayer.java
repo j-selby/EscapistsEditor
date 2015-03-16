@@ -26,4 +26,9 @@ public class UndergroundLayer extends Layer {
     public String getLayerName() {
         return "Underground";
     }
+
+    @Override
+    public boolean isTransparent() {
+        return false;
+    }
 }

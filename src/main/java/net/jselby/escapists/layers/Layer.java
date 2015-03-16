@@ -80,4 +80,6 @@ public abstract class Layer {
     }
 
     public abstract String getLayerName();
+
+    public abstract boolean isTransparent();
 }

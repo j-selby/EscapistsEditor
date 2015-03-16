@@ -66,19 +66,20 @@ public class MapRenderer {
 
     private BufferedImage renderLayer(Map map, int layer) {
         // Compute view
+
+        // Get that index
+        Layer mainLayer = layers.get(layer);
+
         // Get tiles, and render it
         BufferedImage renderPlatform =
                 new BufferedImage((map.getHeight() - 1) * 16, (map.getWidth() - 3) * 16,
-                        BufferedImage.TYPE_INT_RGB);
+                        mainLayer.isTransparent() ? BufferedImage.TYPE_INT_ARGB : BufferedImage.TYPE_INT_RGB);
 
         Graphics2D g = renderPlatform.createGraphics();
 
         // Get tiles
         BufferedImage tiles = map.getTilesImage();
         BufferedImage ground = map.getBackgroundImage();
-
-        // Get that index
-        Layer mainLayer = layers.get(layer);
 
         // Make sure dependencies are sorted
         if (mainLayer.getLayerName().equalsIgnoreCase("Roof")

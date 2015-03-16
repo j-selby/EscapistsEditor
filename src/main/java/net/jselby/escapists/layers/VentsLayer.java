@@ -29,4 +29,9 @@ public class VentsLayer extends Layer {
     public String getLayerName() {
         return "Vents";
     }
+
+    @Override
+    public boolean isTransparent() {
+        return false;
+    }
 }

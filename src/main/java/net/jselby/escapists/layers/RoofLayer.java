@@ -27,4 +27,9 @@ public class RoofLayer extends Layer {
     public String getLayerName() {
         return "Roof";
     }
+
+    @Override
+    public boolean isTransparent() {
+        return false;
+    }
 }

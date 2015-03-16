@@ -73,6 +73,11 @@ public class ZoneLayer extends Layer {
         return "Zones";
     }
 
+    @Override
+    public boolean isTransparent() {
+        return true;
+    }
+
     public void mouseDragged(Map map, int x, int y) {
         // Update the zone accordingly
         if (zoneClicked != null) {

@@ -24,4 +24,9 @@ public class WorldLayer extends Layer {
     public String getLayerName() {
         return "World";
     }
+
+    @Override
+    public boolean isTransparent() {
+        return false;
+    }
 }

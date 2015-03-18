@@ -1,7 +1,7 @@
 package net.jselby.escapists.layers;
 
-import net.jselby.escapists.Map;
-import net.jselby.escapists.MapRenderer;
+import net.jselby.escapists.mapping.Map;
+import net.jselby.escapists.mapping.MapRenderer;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

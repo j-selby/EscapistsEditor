@@ -2,9 +2,13 @@ package net.jselby.escapists;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
-import net.jselby.escapists.editor.RenderView;
+import net.jselby.escapists.editor.elements.RenderView;
+import net.jselby.escapists.mapping.Map;
+import net.jselby.escapists.mapping.MapRenderer;
+import net.jselby.escapists.objects.ObjectRegistry;
 import net.jselby.escapists.utils.BlowfishCompatEncryption;
 import net.jselby.escapists.utils.IOUtils;
+import net.jselby.escapists.utils.LoggingDebugPrintStream;
 import net.jselby.escapists.utils.SteamFinder;
 
 import javax.imageio.ImageIO;

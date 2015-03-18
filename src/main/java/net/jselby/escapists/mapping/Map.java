@@ -1,5 +1,8 @@
-package net.jselby.escapists;
+package net.jselby.escapists.mapping;
 
+import net.jselby.escapists.EscapistsEditor;
+import net.jselby.escapists.objects.ObjectRegistry;
+import net.jselby.escapists.objects.WorldObject;
 import net.jselby.escapists.filters.PreFilters;
 import net.jselby.escapists.utils.BlowfishCompatEncryption;
 

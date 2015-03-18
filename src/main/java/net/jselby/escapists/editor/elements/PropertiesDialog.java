@@ -1,6 +1,6 @@
-package net.jselby.escapists.editor;
+package net.jselby.escapists.editor.elements;
 
-import net.jselby.escapists.Map;
+import net.jselby.escapists.mapping.Map;
 import net.jselby.escapists.utils.StringUtils;
 
 import javax.swing.*;

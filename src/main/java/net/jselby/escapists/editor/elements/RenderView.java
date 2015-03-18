@@ -1,6 +1,10 @@
-package net.jselby.escapists.editor;
+package net.jselby.escapists.editor.elements;
 
 import net.jselby.escapists.*;
+import net.jselby.escapists.editor.ActionMode;
+import net.jselby.escapists.mapping.Map;
+import net.jselby.escapists.objects.ObjectRegistry;
+import net.jselby.escapists.objects.WorldObject;
 import net.jselby.escapists.utils.IOUtils;
 import net.jselby.escapists.utils.StringUtils;
 
@@ -512,10 +516,10 @@ public class RenderView extends JFrame {
             }
         }
 
-        SwingUtilities.updateComponentTreeUI(this);
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
+                SwingUtilities.updateComponentTreeUI(RenderView.this);
                 setVisible(true);
             }
         });

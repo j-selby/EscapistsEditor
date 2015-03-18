@@ -1,5 +1,6 @@
-package net.jselby.escapists;
+package net.jselby.escapists.objects;
 
+import net.jselby.escapists.EscapistsEditor;
 import net.jselby.escapists.utils.StringUtils;
 
 import java.awt.*;

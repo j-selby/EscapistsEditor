@@ -1,7 +1,5 @@
 package net.jselby.escapists.objects;
 
-import net.jselby.escapists.WorldObject;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
 

@@ -35,7 +35,7 @@
     <productVersion>1.4.9.0</productVersion>
     <txtProductVersion>1.4.9.0</txtProductVersion>
     <fileDescription>Escapists Map Editor</fileDescription>
-    <copyright>Editor: jselby, Game: Mouldy Toof Studios, Team17</copyright>
+    <copyright>Editor: jselby (licensed under the MIT license), Game: Mouldy Toof Studios, Team17.</copyright>
     <productName>Escapists Map Editor</productName>
     <companyName></companyName>
     <internalName>net.jselby.escapists.EscapistsEditor</internalName>

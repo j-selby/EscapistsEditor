@@ -4,6 +4,7 @@ import net.jselby.escapists.*;
 import net.jselby.escapists.editor.ActionMode;
 import net.jselby.escapists.mapping.Map;
 import net.jselby.escapists.objects.ObjectRegistry;
+import net.jselby.escapists.objects.Objects;
 import net.jselby.escapists.objects.WorldObject;
 import net.jselby.escapists.utils.IOUtils;
 import net.jselby.escapists.utils.StringUtils;
@@ -57,7 +58,7 @@ public class RenderView extends JFrame {
         // Configure the defaults
         // ID box
         ArrayList<Object> objectIds = new ArrayList<>();
-        for (ObjectRegistry.Objects objectId : ObjectRegistry.Objects.values()) {
+        for (Objects objectId : Objects.values()) {
             objectIds.add(objectId.getID() + ": "
                     + StringUtils.capitalize(objectId.name().toLowerCase().replace("_", " ")));
         }

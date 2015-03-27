@@ -32,7 +32,7 @@ public abstract class WorldObject {
      */
     public String getName() {
         String providedName = null;
-        for (ObjectRegistry.Objects object : ObjectRegistry.Objects.values()) {
+        for (Objects object : Objects.values()) {
             if (object.getID() == getID()) {
                 providedName = StringUtils.capitalize(object.name().toLowerCase().replace("_", " "));
             }
@@ -76,8 +76,8 @@ public abstract class WorldObject {
         return y;
     }
 
-    public ObjectRegistry.Objects asWorldDictionary() {
-        for (ObjectRegistry.Objects object : ObjectRegistry.Objects.values()) {
+    public Objects asWorldDictionary() {
+        for (Objects object : Objects.values()) {
             if (object.getID() == getID()) {
                 return object;
             }

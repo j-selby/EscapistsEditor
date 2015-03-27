@@ -44,7 +44,6 @@ public class Map {
     private final BufferedImage tilesImage;
     private final BufferedImage backgroundImage;
 
-
     /**
      * Decodes a map.
      *

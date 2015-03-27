@@ -11,14 +11,8 @@ import java.awt.*;
  * A simple dialog for showing properties.
  */
 public class ZonesDialog extends JDialog {
-    private final MapRendererComponent renderer;
-    private final Map mapToEdit;
-
     public ZonesDialog(RenderView parent, final MapRendererComponent renderer, final Map mapToEdit) {
         super(parent, "Zone Editor", false);
-
-        this.renderer = renderer;
-        this.mapToEdit = mapToEdit;
 
         JPanel scrollableContent = new JPanel();
         scrollableContent.setLayout(new GridLayout(0, 2, 0, 10));
@@ -30,7 +24,7 @@ public class ZonesDialog extends JDialog {
         scrollableContent.add(new JLabel("Coordinates is *16 from tiles!"));
 
         // Build fields
-        for (java.util.Map.Entry<String, Object> fieldSet : mapToEdit.getZones().entrySet()) {
+        for (java.util.Map.Entry<String, Object> fieldSet : mapToEdit.getMap("Zones").entrySet()) {
             final String name = fieldSet.getKey();
             final String startingContent = ((String) fieldSet.getValue()).trim();
 

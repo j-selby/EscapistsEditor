@@ -1,6 +1,6 @@
 package net.jselby.escapists.mapping;
 
-import net.jselby.escapists.layers.*;
+import net.jselby.escapists.layers.Layer;
 import net.jselby.escapists.layers.impl.*;
 
 import java.awt.*;

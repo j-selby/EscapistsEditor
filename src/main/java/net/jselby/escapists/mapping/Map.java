@@ -1,10 +1,12 @@
 package net.jselby.escapists.mapping;
 
 import net.jselby.escapists.EscapistsEditor;
+import net.jselby.escapists.filters.PreFilters;
+import net.jselby.escapists.mapping.store.PropertiesFile;
+import net.jselby.escapists.mapping.store.PropertiesSection;
 import net.jselby.escapists.objects.ObjectRegistry;
 import net.jselby.escapists.objects.Objects;
 import net.jselby.escapists.objects.WorldObject;
-import net.jselby.escapists.filters.PreFilters;
 import net.jselby.escapists.utils.BlowfishCompatEncryption;
 
 import javax.imageio.ImageIO;
@@ -16,8 +18,6 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -26,27 +26,24 @@ import java.util.List;
  * @author j_selby
  */
 public class Map {
-    private static final String COMPILE_ERROR = "Compile Error: ";
     public static final int DEFAULT_WIDTH = 96;
     public static final int DEFAULT_HEIGHT = 93;
+
+    private int width;
+    private int height;
+
+    private PropertiesFile sections;
 
     private int[][] tiles;
     private int[][] vents;
     private int[][] roof;
     private int[][] underground;
 
-    private int width;
-    private int height;
+    private List<WorldObject> objects = new ArrayList<>();
 
     private final BufferedImage tilesImage;
     private final BufferedImage backgroundImage;
 
-    private java.util.Map<String, java.util.Map<String, Object>> sections = new HashMap<>();
-
-    private List<WorldObject> objects = new ArrayList<>();
-
-    private EscapistsEditor editor;
-    private String filename;
 
     /**
      * Decodes a map.
@@ -59,92 +56,45 @@ public class Map {
      */
     public Map(EscapistsEditor editor, ObjectRegistry registry,
                String filename, String content) throws IOException {
-        this.editor = editor;
-        this.filename = filename;
         System.out.println(" - Decoding map \"" + filename + "\"...");
+        this.sections = new PropertiesFile(content);
 
         // Get the raw filename
         String rawName = new File(filename).getName().split("\\.")[0];
 
-        String currentSection = null;
-        java.util.Map<String, Object> currentSectionMap = null;
-
-        int lineNum = 0;
-
-        for (String line : content.split("\n")) {
-            lineNum++;
-
-            // Discover what this is
-            String command = line.trim();
-
-            if (command.startsWith("[") && command.endsWith("]")) {
-                // New section
-                // Get what its name is
-                currentSection = command.substring(1, command.length() - 1);
-
-                currentSectionMap = new LinkedHashMap<>();
-                sections.put(currentSection, currentSectionMap);
-                continue;
-
-            } else if (command.startsWith("[")) {
-                System.out.println(" > Map decode warning: Invalid syntax (\"[\") @ line " + lineNum);
-                continue;
-
-            }
-
-            // OK: Read this key
-            if (line.contains("=")) {
-                if (currentSection == null) {
-                    System.out.println(" > Map decode warning: No section defined @ line " + lineNum);
-                    continue;
-                }
-
-                // Yay
-                int index = line.indexOf("=");
-                String key = line.substring(0, index);
-                String value = line.substring(index + 1);
-                currentSectionMap.put(key, value);
-
-            } else {
-                if (line.trim().length() > 0) {
-                    System.out.println(" > Map decode warning: Invalid syntax (no \"*=*\" or \"[*]\") @ line " + lineNum);
-                }
-            }
-        }
-
         // Decode tiles, if it exists
-        if (sections.containsKey("Tiles")) {
+        if (sections.containsSection("Tiles")) {
             // Decode!
-            java.util.Map<String, Object> section = sections.get("Tiles");
-            tiles = compileIDSection("Overworld", section);
+            PropertiesSection section = sections.getSection("Tiles");
+            tiles = compileIDSection(section);
 
         } else {
             tiles = new int[0][0];
             System.out.println(" > Map decode warning: No tiles found.");
         }
 
-        if (sections.containsKey("Vents")) {
+        if (sections.containsSection("Vents")) {
             // Decode!
-            java.util.Map<String, Object> section = sections.get("Vents");
-            vents = compileIDSection("Vents", section);
+            PropertiesSection section = sections.getSection("Vents");
+            vents = compileIDSection(section);
         } else {
             vents = new int[0][0];
             System.out.println(" > Map decode warning: No vents found.");
         }
 
-        if (sections.containsKey("Roof")) {
+        if (sections.containsSection("Roof")) {
             // Decode!
-            java.util.Map<String, Object> section = sections.get("Roof");
-            roof = compileIDSection("Roof", section);
+            PropertiesSection section = sections.getSection("Roof");
+            roof = compileIDSection(section);
         } else {
             roof = new int[0][0];
             System.out.println(" > Map decode warning: No roof found.");
         }
 
-        if (sections.containsKey("Underground")) {
+        if (sections.containsSection("Underground")) {
             // Decode!
-            java.util.Map<String, Object> section = sections.get("Underground");
-            underground = compileIDSection("Underground", section);
+            PropertiesSection section = sections.getSection("Underground");
+            underground = compileIDSection(section);
         } else {
             underground = new int[0][0];
             System.out.println(" > Map decode warning: No underground found.");
@@ -152,9 +102,9 @@ public class Map {
 
 
         // Decode Object entities
-        if (sections.containsKey("Objects")) {
+        if (sections.containsSection("Objects")) {
             for (java.util.Map.Entry<String, Object> object :
-                    sections.get("Objects").entrySet()) {
+                    sections.getSection("Objects").entrySet()) {
                 // Find this object
                 String[] args = ((String)object.getValue()).trim().split("x");
 
@@ -226,7 +176,7 @@ public class Map {
         System.out.println(" > Done.");
     }
 
-    private int[][] compileIDSection(String name, java.util.Map<String, Object> section) {
+    private int[][] compileIDSection(PropertiesSection section) {
         // Get first row, so we can work out width
         String firstRow = (String) section.get("0");
         width = firstRow.split("_").length - 1;
@@ -268,7 +218,7 @@ public class Map {
         String section = key.split("\\.")[0];
         key = key.substring(key.indexOf(section) + section.length() + 1);
 
-        java.util.Map<String, Object> discoveredSection = sections.get(section);
+        PropertiesSection discoveredSection = sections.getSection(section);
         if (discoveredSection != null) {
             return discoveredSection.get(key);
         } else {
@@ -276,8 +226,8 @@ public class Map {
         }
     }
 
-    public java.util.Map<String, Object> getMap(String key) {
-        return sections.get(key);
+    public PropertiesSection getMap(String key) {
+        return sections.getSection(key);
     }
 
     public int getHeight() {
@@ -354,11 +304,11 @@ public class Map {
     public void save(File selectedFile) throws IOException {
         // Do checks
         if (count(Objects.AI_WP_GUARD_ROLLCALL) == 0) {
-            throw new IOException(COMPILE_ERROR + "Invalid amount of rollcall guard waypoints - \n" +
+            throw new IOException("Compile Error: Invalid amount of rollcall guard waypoints - \n" +
                     "You need more then 1.");
         }
         if (count(Objects.AI_WP_GUARD_GENERAL) == 0) {
-            throw new IOException(COMPILE_ERROR + "Invalid amount of general guard waypoints - \nYou need more then 1.");
+            throw new IOException("Compile Error: Invalid amount of general guard waypoints - \nYou need more then 1.");
         }
 
         // Count tiles, more then 1
@@ -372,53 +322,51 @@ public class Map {
             }
         }
         if (!foundTile) {
-            throw new IOException(COMPILE_ERROR + "You need at least 1 tile in the world!");
+            throw new IOException("Compile Error: You need at least 1 tile in the world!");
         }
 
         System.out.println("Saving...");
 
         // Serialize tiles
-        String allSections = "";
-
-        allSections += "[Tiles]\n";
+        sections.getSection("Tiles").clear();
         for (int y = 0; y < tiles.length; y++) {
             String arrayBuild = "";
             for (int x = 0; x < tiles[y].length; x++) {
                 arrayBuild += tiles[y][x] + "_";
             }
-            allSections += y + "=" + arrayBuild + "\n";
+            sections.getSection("Tiles").put(y + "", arrayBuild);
         }
 
-        allSections += "[Underground]\n";
+        sections.getSection("Underground").clear();
         for (int y = 0; y < underground.length; y++) {
             String arrayBuild = "";
             for (int x = 0; x < underground[y].length; x++) {
                 arrayBuild += underground[y][x] + "_";
             }
-            allSections += y + "=" + arrayBuild + "\n";
+            sections.getSection("Underground").put(y + "", arrayBuild);
         }
 
-        allSections += "[Vents]\n";
+        sections.getSection("Vents").clear();
         for (int y = 0; y < vents.length; y++) {
             String arrayBuild = "";
             for (int x = 0; x < vents[y].length; x++) {
                 arrayBuild += vents[y][x] + "_";
             }
-            allSections += y + "=" + arrayBuild + "\n";
+            sections.getSection("Vents").put(y + "", arrayBuild);
         }
 
-        allSections += "[Roof]\n";
+        sections.getSection("Roof").clear();
         for (int y = 0; y < roof.length; y++) {
             String arrayBuild = "";
             for (int x = 0; x < roof[y].length; x++) {
                 arrayBuild += roof[y][x] + "_";
             }
-            allSections += y + "=" + arrayBuild + "\n";
+            sections.getSection("Roof").put(y + "", arrayBuild);
         }
 
         // Serialize Objects
-        allSections += "[Objects]\n";
         int count = 1;
+        sections.getSection("Objects").clear();
         for (WorldObject worldObject : objects) {
             int x = worldObject.getX();
             int y = worldObject.getY();
@@ -426,40 +374,16 @@ public class Map {
             int argument = worldObject.getIDArgument();
 
             if (id != 0) {
-                String idString = x + "x" + y + "x" + id + "x" + argument;
-                allSections += count + "=" + idString + "\n";
+                sections.getSection("Objects").put(count + "", x + "x" + y + "x" + id + "x" + argument);
                 count++;
             }
         }
 
-
         // Build sections
-        for (java.util.Map.Entry<String, java.util.Map<String, Object>> entry : sections.entrySet()) {
-            String sectionId = entry.getKey();
-            if (sectionId.equalsIgnoreCase("Tiles") || sectionId.equalsIgnoreCase("Objects")
-                    || sectionId.equalsIgnoreCase("Underground") || sectionId.equalsIgnoreCase("Vents")
-                    || sectionId.equalsIgnoreCase("Roof")) {
-                continue;
-            }
-            java.util.Map<String, Object> entries = entry.getValue();
-
-            allSections += "[" + sectionId + "]\n";
-            for (java.util.Map.Entry<String, Object> subEntry : entries.entrySet()) {
-                allSections += subEntry.getKey() + "=" + subEntry.getValue() + "\n";
-            }
-
-        }
+        String allSections = sections.toString();
 
         // Save it
-        File temp = new File(".temp.map");
-        try (FileOutputStream out = new FileOutputStream(temp)) {
-            out.write(allSections.getBytes());
-            out.flush();
-        }
-        byte[] encryptedBytes = BlowfishCompatEncryption.encrypt(temp);
-        if (!temp.delete()) {
-            System.out.println("Failed to delete temporary file.");
-        }
+        byte[] encryptedBytes = BlowfishCompatEncryption.encrypt(allSections.getBytes());
 
         System.out.println("Writing to " + selectedFile.getPath());
         try (FileOutputStream out = new FileOutputStream(selectedFile)) {
@@ -491,14 +415,10 @@ public class Map {
         String section = key.split("\\.")[0];
         key = key.substring(key.indexOf(section) + section.length() + 1);
 
-        java.util.Map<String, Object> discoveredSection = sections.get(section);
+        PropertiesSection discoveredSection = sections.getSection(section);
         if (discoveredSection != null) {
             discoveredSection.put(key, value);
         }
-    }
-
-    public java.util.Map<String, Object> getZones() {
-        return sections.get("Zones");
     }
 
     public boolean isObjectAt(int x, int y, int id, int layer) {

@@ -17,6 +17,7 @@ import javax.swing.event.MenuListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -110,6 +111,7 @@ public class RenderView extends JFrame {
                 // Save map
                 // Get our target
                 JFileChooser fc = new JFileChooser();
+                fc.setCurrentDirectory(new File(editor.escapistsPath, "Data" + File.separator + "Maps"));
                 int dialog = fc.showSaveDialog(RenderView.this);
                 if (JFileChooser.APPROVE_OPTION == dialog) {
                     try {

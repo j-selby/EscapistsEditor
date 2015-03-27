@@ -40,6 +40,16 @@ public final class BlowfishCompatEncryption {
     }
 
     /**
+     * Decrypts a Blowfish encrypted array using the built-in key.
+     *
+     * @param t The file to read and decrypt
+     * @return The byte contents of this file decrypted
+     **/
+    public static byte[] decrypt(byte[] t) throws IOException {
+        return decryptBytes(t, ENCRYPTION_KEY.getBytes());
+    }
+
+    /**
      * Decrypts the specified byte array encrypted via Blowfish using
      * the specified key.
      *
@@ -91,12 +101,22 @@ public final class BlowfishCompatEncryption {
      * @return The byte contents of this file encrypted
      **/
     public static byte[] encrypt(File t) throws IOException {
-
         // get the data
         byte[] data = IOUtils.toByteArray(t);
 
         return encryptBytes(data, ENCRYPTION_KEY.getBytes());
     }
+
+    /**
+     * Encrypts a Blowfish encrypted array using the built-in key.
+     *
+     * @param t The file to read and encrypt
+     * @return The byte contents of this file encrypted
+     **/
+    public static byte[] encrypt(byte[] t) throws IOException {
+        return encryptBytes(t, ENCRYPTION_KEY.getBytes());
+    }
+
 
     /**
      * Encrypted the specified byte array via Blowfish using

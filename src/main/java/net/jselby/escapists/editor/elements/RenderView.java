@@ -1,9 +1,8 @@
 package net.jselby.escapists.editor.elements;
 
-import net.jselby.escapists.*;
+import net.jselby.escapists.EscapistsEditor;
 import net.jselby.escapists.editor.ActionMode;
 import net.jselby.escapists.mapping.Map;
-import net.jselby.escapists.objects.ObjectRegistry;
 import net.jselby.escapists.objects.Objects;
 import net.jselby.escapists.objects.WorldObject;
 import net.jselby.escapists.utils.IOUtils;

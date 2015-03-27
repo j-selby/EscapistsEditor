@@ -1,5 +1,6 @@
-package net.jselby.escapists.layers;
+package net.jselby.escapists.layers.impl;
 
+import net.jselby.escapists.layers.Layer;
 import net.jselby.escapists.mapping.Map;
 import net.jselby.escapists.mapping.MapRenderer;
 

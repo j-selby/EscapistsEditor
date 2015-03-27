@@ -2,6 +2,7 @@ package net.jselby.escapists.mapping;
 
 import net.jselby.escapists.EscapistsEditor;
 import net.jselby.escapists.objects.ObjectRegistry;
+import net.jselby.escapists.objects.Objects;
 import net.jselby.escapists.objects.WorldObject;
 import net.jselby.escapists.filters.PreFilters;
 import net.jselby.escapists.utils.BlowfishCompatEncryption;
@@ -336,7 +337,7 @@ public class Map {
         }
     }
 
-    public int count(ObjectRegistry.Objects object) {
+    public int count(Objects object) {
         return count(object.getID());
     }
 
@@ -352,11 +353,11 @@ public class Map {
 
     public void save(File selectedFile) throws IOException {
         // Do checks
-        if (count(ObjectRegistry.Objects.AI_WP_GUARD_ROLLCALL) == 0) {
+        if (count(Objects.AI_WP_GUARD_ROLLCALL) == 0) {
             throw new IOException(COMPILE_ERROR + "Invalid amount of rollcall guard waypoints - \n" +
                     "You need more then 1.");
         }
-        if (count(ObjectRegistry.Objects.AI_WP_GUARD_GENERAL) == 0) {
+        if (count(Objects.AI_WP_GUARD_GENERAL) == 0) {
             throw new IOException(COMPILE_ERROR + "Invalid amount of general guard waypoints - \nYou need more then 1.");
         }
 

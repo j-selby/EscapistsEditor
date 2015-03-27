@@ -30,6 +30,7 @@ public class PropertiesDialog extends JDialog {
         this.renderer = renderer;
         this.mapToEdit = mapToEdit;
 
+        // TODO: Add dropdown menus for some of these options
         // Build fields
         ArrayList<Component[]> fieldsToEdit = new ArrayList<>();
         fieldsToEdit.add(stringField(mapToEdit, "Prison Name", "Info.MapName"));

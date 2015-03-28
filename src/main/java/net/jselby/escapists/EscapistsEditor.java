@@ -61,9 +61,6 @@ public class EscapistsEditor {
     public static String updateMessage;
 
     private void start() {
-        System.out.println("The Escapists Editor v" + VERSION);
-        System.out.println("By jselby");
-
         System.out.println("=========================");
         System.out.println("Operating system: " + System.getProperty("os.name"));
         System.out.println("Java version: " + System.getProperty("java.version"));
@@ -296,11 +293,13 @@ public class EscapistsEditor {
 
     public static void main(String[] args) {
         try {
-            // TODO: Replace JCommander with internal implementation to save disk space
             // Redirect SysOut
             OutputStream fileOut = new FileOutputStream(new File("escapistseditor.log"));
             System.setOut(new LoggingDebugPrintStream(fileOut, System.out));
             System.setErr(new LoggingDebugPrintStream(fileOut, System.err));
+
+            System.out.println("The Escapists Editor v" + VERSION);
+            System.out.println("By jselby");
 
             // Parse
             EscapistsEditor editor = new EscapistsEditor();
@@ -356,14 +355,10 @@ public class EscapistsEditor {
                             } else if (name.equalsIgnoreCase("escapists-path")) {
                                 editor.escapistsPathUser = val;
                             }
-                            System.out.println(name + " = \"" + val + "\"");
                         } else {
-                            System.out.println("Invalid command arguments - arg.");
-                            System.out.println(name + " = \"\"");
                             editor.showHelp = true;
                         }
                     }  else {
-                        System.out.println("Invalid command arguments - check.");
                         System.out.println(args[pos]);
                         editor.showHelp = true;
                     }

@@ -1,21 +1,27 @@
 package net.jselby.escapists.editor.elements;
 
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Worker;
+import javafx.embed.swing.JFXPanel;
+import javafx.scene.Scene;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import net.jselby.escapists.mapping.Map;
 import net.jselby.escapists.mapping.MapRenderer;
-import net.jselby.escapists.utils.IOUtils;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.events.Event;
+import org.w3c.dom.events.EventTarget;
+import org.w3c.dom.html.HTMLAnchorElement;
 
 import javax.swing.*;
-import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
-import javax.swing.text.html.HTMLEditorKit;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.net.URISyntaxException;
+import java.lang.reflect.Field;
 import java.net.URL;
 
 /**
@@ -24,7 +30,7 @@ import java.net.URL;
  * @author j_selby
  */
 public class MapRendererComponent extends JPanel {
-    private final JScrollPane panel;
+    private final JFXPanel panel;
     private float origWidth;
     private float origHeight;
 
@@ -67,65 +73,31 @@ public class MapRendererComponent extends JPanel {
             }
         });
 
-        final JEditorPane area = new JEditorPane();
-        area.setEditable(false);
-        area.setOpaque(false);
-        area.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 16));
-        area.setText("Escapists Map Editor\n" +
-                "Written by jselby\nhttp://redd.it/2wacp2\n\n" +
-                "You don't have a map loaded currently - \n Go to File in the top left, and press a button there!\n" +
-                "\nLoading...");
-        area.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        area.addHyperlinkListener(new HyperlinkListener() {
-            public void hyperlinkUpdate(HyperlinkEvent e) {
-                if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-                    if(Desktop.isDesktopSupported()) {
-                        try {
-                            Desktop.getDesktop().browse(e.getURL().toURI());
-                        } catch (IOException | URISyntaxException e1) {
-                            e1.printStackTrace();
-                        }
-                    }
-                }
-            }
-        });
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                String txt;
-                try {
-                    txt = IOUtils.toString(new URL("http://escapists.jselby.net/welcome.html"));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    txt = area.getText().replace("Loading...",
-                            "Failed to load daily content: " +
-                                    e.getClass().getSimpleName() +
-                                    ": " + e.getLocalizedMessage() + "\n\n\n");
-                }
-                final String finalTxt = txt;
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (!finalTxt.contains("Failed")) {
-                            area.setContentType("text/html");
-                            area.setEditorKit(new HTMLEditorKit());
-                        }
-                        try {
-                            area.setText(finalTxt);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        panel.validate();
-                    }
-                });
-            }
-        }).start();
-
-        panel = new JScrollPane(area);
+        panel = new JFXPanel();
         panel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 
         setLayout(new BorderLayout());
         setMap(map);
+
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                double oldWidth = panel.getSize().getWidth();
+                double oldHeight = panel.getSize().getWidth();
+                double newWidth = getSize().getWidth();
+                double newHeight = getSize().getWidth();
+                if (oldWidth != newWidth || newHeight != oldHeight) {
+                    panel.setSize(getSize());
+                }
+            }
+        });
+
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                initFX(panel);
+            }
+        });
     }
 
     @Override
@@ -137,7 +109,6 @@ public class MapRendererComponent extends JPanel {
             g.drawImage(render, 0, 0, null);
         }
 
-        // Change the size of the panel
         Dimension size = new Dimension((int) (origWidth * zoomFactor),(int) (origHeight * zoomFactor));
         setSize(size);
         setPreferredSize(size);
@@ -205,12 +176,58 @@ public class MapRendererComponent extends JPanel {
             origWidth = (map.getHeight() - 1) * 16;
             origHeight = (map.getWidth() - 3) * 16;
         } else {
-            origHeight = 300;
-            origWidth = 700;
+            origHeight = 500;
+            origWidth = 734;
 
             add(panel, BorderLayout.NORTH);
         }
 
         refresh();
     }
+
+    private static void initFX(final JFXPanel fxPanel) {
+        final WebView webView = new WebView();
+        fxPanel.setScene(new Scene(webView));
+
+        // Obtain the webEngine to navigate
+        final WebEngine webEngine = webView.getEngine();
+        webEngine.loadContent("Escapists Map Editor\n" +
+                "Written by jselby\nhttp://redd.it/2wacp2\n\n" +
+                "You don't have a map loaded currently - \nGo to File in the top left, and press a button there!\n" +
+                "Loading...");
+        webEngine.load("http://escapists.jselby.net/welcome/");
+
+        webView.getEngine().getLoadWorker().stateProperty().addListener(new ChangeListener<Worker.State>() {
+            @Override
+            public void changed(ObservableValue<? extends Worker.State> observable,
+                                Worker.State oldValue, Worker.State newValue) {
+                if (newValue == Worker.State.SUCCEEDED) {
+                    final Document document = webEngine.getDocument();
+                    NodeList nodeList = document.getElementsByTagName("a");
+                    for (int i = 0; i < nodeList.getLength(); i++) {
+                        Node node = nodeList.item(i);
+                        EventTarget eventTarget = (EventTarget) node;
+                        eventTarget.addEventListener("click", new org.w3c.dom.events.EventListener() {
+                            @Override
+                            public void handleEvent(Event evt) {
+                                EventTarget target = evt.getCurrentTarget();
+                                HTMLAnchorElement anchorElement = (HTMLAnchorElement) target;
+                                String href = anchorElement.getHref();
+                                Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+                                if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+                                    try {
+                                        desktop.browse(new URL(href).toURI());
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                                evt.preventDefault();
+                            }
+                        }, false);
+                    }
+                }
+            }
+        });
+    }
+
 }

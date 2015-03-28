@@ -1,7 +1,5 @@
 package net.jselby.escapists;
 
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
 import net.jselby.escapists.editor.elements.RenderView;
 import net.jselby.escapists.mapping.Map;
 import net.jselby.escapists.mapping.MapRenderer;
@@ -16,6 +14,7 @@ import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URL;
+import java.security.NoSuchAlgorithmException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 
@@ -29,28 +28,20 @@ public class EscapistsEditor {
     public static final boolean DEBUG = false;
 
     // -- Arguments
-    @Parameter(names = "--decrypt", description = "Decrypts the passed file.")
     private String decryptFile;
 
-    @Parameter(names = "--encrypt", description = "Encrypts the passed file.")
     private String encryptFile;
 
-    @Parameter(names = "--encrypt-and-install", description = "Encrypts and installs the passed file.")
     private String encryptAndInstallFile;
 
-    @Parameter(names = "--render", description = "Renders the passed file.")
     private String renderMap;
 
-    @Parameter(names = "--edit", description = "Edits the passed unencrypted map.")
     private String editMap;
 
-    @Parameter(names = "--help", description = "Shows this help.", hidden = true)
     private boolean showHelp;
 
-    @Parameter(names = "--render-all", description = "Renders all maps.")
     private boolean renderAll;
 
-    @Parameter(names = "--escapists-path", description = "Forces a path for The Escapists install directory.")
     private String escapistsPathUser;
 
 
@@ -77,15 +68,6 @@ public class EscapistsEditor {
         System.out.println("Operating system: " + System.getProperty("os.name"));
         System.out.println("Java version: " + System.getProperty("java.version"));
 
-        Runtime runtime = Runtime.getRuntime();
-        NumberFormat format = NumberFormat.getInstance();
-        long allocatedMemory = runtime.totalMemory();
-        long freeMemory = runtime.freeMemory();
-        System.out.println("Free memory: " + format.format(freeMemory / 1024 / 1024) + " MB");
-        System.out.println("Allocated memory: " + format.format(allocatedMemory / 1024 / 1024) + " MB");
-        System.out.println("Used memory: " + format.format(((allocatedMemory - freeMemory)) / 1024 / 1024) + " MB");
-        System.out.println("=========================");
-
         registry = new ObjectRegistry("net.jselby.escapists.objects");
 
         // Discover Escapists directory
@@ -105,6 +87,19 @@ public class EscapistsEditor {
             fatalError("Escapists is not installed @ " + escapistsPath.getPath());
         }
 
+        // I don't support piracy, in terms of obtaining support for such.
+        // This hashes the steam_api.dll, checking for bad stuff there.
+        File file = new File(escapistsPath, "steam_api.dll");
+        if (file.exists()) {
+            try {
+                System.out.println("Hash: " + IOUtils.hash(file));
+            } catch (Exception ignored) {}
+        } else {
+            System.out.println("Warning: No Steam API in Escapists dir!");
+        }
+
+        System.out.println("=========================");
+
         // Parse arguments
         System.out.println("Discovered Escapists @ " + escapistsPath.getPath());
 
@@ -112,6 +107,9 @@ public class EscapistsEditor {
         Thread updateThread = new Thread(new Runnable() {
             @Override
             public void run() {
+                if (!showGUI) {
+                    return;
+                }
                 try {
                     String newVersion = IOUtils.toString(new URL("http://escapists.jselby.net/version.txt")).trim();
                     String message = "";
@@ -131,6 +129,7 @@ public class EscapistsEditor {
             }
         });
         updateThread.start();
+
     }
 
     private static void fatalError(String s) {
@@ -303,26 +302,85 @@ public class EscapistsEditor {
             System.setOut(new LoggingDebugPrintStream(fileOut, System.out));
             System.setErr(new LoggingDebugPrintStream(fileOut, System.err));
 
-            if (args.length == 0) {
-                showGUI = true;
-            }
-
             // Parse
             EscapistsEditor editor = new EscapistsEditor();
 
-            JCommander commander = new JCommander(editor);
-            commander.setAcceptUnknownOptions(false);
-            commander.setProgramName("java -jar escapistseditor.jar");
-            try {
-                commander.parse(args);
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-                commander.usage();
-                System.exit(-1);
+            if (args.length == 0) {
+                showGUI = true;
+            } else if (args.length > 0) {
+                // Check for a command
+                int pos = 0;
+                while(pos < args.length) {
+                    if (args[pos].startsWith("-")) {
+                        // Sure is. Get its name
+                        String name = args[pos].substring(1).toLowerCase();
+                        while (name.startsWith("-")) {
+                            name = name.substring(1);
+                        }
+
+                        if (name.startsWith("help") && args.length == 1) {
+                            editor.showHelp = true;
+                        }
+                        if (name.startsWith("render-all") && args.length == 1) {
+                            editor.renderAll = true;
+                        } else if (args.length > 1) {
+                            String val = args[pos + 1];
+
+                            if (args[pos + 1].startsWith("\"")) {
+                                // Multi-space arg
+                                val = val.substring(1);
+                                for (int i = pos + 2; i < args.length; i++) {
+                                    pos = i;
+                                    String str = args[i];
+                                    val += " " + str;
+                                    if (str.endsWith("\"")) {
+                                        val = val.substring(0, val.length() - 1);
+                                        break;
+                                    }
+                                }
+                            } else {
+                                pos++;
+                            }
+
+                            // Parse
+                            if (name.equalsIgnoreCase("decrypt")) {
+                                editor.decryptFile = val;
+                            } else if (name.equalsIgnoreCase("encrypt")) {
+                                editor.encryptFile = val;
+                            } else if (name.equalsIgnoreCase("encrypt-and-install")) {
+                                editor.encryptAndInstallFile = val;
+                            } else if (name.equalsIgnoreCase("render")) {
+                                editor.renderMap = val;
+                            } else if (name.equalsIgnoreCase("edit")) {
+                                editor.editMap = val;
+                            } else if (name.equalsIgnoreCase("escapists-path")) {
+                                editor.escapistsPathUser = val;
+                            }
+                            System.out.println(name + " = \"" + val + "\"");
+                        } else {
+                            System.out.println("Invalid command arguments - arg.");
+                            System.out.println(name + " = \"\"");
+                            editor.showHelp = true;
+                        }
+                    }  else {
+                        System.out.println("Invalid command arguments - check.");
+                        System.out.println(args[pos]);
+                        editor.showHelp = true;
+                    }
+                    pos++;
+                }
             }
+
             if (editor.showHelp) {
-                commander.usage();
-                System.exit(0);
+                System.out.println("Usage:");
+                System.out.println(" --decrypt\tDecrypts the passed file.");
+                System.out.println(" --encrypt\tEncrypts the passed file.");
+                System.out.println(" --encrypt-and-install\tEncrypts and installs the passed file.");
+                System.out.println(" --render\tRenders the passed file.");
+                System.out.println(" --edit\tEdits the passed unencrypted map.");
+                System.out.println(" --render-all\tRenders all maps.");
+                System.out.println(" --escapists-path\tForces a path for The Escapists install directory.");
+                return;
             }
 
             editor.start();

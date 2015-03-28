@@ -61,10 +61,5 @@
     </build>
 
     <dependencies>
-        <dependency>
-            <groupId>com.beust</groupId>
-            <artifactId>jcommander</artifactId>
-            <version>1.47</version>
-        </dependency>
     </dependencies>
 </project>

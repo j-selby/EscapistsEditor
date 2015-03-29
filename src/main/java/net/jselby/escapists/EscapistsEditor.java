@@ -14,8 +14,6 @@ import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URL;
-import java.security.NoSuchAlgorithmException;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 
 /**
@@ -24,7 +22,7 @@ import java.util.ArrayList;
  * @author j_selbys
  */
 public class EscapistsEditor {
-    public static final String VERSION = "1.5.0";
+    public static final String VERSION = "1.5.1";
     public static final boolean DEBUG = false;
 
     // -- Arguments

@@ -156,12 +156,6 @@ public class EscapistsEditor {
                 maps.add(file.getName());
             }
         }
-        for (File file : new File(escapistsPath, "Data" + File.separator +
-                "Maps" + File.separator + "Custom").listFiles()) {
-            if (file.isFile()) {
-                maps.add("Custom" + File.separator + file.getName());
-            }
-        }
         System.out.println("Listing " + maps.size() + " maps.");
         return maps.toArray(new String[maps.size()]);
     }

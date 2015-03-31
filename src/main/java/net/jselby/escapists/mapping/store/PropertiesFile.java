@@ -113,6 +113,10 @@ public class PropertiesFile {
         return build;
     }
 
+    public void setSection(String key, PropertiesSection value) {
+        sections.put(key, value);
+    }
+
     private enum ReadState {
         UNDEFINED,
         KEYS

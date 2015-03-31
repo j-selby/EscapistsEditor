@@ -53,8 +53,15 @@ public class MapSelectionGUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                final JFileChooser fc = new JFileChooser();
-                fc.setFileFilter(new FileFilter() {
+                final JFileChooser fc = new JFileChooser() {
+                    @Override
+                    public void approveSelection() {
+                        if (getSelectedFile().isFile()) {
+                            super.approveSelection();
+                        }
+                    }
+                };;
+                FileFilter filter = new FileFilter() {
                     @Override
                     public boolean accept(File f) {
                         return f.getName().toLowerCase().endsWith(".map") || f.isDirectory()
@@ -65,8 +72,20 @@ public class MapSelectionGUI extends JFrame {
                     public String getDescription() {
                         return ".map or .pmap";
                     }
-                });
+                };
+                fc.addChoosableFileFilter(filter);
+                fc.setFileFilter(filter);
+                fc.addChoosableFileFilter(new FileFilter() {
+                    @Override
+                    public boolean accept(File f) {
+                        return f.getName().toLowerCase().endsWith(".proj") || f.isDirectory();
+                    }
 
+                    @Override
+                    public String getDescription() {
+                        return ".proj Project";
+                    }
+                });
                 int result = fc.showDialog(MapSelectionGUI.this, "Load");
                 if (result == JFileChooser.APPROVE_OPTION) {
                     mapsSelector.setEditable(false);

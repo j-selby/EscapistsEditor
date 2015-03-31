@@ -145,18 +145,19 @@ public class Map {
         }
 
         // Decode tiles for this
+        String texName = (String) get("Info.Tileset");
         File tilesFile = new File(editor.escapistsPath, "Data" +
-                File.separator + "images" + File.separator + "tiles_" + rawName + ".gif");
+                File.separator + "images" + File.separator + "tiles_" + texName + ".gif");
         if (!tilesFile.exists()) {
-            System.out.println(" > No tiles found for \"" + rawName + "\". Using \"perks\".");
+            System.out.println(" > No tiles found for \"" + texName + "\". Using \"perks\".");
             tilesFile = new File(editor.escapistsPath, "Data" +
                     File.separator + "images" + File.separator + "tiles_perks.gif");
         }
 
         File background = new File(editor.escapistsPath, "Data" +
-                File.separator + "images" + File.separator + "ground_" + rawName + ".gif");
+                File.separator + "images" + File.separator + "ground_" + texName + ".gif");
         if (!background.exists()) {
-            System.out.println(" > No background found for \"" + rawName + "\". Using \"perks\".");
+            System.out.println(" > No background found for \"" + texName + "\". Using \"perks\".");
             background = new File(editor.escapistsPath, "Data" +
                     File.separator + "images" + File.separator + "ground_perks.gif");
         }

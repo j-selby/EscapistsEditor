@@ -70,6 +70,7 @@ public class PreFilters {
             map.setMap("Perim", section);
             map.set("Info.Custom", 2);
             map.set("Info.Rdy", 1);
+            map.set("Info.Warden", "Bob");
         }
     }
 }

@@ -38,6 +38,10 @@ public class PropertiesDialog extends JDialog {
         fieldsToEdit.add(numberField(mapToEdit, "Guards (1- around 20)", "Info.Guards"));
         fieldsToEdit.add(numberField(mapToEdit, "NPC Level (1-3 known)", "Info.NPClvl"));
         fieldsToEdit.add(stringField(mapToEdit, "Music", "Info.Music"));
+        fieldsToEdit.add(stringField(mapToEdit, "Fight Frequency", "Info.FightFreq"));
+        fieldsToEdit.add(stringField(mapToEdit, "Tileset", "Info.Tileset"));
+        fieldsToEdit.add(stringField(mapToEdit, "Warden name", "Info.Warden"));
+        fieldsToEdit.add(textBoxField(mapToEdit, "Intro text", "Info.Intro"));
 
         // Jobs
         fieldsToEdit.add(stringField(mapToEdit, "Starting Job (first letter CAPITAL)", "Jobs.StartingJob"));
@@ -61,13 +65,10 @@ public class PropertiesDialog extends JDialog {
         fieldsToEdit.add(new Component[]{experimental, experimental2});
 
         fieldsToEdit.add(stringField(mapToEdit, "Map Type", "Info.MapType"));
-        fieldsToEdit.add(stringField(mapToEdit, "Fight Frequency", "Info.FightFreq"));
         fieldsToEdit.add(stringField(mapToEdit, "Routine Set", "Info.RoutineSet"));
-        fieldsToEdit.add(stringField(mapToEdit, "Tileset", "Info.Tileset"));
         fieldsToEdit.add(textBoxField(mapToEdit, "Hint (Part 1)", "Info.Hint1"));
         fieldsToEdit.add(textBoxField(mapToEdit, "Hint (Part 2)", "Info.Hint2"));
         fieldsToEdit.add(textBoxField(mapToEdit, "Hint (Part 3)", "Info.Hint3"));
-        fieldsToEdit.add(textBoxField(mapToEdit, "Intro text", "Info.Intro"));
 
         // Build GUI
         JPanel scrollableContent = new JPanel();

@@ -7,6 +7,7 @@ import net.jselby.escapists.objects.Objects;
 import net.jselby.escapists.objects.WorldObject;
 import net.jselby.escapists.utils.IOUtils;
 import net.jselby.escapists.utils.StringUtils;
+import net.jselby.escapists.utils.logging.Rollbar;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -141,7 +142,12 @@ public class RenderView extends JFrame {
                     @Override
                     public void run() {
                         if (RenderView.this.mapToEdit != null) {
-                            new PropertiesDialog(RenderView.this, renderer, RenderView.this.mapToEdit);
+                            try {
+                                new PropertiesDialog(RenderView.this, renderer, RenderView.this.mapToEdit);
+                            } catch (Exception err) {
+                                err.printStackTrace();
+                                Rollbar.fatal(err);
+                            }
                         } else {
                             editor.dialog("You must have a map loaded!");
                         }

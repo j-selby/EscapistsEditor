@@ -79,7 +79,6 @@ public class Rollbar {
         data.put("language", "java");
         data.put("framework", "java");
         data.put("platform", "client");
-        data.put("title", "client");
 
         JSONObject client = new JSONObject();
         client.put("java_version", System.getProperty("java.version"));

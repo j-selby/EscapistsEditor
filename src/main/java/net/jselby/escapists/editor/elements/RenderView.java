@@ -112,7 +112,14 @@ public class RenderView extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 // Save map
                 // Get our target
-                JFileChooser fc = new JFileChooser();
+                JFileChooser fc = new JFileChooser() {
+                    @Override
+                    public void approveSelection() {
+                        if (getSelectedFile().isFile() || !getSelectedFile().exists()) {
+                            super.approveSelection();
+                        }
+                    }
+                };
                 File file = new File(System.getProperty("user.home"));
                 File documents = new File(file, "Documents" + File.separator
                         + "The Escapists" + File.separator + "Custom Maps");
@@ -122,23 +129,38 @@ public class RenderView extends JFrame {
                     fc.setCurrentDirectory(new File(editor.escapistsPath,
                             "Data" + File.separator + "Maps"));
                 }
-                fc.addChoosableFileFilter(new FileFilter() {
+                FileFilter filter = new FileFilter() {
                     @Override
                     public boolean accept(File f) {
-                        return f.getName().toLowerCase().endsWith(".pmap");
+                        return f.getName().toLowerCase().endsWith(".pmap") || f.isDirectory();
                     }
 
                     @Override
                     public String getDescription() {
                         return ".pmap Maps";
                     }
+                };
+                fc.addChoosableFileFilter(filter);
+                fc.setFileFilter(filter);
+                fc.addChoosableFileFilter(new FileFilter() {
+                    @Override
+                    public boolean accept(File f) {
+                        return f.getName().toLowerCase().endsWith(".proj") || f.isDirectory();
+                    }
+
+                    @Override
+                    public String getDescription() {
+                        return ".proj Project";
+                    }
                 });
                 int dialog = fc.showSaveDialog(RenderView.this);
                 if (JFileChooser.APPROVE_OPTION == dialog) {
                     try {
                         File file1 = fc.getSelectedFile();
-                        if (!file1.getName().toLowerCase().endsWith(".pmap")) {
-                            file1 = new File(file1.getParent(), file1.getName() + ".pmap");
+                        String extension = fc.getFileFilter() != null ? fc.getFileFilter().getDescription().split(" ")[0]
+                                : ".pmap";
+                        if (!file1.getName().toLowerCase().endsWith(extension)) {
+                            file1 = new File(file1.getParent(), file1.getName() + extension);
                         }
                         mapToEdit.save(file1);
                     } catch (Exception error) {
@@ -200,8 +222,11 @@ public class RenderView extends JFrame {
                 });
             }
 
-            public void menuDeselected(MenuEvent e) {}
-            public void menuCanceled(MenuEvent e) {}
+            public void menuDeselected(MenuEvent e) {
+            }
+
+            public void menuCanceled(MenuEvent e) {
+            }
         });
         menuBar.add(aboutMenu);
         menuBar.setAlignmentX(LEFT_ALIGNMENT);

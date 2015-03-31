@@ -225,6 +225,10 @@ public class Map {
         }
     }
 
+    public void setMap(String key, PropertiesSection value) {
+        sections.setSection(key, value);
+    }
+
     public PropertiesSection getMap(String key) {
         return sections.getSection(key);
     }

@@ -306,13 +306,116 @@ public class Map {
 
     public void save(File selectedFile) throws IOException {
         // Do checks
-        if (count(Objects.AI_WP_GUARD_ROLLCALL) == 0) {
+        // Correct points for guards
+        if (count(Objects.AI_WP_GUARD_ROLLCALL) != 3) {
             throw new IOException("Compile Error: Invalid amount of rollcall guard waypoints - \n" +
-                    "You need more then 1.");
+                    "You need 3.");
         }
-        if (count(Objects.AI_WP_GUARD_GENERAL) == 0) {
-            throw new IOException("Compile Error: Invalid amount of general guard waypoints - \nYou need more then 1.");
+        if (count(Objects.AI_WP_GUARD_MEALS) != 3) {
+            throw new IOException("Compile Error: Invalid amount of meal guard waypoints - \n" +
+                    "You need 3.");
         }
+        if (count(Objects.AI_WP_GUARD_EXERCISE) != 3) {
+            throw new IOException("Compile Error: Invalid amount of exercise guard waypoints - \n" +
+                    "You need 3.");
+        }
+        if (count(Objects.AI_WP_GUARD_SHOWERS) != 3) {
+            throw new IOException("Compile Error: Invalid amount of shower guard waypoints - \n" +
+                    "You need 3.");
+        }
+        if (count(Objects.GUARD_BED) < 2) {
+            throw new IOException("Compile Error: Invalid amount of guard beds - \n" +
+                    "You need more than 1.");
+        }
+        if (count(Objects.AI_WP_GUARD_GENERAL) < 5) {
+            throw new IOException("Compile Error: Invalid amount of general guard waypoints - \nYou need more than 4.");
+        }
+
+        // Workout equipment
+        int count = 0;
+        for (Objects object : Objects.values()) {
+            if (object.name().toLowerCase().startsWith("training")) {
+                count += count(object);
+            }
+        }
+        int required = Integer.parseInt(get("Info.Inmates").toString());
+        if (count < required) {
+            throw new IOException("Compile Error: Invalid amount of training objects - \nYou need more than " + (count - 1) + ".");
+        }
+
+        // Player stuff
+        if (count(Objects.FORCED_PRISONER_BED) != 1) {
+            throw new IOException("Compile Error: You need a single forced prisoner bed for the player!");
+        }
+        if (count(Objects.FORCED_PRISONER_DESK) != 1) {
+            throw new IOException("Compile Error: You need a single forced prisoner desk for the player!");
+        }
+        if (count(Objects.SOLITARY_BED) == 0) {
+            throw new IOException("Compile Error: You need at least 1 solitary bed!");
+        }
+        if (count(Objects.MEDICAL_BED) == 0) {
+            throw new IOException("Compile Error: You need at least 1 medical bed!");
+        }
+
+        // Other desk stuff
+        if (count(Objects.BED) != (required - 1)) {
+            throw new IOException("Compile Error: You need " + (required - 1) + " general beds for prisoners!");
+        }
+
+        // Lights
+        if (count(Objects.LIGHT) == 0) {
+            throw new IOException("Compile Error: You need some Light objects!");
+        }
+
+        // Food trays
+        if (count(Objects.SERVING_TABLE) < 3) {
+            throw new IOException("Compile Error: You need at least 3 serving tables!");
+        }
+        if (count(Objects.AI_WP_PRISONER_MEALS) == 0) {
+            throw new IOException("Compile Error: You need a prisoner meals waypoint!");
+        }
+        if (count(Objects.CHAIR) < (required - 1)) {
+            throw new IOException("Compile Error: You need at least " + (required - 1) + " chairs in the canteen!");
+        }
+
+        // Warden name
+        if (get("Info.Warden") == null || get("Info.Warden").toString().length() == 0) {
+            throw new IOException("Compile Error: You need a warden name!");
+        }
+
+        // Other NPC prisoners
+        if (count(Objects.AI_WP_PRISONER_ROLLCALL) != (required - 1)) {
+            throw new IOException("Compile Error: You need " + (required - 1) + " rollcall waypoints for prisoners!");
+        }
+        if (count(Objects.BED) != (required - 1)) {
+            throw new IOException("Compile Error: You need " + (required - 1) + " standard beds for non-player prisoners!");
+        }
+        if (count(Objects.PERSONAL_DESK) != (required - 1)) {
+            throw new IOException("Compile Error: You need " + (required - 1) + " standard personal desks for non-player prisoners!");
+        }
+        if (count(Objects.AI_WP_PRISONER_GENERAL) < 5) {
+            throw new IOException("Compile Error: You need at least 5 general waypoints for prisoners!");
+        }
+        if (count(Objects.AI_NPC_SPAWN) != 1) {
+            throw new IOException("Compile Error: You need a single AI Npc Spawn point!");
+        }
+        if (count(Objects.AI_WP_DOCTOR_WORK) != 1) {
+            throw new IOException("Compile Error: You need a single AI Doctor Work waypoint!");
+        }
+        if (count(Objects.AI_WP_EMPLOYMENT_OFFICER) != 1) {
+            throw new IOException("Compile Error: You need a single AI Employment Officer waypoint!");
+        }
+
+        // TODO: Zones
+        /**
+         25) ZONES: Solitary missing
+         26) ZONES: Player cell missing
+         27) ZONES: Rollcall missing
+         28) ZONES: Canteen missing
+         29) ZONES: Showers missing
+         30) ZONES: Gym missing
+         31) ZONES: Cells1 missing
+         */
 
         // Count tiles, more then 1
         boolean foundTile = false;
@@ -368,7 +471,7 @@ public class Map {
         }
 
         // Serialize Objects
-        int count = 1;
+        int objCount = 1;
         sections.getSection("Objects").clear();
         for (WorldObject worldObject : objects) {
             int x = worldObject.getX();
@@ -377,8 +480,8 @@ public class Map {
             int argument = worldObject.getIDArgument();
 
             if (id != 0) {
-                sections.getSection("Objects").put(count + "", x + "x" + y + "x" + id + "x" + argument);
-                count++;
+                sections.getSection("Objects").put(objCount + "", x + "x" + y + "x" + id + "x" + argument);
+                objCount++;
             }
         }
 

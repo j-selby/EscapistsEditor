@@ -176,7 +176,7 @@ public class PropertiesDialog extends JDialog {
     }
 
     private static JComponent[] booleanField(final Map mapToEdit, String name, final String valueSrc) {
-        String val = (((String) mapToEdit.get(valueSrc)).trim());
+        String val = (mapToEdit.get(valueSrc) + "").trim();
         int startingContent = StringUtils.isNumber(val) ? Integer.parseInt(val) : 0;
 
         JLabel label = new JLabel(name);
@@ -199,6 +199,9 @@ public class PropertiesDialog extends JDialog {
 
     private static JComponent[] textBoxField(final Map mapToEdit, String name, final String valueSrc) {
         String startingContent = (String) mapToEdit.get(valueSrc);
+        if (startingContent == null) {
+            startingContent = "";
+        }
         startingContent = startingContent.trim();
 
         JLabel label = new JLabel(name);

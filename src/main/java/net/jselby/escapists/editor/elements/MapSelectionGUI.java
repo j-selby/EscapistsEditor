@@ -57,12 +57,13 @@ public class MapSelectionGUI extends JFrame {
                 fc.setFileFilter(new FileFilter() {
                     @Override
                     public boolean accept(File f) {
-                        return f.getName().toLowerCase().endsWith(".map") || f.isDirectory();
+                        return f.getName().toLowerCase().endsWith(".map") || f.isDirectory()
+                                || f.getName().toLowerCase().endsWith(".pmap");
                     }
 
                     @Override
                     public String getDescription() {
-                        return ".map";
+                        return ".map or .pmap";
                     }
                 });
 

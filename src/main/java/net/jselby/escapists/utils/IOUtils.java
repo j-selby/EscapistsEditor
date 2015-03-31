@@ -52,4 +52,15 @@ public class IOUtils {
     public static String toString(URL url) throws IOException {
         return new String(toByteArray(url));
     }
+
+    public static void write(File f, String s) throws IOException {
+        write(f, s.getBytes());
+    }
+
+    public static void write(File f, byte[] s) throws IOException {
+        try (FileOutputStream out = new FileOutputStream(f)) {
+            out.write(s);
+            out.flush();
+        }
+    }
 }

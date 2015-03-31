@@ -1,4 +1,4 @@
-package net.jselby.escapists.utils;
+package net.jselby.escapists.utils.logging;
 
 import java.io.IOException;
 import java.io.OutputStream;

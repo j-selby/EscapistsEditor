@@ -6,8 +6,9 @@ import net.jselby.escapists.mapping.MapRenderer;
 import net.jselby.escapists.objects.ObjectRegistry;
 import net.jselby.escapists.utils.BlowfishCompatEncryption;
 import net.jselby.escapists.utils.IOUtils;
-import net.jselby.escapists.utils.LoggingDebugPrintStream;
+import net.jselby.escapists.utils.logging.LoggingDebugPrintStream;
 import net.jselby.escapists.utils.SteamFinder;
+import net.jselby.escapists.utils.logging.Rollbar;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -87,7 +88,8 @@ public class EscapistsEditor {
         File file = new File(escapistsPath, "steam_api.dll");
         if (file.exists()) {
             try {
-                System.out.println("Hash: " + IOUtils.hash(file));
+                String hash = IOUtils.hash(file);
+                System.out.println("Hash: " + hash);
             } catch (Exception ignored) {}
         } else {
             System.out.println("Warning: No Steam API in Escapists dir!");
@@ -180,10 +182,7 @@ public class EscapistsEditor {
         byte[] content = BlowfishCompatEncryption.decrypt(mapPath);
         File decryptedMap = new File(name.split("\\.")[0] + ".decrypted" + fileExtension);
         System.out.println("Decrypting \"" + name + " to \"" + decryptedMap.getPath() + "\"...");
-        try (FileOutputStream out = new FileOutputStream(decryptedMap)) {
-            out.write(content);
-            out.flush();
-        }
+        IOUtils.write(decryptedMap, content);
     }
 
     public void render(String name) throws IOException {
@@ -237,11 +236,8 @@ public class EscapistsEditor {
         } else {
             decryptedMap = new File(name.split("\\.")[0] + ".encrypted" + fileExtension);
         }
-        System.out.println("Decrypting \"" + name + " to \"" + decryptedMap.getPath() + "\"...");
-        try (FileOutputStream out = new FileOutputStream(decryptedMap)) {
-            out.write(content);
-            out.flush();
-        }
+        System.out.println("Encrypting \"" + name + " to \"" + decryptedMap.getPath() + "\"...");
+        IOUtils.write(decryptedMap, content);
     }
 
     public void edit(byte[] decryptedBytes) throws IOException {
@@ -291,6 +287,8 @@ public class EscapistsEditor {
 
     public static void main(String[] args) {
         try {
+            Rollbar.init();
+
             // Redirect SysOut
             OutputStream fileOut = new FileOutputStream(new File("escapistseditor.log"));
             System.setOut(new LoggingDebugPrintStream(fileOut, System.out));
@@ -317,8 +315,7 @@ public class EscapistsEditor {
 
                         if (name.startsWith("help") && args.length == 1) {
                             editor.showHelp = true;
-                        }
-                        if (name.startsWith("render-all") && args.length == 1) {
+                        } else if (name.startsWith("render-all") && args.length == 1) {
                             editor.renderAll = true;
                         } else if (args.length > 1) {
                             String val = args[pos + 1];
@@ -412,8 +409,26 @@ public class EscapistsEditor {
                 editor.edit(editor.editMap);
             }
         } catch (Exception e) {
-           fatalError(e);
+            fatalError(e, Rollbar.fatal(e));
         }
+    }
+
+    public static void fatalError(Exception e, Thread fatal) {
+        String s = "Error: ";
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        PrintStream stream = new PrintStream(out);
+        e.printStackTrace(stream);
+        s += out.toString();
+        System.err.println(s);
+        if (showGUI) {
+            JOptionPane.showMessageDialog(null, s);
+        }
+        try {
+            fatal.join();
+        } catch (InterruptedException e1) {
+            e1.printStackTrace();
+        }
+        System.exit(1);
     }
 
     public static void fatalError(Exception e) {

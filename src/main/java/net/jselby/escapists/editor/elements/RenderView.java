@@ -15,6 +15,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
+import javax.swing.filechooser.FileFilter;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -112,11 +113,34 @@ public class RenderView extends JFrame {
                 // Save map
                 // Get our target
                 JFileChooser fc = new JFileChooser();
-                fc.setCurrentDirectory(new File(editor.escapistsPath, "Data" + File.separator + "Maps"));
+                File file = new File(System.getProperty("user.home"));
+                File documents = new File(file, "Documents" + File.separator
+                        + "The Escapists" + File.separator + "Custom Maps");
+                if (documents.exists()) {
+                    fc.setCurrentDirectory(documents);
+                } else {
+                    fc.setCurrentDirectory(new File(editor.escapistsPath,
+                            "Data" + File.separator + "Maps"));
+                }
+                fc.addChoosableFileFilter(new FileFilter() {
+                    @Override
+                    public boolean accept(File f) {
+                        return f.getName().toLowerCase().endsWith(".pmap");
+                    }
+
+                    @Override
+                    public String getDescription() {
+                        return ".pmap Maps";
+                    }
+                });
                 int dialog = fc.showSaveDialog(RenderView.this);
                 if (JFileChooser.APPROVE_OPTION == dialog) {
                     try {
-                        mapToEdit.save(fc.getSelectedFile());
+                        File file1 = fc.getSelectedFile();
+                        if (!file1.getName().toLowerCase().endsWith(".pmap")) {
+                            file1 = new File(file1.getParent(), file1.getName() + ".pmap");
+                        }
+                        mapToEdit.save(file1);
                     } catch (Exception error) {
                         error.printStackTrace();
                         editor.dialog(error.getMessage());
@@ -156,8 +180,11 @@ public class RenderView extends JFrame {
 
             }
 
-            public void menuDeselected(MenuEvent e) {}
-            public void menuCanceled(MenuEvent e) {}
+            public void menuDeselected(MenuEvent e) {
+            }
+
+            public void menuCanceled(MenuEvent e) {
+            }
         });
         menuBar.add(propertiesMenu);
 

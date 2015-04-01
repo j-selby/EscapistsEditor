@@ -284,9 +284,14 @@ public class EscapistsEditor {
             Rollbar.init();
 
             // Redirect SysOut
-            OutputStream fileOut = new FileOutputStream(new File("escapistseditor.log"));
-            System.setOut(new LoggingDebugPrintStream(fileOut, System.out));
-            System.setErr(new LoggingDebugPrintStream(fileOut, System.err));
+            try {
+                OutputStream fileOut = new FileOutputStream(new File("escapistseditor.log"));
+                System.setOut(new LoggingDebugPrintStream(fileOut, System.out));
+                System.setErr(new LoggingDebugPrintStream(fileOut, System.err));
+            } catch (Exception e) {
+                System.err.println("Failed to start logging.");
+                e.printStackTrace();
+            }
 
             System.out.println("The Escapists Editor v" + VERSION);
             System.out.println("By jselby");

@@ -26,7 +26,7 @@ public class PreFilters {
             }
         }
 
-        if (map.getWidth() != Map.DEFAULT_WIDTH || map.getHeight() != Map.DEFAULT_HEIGHT) {
+        /*if (map.getWidth() != Map.DEFAULT_WIDTH || map.getHeight() != Map.DEFAULT_HEIGHT) {
             // Assuming array sizing is broken.
             System.out.println(" > Map decode warning: Bad width/height of tiles. Repairing array...");
 
@@ -45,7 +45,7 @@ public class PreFilters {
                 }
                 map.setTiles(section, newArray);
             }
-        }
+        }*/
 
         // Escapists Update: Custom map tags
         /*

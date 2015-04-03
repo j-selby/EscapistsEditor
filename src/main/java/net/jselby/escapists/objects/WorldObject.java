@@ -131,7 +131,9 @@ public abstract class WorldObject {
                 }
                 g.setColor(new Color(1f, 0f, 0f, 1f));
                 g.drawRect(getX() * 16, getY() * 16, 16, 16);
-                g.drawString(getID() + "", getX() * 16 + 2, getY() * 16 + 12);
+                if (EscapistsEditor.DRAW_TEXT) {
+                    g.drawString(getID() + "", getX() * 16 + 2, getY() * 16 + 12);
+                }
             }
         }
     }

@@ -17,7 +17,11 @@ public class WorldLayer extends Layer {
                        BufferedImage tiles, BufferedImage ground) {
 
         // Draw the ground texture
-        g.drawImage(ground, null, 0, 0);
+        for (int x = 0; x < image.getWidth(); x += ground.getWidth()) {
+            for (int y = 0; y < image.getHeight(); y+= ground.getHeight()) {
+                g.drawImage(ground, null, x, y);
+            }
+        }
 
         genericRender(map, image, g, tileCache, tiles, 1);
     }

@@ -42,6 +42,8 @@ public enum Objects {
     PAYPHONE(74),
     CABLE_TV(87),
     SUN_LOUNGER(88),
+    SIDEWAYS_PRISONER_BED(110),
+    FORCED_SIDEWAYS_PRISONER_BED(111),
 
     // Job items
     JOB_DIRTY_LAUNDRY(35),

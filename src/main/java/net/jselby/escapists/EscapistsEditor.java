@@ -23,8 +23,8 @@ import java.util.ArrayList;
  * @author j_selbys
  */
 public class EscapistsEditor {
-    public static final String VERSION = "1.5.4";
-    public static final boolean DEBUG = false;
+    public static final String VERSION = "1.6.0";
+    public static final boolean DEBUG = true;
 
     // For embedded environments
     public static final boolean DRAW_TEXT = true;
@@ -266,7 +266,12 @@ public class EscapistsEditor {
             }
         }
 
-        String contents = new String(BlowfishCompatEncryption.decrypt(mapPath));
+        String contents;
+        try {
+            contents = new String(BlowfishCompatEncryption.decrypt(mapPath));
+        } catch (Exception e) {
+            contents = new String(IOUtils.toByteArray(mapPath));
+        }
 
         Map map = new Map(this, registry, mapPath.getPath(), contents);
 

@@ -347,7 +347,7 @@ public class Map {
             }
 
             // Player stuff
-            if (count(Objects.FORCED_PRISONER_BED) != 1) {
+            if ((count(Objects.FORCED_PRISONER_BED) + count(Objects.FORCED_SIDEWAYS_PRISONER_BED)) != 1) {
                 throw new IOException("Compile Error: You need a single forced prisoner bed for the player!");
             }
             if (count(Objects.FORCED_PRISONER_DESK) != 1) {
@@ -361,8 +361,8 @@ public class Map {
             }
 
             // Other desk stuff
-            if (count(Objects.BED) != (required - 1)) {
-                throw new IOException("Compile Error: You need " + (required - 1) + " general beds for prisoners!");
+            if ((count(Objects.BED) + count(Objects.SIDEWAYS_PRISONER_BED)) < (required - 1)) {
+                throw new IOException("Compile Error: You need " + (required - 1) + " general beds for non-player prisoners!");
             }
 
             // Lights
@@ -390,10 +390,7 @@ public class Map {
             if (count(Objects.AI_WP_PRISONER_ROLLCALL) != (required - 1)) {
                 throw new IOException("Compile Error: You need " + (required - 1) + " rollcall waypoints for prisoners!");
             }
-            if (count(Objects.BED) != (required - 1)) {
-                throw new IOException("Compile Error: You need " + (required - 1) + " standard beds for non-player prisoners!");
-            }
-            if (count(Objects.PERSONAL_DESK) != (required - 1)) {
+            if (count(Objects.PERSONAL_DESK) < (required - 1)) {
                 throw new IOException("Compile Error: You need " + (required - 1) + " standard personal desks for non-player prisoners!");
             }
             if (count(Objects.AI_WP_PRISONER_GENERAL) < 5) {
@@ -500,7 +497,7 @@ public class Map {
         String allSections = sections.toString();
 
         // Save it
-        byte[] encryptedBytes = BlowfishCompatEncryption.encrypt(allSections.getBytes());
+        byte[] encryptedBytes = allSections.getBytes();//BlowfishCompatEncryption.encrypt(allSections.getBytes());
 
         System.out.println("Writing to " + selectedFile.getPath());
         try (FileOutputStream out = new FileOutputStream(selectedFile)) {

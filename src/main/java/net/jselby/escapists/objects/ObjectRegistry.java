@@ -50,7 +50,7 @@ public class ObjectRegistry {
         }
 
         try {
-            // X:Y
+            // X:Y;iD
             Constructor<? extends WorldObject> constructor
                     = gameObjectClass.getConstructor(new Class[]{Integer.TYPE, Integer.TYPE, Integer.TYPE});
             return constructor.newInstance(x, y, level);

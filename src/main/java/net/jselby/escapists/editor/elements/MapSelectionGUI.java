@@ -61,21 +61,20 @@ public class MapSelectionGUI extends JFrame {
                         }
                     }
                 };;
-                FileFilter filter = new FileFilter() {
+                fc.addChoosableFileFilter(new FileFilter() {
                     @Override
                     public boolean accept(File f) {
                         return f.getName().toLowerCase().endsWith(".map") || f.isDirectory()
-                                || f.getName().toLowerCase().endsWith(".pmap");
+                                || f.getName().toLowerCase().endsWith(".pmap")
+                                || f.getName().toLowerCase().endsWith(".cmap");
                     }
 
                     @Override
                     public String getDescription() {
-                        return ".map or .pmap";
+                        return ".map, .pmap or .cmap";
                     }
-                };
-                fc.addChoosableFileFilter(filter);
-                fc.setFileFilter(filter);
-                fc.addChoosableFileFilter(new FileFilter() {
+                });
+                FileFilter filter = new FileFilter() {
                     @Override
                     public boolean accept(File f) {
                         return f.getName().toLowerCase().endsWith(".proj") || f.isDirectory();
@@ -85,7 +84,9 @@ public class MapSelectionGUI extends JFrame {
                     public String getDescription() {
                         return ".proj Project";
                     }
-                });
+                };
+                fc.addChoosableFileFilter(filter);
+                fc.setFileFilter(filter);
                 int result = fc.showDialog(MapSelectionGUI.this, "Load");
                 if (result == JFileChooser.APPROVE_OPTION) {
                     mapsSelector.setEditable(false);

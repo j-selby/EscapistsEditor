@@ -132,19 +132,6 @@ public class RenderView extends JFrame {
                 FileFilter filter = new FileFilter() {
                     @Override
                     public boolean accept(File f) {
-                        return f.getName().toLowerCase().endsWith(".pmap") || f.isDirectory();
-                    }
-
-                    @Override
-                    public String getDescription() {
-                        return ".pmap Maps";
-                    }
-                };
-                fc.addChoosableFileFilter(filter);
-                fc.setFileFilter(filter);
-                fc.addChoosableFileFilter(new FileFilter() {
-                    @Override
-                    public boolean accept(File f) {
                         return f.getName().toLowerCase().endsWith(".proj") || f.isDirectory();
                     }
 
@@ -152,7 +139,20 @@ public class RenderView extends JFrame {
                     public String getDescription() {
                         return ".proj Project";
                     }
+                };
+                fc.addChoosableFileFilter(new FileFilter() {
+                    @Override
+                    public boolean accept(File f) {
+                        return f.getName().toLowerCase().endsWith(".cmap") || f.isDirectory();
+                    }
+
+                    @Override
+                    public String getDescription() {
+                        return ".cmap Maps";
+                    }
                 });
+                fc.addChoosableFileFilter(filter);
+                fc.setFileFilter(filter);
                 int dialog = fc.showSaveDialog(RenderView.this);
                 if (JFileChooser.APPROVE_OPTION == dialog) {
                     try {
@@ -660,7 +660,11 @@ public class RenderView extends JFrame {
                 }
                 int idToAdd;
                 if (id.getSelectedItem().toString().equalsIgnoreCase("Other...")) {
-                    String output = JOptionPane.showInputDialog(RenderView.this, "Enter an ID (1-150): ").trim();
+                    String output = JOptionPane.showInputDialog(RenderView.this, "Enter an ID (1-150): ");
+                    if (output == null) {
+                        break;
+                    }
+                    output = output.trim();
                     if (StringUtils.isNumber(output)) {
                         int num = Integer.parseInt(output);
                         if (num > 0 && num < 150) {

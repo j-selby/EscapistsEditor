@@ -80,6 +80,10 @@ public class PropertiesDialog extends JDialog {
         int y = 1;
         c.ipady = 10;
         for (Component[] components : fieldsToEdit) {
+            if (components.length == 0) {
+                continue;
+            }
+
             c.gridy = y;
             c.gridx = 0;
             c.weightx = 0.3;
@@ -249,7 +253,14 @@ public class PropertiesDialog extends JDialog {
     }
 
     private static JComponent[] stringField(final Map mapToEdit, String name, final String valueSrc) {
+        if (name == null || valueSrc == null) {
+            return new JComponent[0];
+        }
+
         String startingContent = (String) mapToEdit.get(valueSrc);
+        if (startingContent == null) {
+            startingContent = "";
+        }
         startingContent = startingContent.trim();
 
         JLabel label = new JLabel(name);

@@ -409,9 +409,12 @@ Mailman=0
 Library=0
 StartingJob=Laundry
 [Info]
+Version=JSELBYEDITORv1
+Custom=2
 MapHash=0861b651f031404b80e77f8b75fd014c
 MapName=Blank Map
 Warden=McMoth
+Floor=black
 Guards=5
 Inmates=1
 Tileset=perks

@@ -1,13 +1,13 @@
 package net.jselby.escapists.editor.elements;
 
-import net.jselby.escapists.EscapistsEditor;
+import net.jselby.escapists.editor.EscapistsEditor;
 import net.jselby.escapists.editor.ActionMode;
-import net.jselby.escapists.mapping.Map;
-import net.jselby.escapists.objects.Objects;
-import net.jselby.escapists.objects.WorldObject;
-import net.jselby.escapists.utils.IOUtils;
-import net.jselby.escapists.utils.StringUtils;
-import net.jselby.escapists.utils.logging.Rollbar;
+import net.jselby.escapists.editor.mapping.Map;
+import net.jselby.escapists.editor.objects.Objects;
+import net.jselby.escapists.editor.objects.WorldObject;
+import net.jselby.escapists.editor.utils.IOUtils;
+import net.jselby.escapists.editor.utils.StringUtils;
+import net.jselby.escapists.editor.utils.logging.Rollbar;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;

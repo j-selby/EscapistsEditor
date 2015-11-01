@@ -1,6 +1,6 @@
 package net.jselby.escapists.editor.elements;
 
-import net.jselby.escapists.EscapistsEditor;
+import net.jselby.escapists.editor.EscapistsEditor;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;

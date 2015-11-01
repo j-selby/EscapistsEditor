@@ -38,7 +38,7 @@
     <copyright>Editor: jselby (licensed under the MIT license), Game: Mouldy Toof Studios, Team17.</copyright>
     <productName>Escapists Map Editor</productName>
     <companyName></companyName>
-    <internalName>net.jselby.escapists.EscapistsEditor</internalName>
+    <internalName>net.jselby.escapists.editor.EscapistsEditor</internalName>
     <originalFilename>EscapistsEditor.exe</originalFilename>
   </versionInfo>
 </launch4jConfig>

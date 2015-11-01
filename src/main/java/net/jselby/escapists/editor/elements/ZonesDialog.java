@@ -1,6 +1,6 @@
 package net.jselby.escapists.editor.elements;
 
-import net.jselby.escapists.mapping.Map;
+import net.jselby.escapists.editor.mapping.Map;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;

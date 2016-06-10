@@ -21,7 +21,9 @@ public class SteamFinder {
             "Steam" + File.separator,
             "SteamLibrary" + File.separator,
             "Games" + File.separator,
-            "Games" + File.separator + "Steam" + File.separator
+            "Games" + File.separator + "Steam" + File.separator,
+            ".local" + File.separator + "share" + File.separator + "Steam",
+            "SteamLib" + File.separator,
     };
 
     /**
@@ -33,33 +35,39 @@ public class SteamFinder {
     public static File getSteamPath(EscapistsEditor editor) {
         // TODO: Support platforms other then Windows.
         // Discover drive letters
-        File[] drives = File.listRoots();
+        File[] drives;
+        if (System.getProperty("os.name").equals("Linux")) {
+            drives = new File[] { new File(System.getProperty("user.home")) };
+        }
+        else drives = File.listRoots();
 
         // Check locations
         for (File drive : drives) {
             for (String possibleLoc : POSSIBLE_LOCS) {
                 File steamDir = new File(drive, possibleLoc);
+                System.out.println("Searching " + steamDir.toString());
 
                 if (steamDir.exists()) {
-                    // Make sure that a Steam.dll exists here.
-                    File steamFile = new File(steamDir, "Steam.dll");
-                    if (steamFile.exists()) {
-                        // Check that the Escapists is here
-                        if (new File(steamDir,
-                                "SteamApps" + File.separator + "common" + File.separator + "The Escapists").exists()) {
-                            return new File(steamDir,
-                                    "SteamApps" + File.separator + "common" + File.separator + "The Escapists");
-                        }
-                        if (new File(steamDir,
-                                "common" + File.separator + "The Escapists").exists()) {
-                            return new File(steamDir,
-                                    "common" + File.separator + "The Escapists");
-                        }
-                        if (new File(steamDir,
-                                "The Escapists").exists()) {
-                            return new File(steamDir,
-                                    "The Escapists");
-                        }
+                    // Check that the Escapists is here
+                    if (new File(steamDir,
+                            "steamapps" + File.separator + "common" + File.separator + "The Escapists").exists()) {
+                        return new File(steamDir,
+                                "steamapps" + File.separator + "common" + File.separator + "The Escapists");
+                    }
+                    if (new File(steamDir,
+                            "SteamApps" + File.separator + "common" + File.separator + "The Escapists").exists()) {
+                        return new File(steamDir,
+                                "SteamApps" + File.separator + "common" + File.separator + "The Escapists");
+                    }
+                    if (new File(steamDir,
+                            "common" + File.separator + "The Escapists").exists()) {
+                        return new File(steamDir,
+                                "common" + File.separator + "The Escapists");
+                    }
+                    if (new File(steamDir,
+                            "The Escapists").exists()) {
+                        return new File(steamDir,
+                                "The Escapists");
                     }
                 }
             }
@@ -84,12 +92,14 @@ public class SteamFinder {
         if (JFileChooser.APPROVE_OPTION == result) {
             // Check for Escapists here
             File resultFile = chooser.getSelectedFile();
-            File escapistsTest = new File(resultFile, "TheEscapists.exe");
-            if (escapistsTest.exists()) {
-                return resultFile;
-            } else {
-                EscapistsEditor.fatalError(new Exception("Invalid directory (No TheEscapists.exe)"));
+            String[] escapistFiles = new String[] { "TheEscapists.exe", "bin64/Chowdren", "bin32/Chowdren" };
+            for (String filename : escapistFiles) {
+                File escapistsTest = new File(resultFile, filename);
+                if (escapistsTest.exists()) {
+                    return resultFile;
+                }
             }
+            EscapistsEditor.fatalError(new Exception("Invalid directory (No Escapists binaries)"));
         }
 
         return null;

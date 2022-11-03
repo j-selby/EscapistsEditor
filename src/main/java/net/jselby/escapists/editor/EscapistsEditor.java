@@ -8,7 +8,6 @@ import net.jselby.escapists.editor.utils.BlowfishCompatEncryption;
 import net.jselby.escapists.editor.utils.IOUtils;
 import net.jselby.escapists.editor.utils.logging.LoggingDebugPrintStream;
 import net.jselby.escapists.editor.utils.SteamFinder;
-import net.jselby.escapists.editor.utils.logging.Rollbar;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -23,7 +22,7 @@ import java.util.ArrayList;
  * @author j_selbys
  */
 public class EscapistsEditor {
-    public static final String VERSION = "1.6.0";
+    public static final String VERSION = "1.7.0";
     public static final boolean DEBUG = true;
 
     // For embedded environments
@@ -102,33 +101,6 @@ public class EscapistsEditor {
 
         // Parse arguments
         System.out.println("Discovered Escapists @ " + escapistsPath.getPath());
-
-        // Check for update
-        Thread updateThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if (!showGUI) {
-                    return;
-                }
-                try {
-                    String newVersion = IOUtils.toString(new URL("http://escapists.jselby.net/version.txt")).trim();
-                    String message = "";
-                    if (newVersion.contains("\n")) {
-                        message = newVersion.split("\n")[1];
-                        newVersion = newVersion.split("\n")[0].trim();
-                    }
-                    if (!newVersion.equalsIgnoreCase(VERSION) && newVersion.length() != 0) {
-                        updateMessage = newVersion + "\n" + message;
-
-                        dialog("New version found (" + newVersion + "). " +
-                                "Download it at http://escapists.jselby.net\n" + message);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        updateThread.start();
 
     }
 
@@ -289,8 +261,6 @@ public class EscapistsEditor {
 
     public static void main(String[] args) {
         try {
-            Rollbar.init();
-
             // Redirect SysOut
             try {
                 OutputStream fileOut = new FileOutputStream(new File("escapistseditor.log"));
@@ -416,7 +386,7 @@ public class EscapistsEditor {
                 editor.edit(editor.editMap);
             }
         } catch (Exception e) {
-            fatalError(e, Rollbar.fatal(e));
+            e.printStackTrace();
         }
     }
 
